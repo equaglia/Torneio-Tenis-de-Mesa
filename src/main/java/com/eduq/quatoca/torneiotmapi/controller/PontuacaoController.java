@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eduq.quatoca.torneiotmapi.model.Pontuacao;
 import com.eduq.quatoca.torneiotmapi.repository.GameRepository;
 import com.eduq.quatoca.torneiotmapi.repository.JogadorRepository;
-import com.eduq.quatoca.torneiotmapi.repository.JogadoresPartidasRepository;
 import com.eduq.quatoca.torneiotmapi.repository.PartidaRepository;
 import com.eduq.quatoca.torneiotmapi.repository.PontuacaoRepository;
 
@@ -21,7 +20,6 @@ import lombok.AllArgsConstructor;
 public class PontuacaoController {
 
 	private PontuacaoRepository pontuacaoRepository; 
-	private JogadoresPartidasRepository jogadoresPartidasRepository;
 	private PartidaRepository partidaRepository;
 	private JogadorRepository jogadorRepository;
 	private GameRepository gameRepository;

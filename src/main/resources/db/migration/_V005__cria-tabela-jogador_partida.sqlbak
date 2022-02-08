@@ -1,0 +1,16 @@
+CREATE TABLE `jogadores_partidas` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `jogador_direita_id` bigint DEFAULT NULL,
+  `jogador_esquerda_id` bigint DEFAULT NULL,
+  `jogador_id` bigint DEFAULT NULL,
+  `partida_id` bigint DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK_direita` (`jogador_direita_id`),
+  KEY `FK_esquerda` (`jogador_esquerda_id`),
+  KEY `FK_jogador` (`jogador_id`),
+  KEY `FK_partida` (`partida_id`),
+  CONSTRAINT `FK_partida` FOREIGN KEY (`partida_id`) REFERENCES `partida` (`id`),
+  CONSTRAINT `FK_direita` FOREIGN KEY (`jogador_direita_id`) REFERENCES `jogador` (`id`),
+  CONSTRAINT `FK_esquerda` FOREIGN KEY (`jogador_esquerda_id`) REFERENCES `jogador` (`id`),
+  CONSTRAINT `FK_jogador` FOREIGN KEY (`jogador_id`) REFERENCES `jogador` (`id`)
+)

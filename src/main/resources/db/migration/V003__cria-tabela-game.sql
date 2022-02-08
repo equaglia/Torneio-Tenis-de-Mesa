@@ -4,6 +4,6 @@ CREATE TABLE `game` (
   `inicio` datetime(6) DEFAULT NULL,
   `partida_id` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `FKfbe6cm6g4w4ayato6oppysntg` (`partida_id`),
-  CONSTRAINT `FKfbe6cm6g4w4ayato6oppysntg` FOREIGN KEY (`partida_id`) REFERENCES `partida` (`id`)
+  KEY `FK_partida_game` (`partida_id`),
+  CONSTRAINT `FK_partida_game` FOREIGN KEY (`partida_id`) REFERENCES `partida` (`id`)
 )

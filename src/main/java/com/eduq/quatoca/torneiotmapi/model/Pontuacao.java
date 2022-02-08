@@ -1,5 +1,6 @@
 package com.eduq.quatoca.torneiotmapi.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import lombok.Builder.Default;
 import lombok.Data;
 
 @Data
@@ -18,11 +20,12 @@ public class Pontuacao {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	private Game game;
 
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	private Jogador jogador;
 
-	private Integer pontos;
+	
+	private Integer pontos = 0;
 }

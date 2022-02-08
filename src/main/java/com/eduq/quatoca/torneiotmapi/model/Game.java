@@ -24,7 +24,7 @@ public class Game {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.ALL)
 	private Partida partida;
 
 	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
