@@ -1,0 +1,13 @@
+package com.eduq.quatoca.torneiotmapi.api.model.input;
+
+import java.time.OffsetDateTime;
+
+import lombok.Data;
+
+@Data
+public class PartidaInput {
+
+	private OffsetDateTime inicio;
+	private OffsetDateTime fim;
+
+}
