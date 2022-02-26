@@ -50,11 +50,6 @@ public class PartidaController {
 		String datesmall = "2022-02-03T16:05";
 		Partida partida = new Partida();
 
-		Optional<Jogador> jogadorA = jogadorRepository.findById(jogadorAId);
-		Optional<Jogador> jogadorB = jogadorRepository.findById(jogadorBId);
-		partida.addJogador(jogadorA.get());
-		partida.addJogador(jogadorB.get());
-
 		partida.setInicio(OffsetDateTime.of(LocalDateTime.parse(datesmall), ZoneOffset.UTC));
 		partida.setFim(OffsetDateTime.of(LocalDateTime.parse(datesmall), ZoneOffset.UTC));
 		for (int i = 0; i < 2; i++) {
@@ -75,8 +70,13 @@ public class PartidaController {
 			partida.addGame(game);
 		}
 
+		Optional<Jogador> jogadorA = jogadorRepository.findById(jogadorAId);
+		Optional<Jogador> jogadorB = jogadorRepository.findById(jogadorBId);
+		partida.addJogador(jogadorA.get());
+		partida.addJogador(jogadorB.get());
+		jogadorRepository.save(jogadorA.get());
+		jogadorRepository.save(jogadorB.get());
 		partidaRepository.save(partida);
-		
 		return partidaAssembler.toModel(partida);
 	}
 

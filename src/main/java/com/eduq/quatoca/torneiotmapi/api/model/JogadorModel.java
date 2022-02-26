@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 public class JogadorModel {
 
-	private Long id; // Remover no futuro
+//	private Long id; // Remover no futuro
 	private String nome;
 	private String sobrenome;
-	private CategoriaJogador categoria;
+//	private CategoriaJogador categoria;
 
 }

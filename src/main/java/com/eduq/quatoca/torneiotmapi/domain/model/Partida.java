@@ -2,7 +2,9 @@ package com.eduq.quatoca.torneiotmapi.domain.model;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
@@ -16,18 +18,20 @@ import javax.persistence.OneToMany;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
+@EqualsAndHashCode(exclude = {"games", "inicio", "fim"})
 public class Partida {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToMany(mappedBy = "partidas")//, cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<Jogador> jogadores = new ArrayList<>();
+	@ManyToMany(mappedBy = "partidas")
+//	@JsonIgnore
+	private Set<Jogador> jogadores = new HashSet<Jogador>();
 	
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
 	@Embedded
@@ -42,7 +46,27 @@ public class Partida {
 	}
 	
 	public void addJogador(Jogador jogador) {
+		System.out.println("jogador nome = "+jogador.getNome());
 		jogadores.add(jogador);
+		System.out.println("numero de jogadores em partida = " + jogadores.size());
 		jogador.getPartidas().add(this);
+	}
+
+	public void addJogadores(Jogador jogadorA, Jogador jogadorB) {
+		Set<Jogador> jogadoresAB = new HashSet<>();
+		jogadoresAB.add(jogadorA);
+		jogadoresAB.add(jogadorB);
+		this.setJogadores(jogadoresAB);
+		System.out.println("jogador nome = "+jogadorA.getNome());
+//		jogadores.add(jogadorA);
+		jogadorA.getPartidas().add(this);
+		System.out.println("jogador A partidas: "+ jogadorA.getPartidas().size());
+		
+		System.out.println("jogador nome = "+jogadorB.getNome());
+//		jogadores.add(jogadorB);
+		jogadorB.getPartidas().add(this);
+		System.out.println("jogador B partidas: "+ jogadorB.getPartidas().size());
+
+		System.out.println("numero de jogadores em partida = " + jogadores.size());
 	}
 }

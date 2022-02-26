@@ -28,8 +28,8 @@ public class PartidaAssembler {
 				.collect(Collectors.toList());
 	}
 	
-	public Partida toEntity(PartidaInput partidaInput) {
-		return modelMapper.map(partidaInput, Partida.class);
+	public Partida toEntity(PartidaModel partidaModel) {
+		return modelMapper.map(partidaModel, Partida.class);
 	}
 
 }
