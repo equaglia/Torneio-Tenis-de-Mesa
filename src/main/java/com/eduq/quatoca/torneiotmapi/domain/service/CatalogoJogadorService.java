@@ -15,6 +15,7 @@ public class CatalogoJogadorService {
 
 	private JogadorRepository jogadorRepository;
 	
+	@Transactional
 	public Jogador buscar(Long jogadorId) {
 		return jogadorRepository.findById(jogadorId)
 				.orElseThrow(() -> new JogoException("Jogador não encontrado"));
@@ -28,6 +29,12 @@ public class CatalogoJogadorService {
 
 	@Transactional
 	public void excluir(Long jogadorId) {
-		jogadorRepository.deleteById(jogadorId);
+		Jogador jogadorParaExcluir = jogadorRepository.findById(jogadorId).get();
+		if (jogadorParaExcluir.getPartidas().isEmpty()) {
+			jogadorRepository.deleteById(jogadorId);
+			System.out.println("Jogador deletado do sistema");
+		} else {
+			throw(new JogoException("Jogador com partida registrada não pode ser deletado."));
+		}
 	}
 }

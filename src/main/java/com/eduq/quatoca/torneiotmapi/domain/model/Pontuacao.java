@@ -11,10 +11,12 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
 @Embeddable
+@EqualsAndHashCode(exclude = {"jogador", "game", "pontos"})
 public class Pontuacao {
 	
 	@Id
@@ -24,6 +26,10 @@ public class Pontuacao {
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JsonIgnore
 	private Game game;
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Jogador jogador;
 
 	private Integer pontos = 0;
 }

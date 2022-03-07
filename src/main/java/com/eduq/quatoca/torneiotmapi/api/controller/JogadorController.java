@@ -47,13 +47,14 @@ public class JogadorController {
 	public ResponseEntity<Jogador> atualizar(
 			@PathVariable Long jogadorId,
 			@Valid @RequestBody Jogador jogador) {
-		if (!jogadorRepository.existsById(jogadorId)) {
-			return ResponseEntity.notFound().build();
-		}
-		jogador.setId(jogadorId);
-		jogador = catalogoJogadorService.salvar(jogador);
-		
-		return ResponseEntity.ok(jogador);
+		return jogadorRepository.findById(jogadorId)
+				.map(record -> {
+					record.setCategoria(jogador.getCategoria());
+					record.setNome(jogador.getNome());
+					record.setSobrenome(jogador.getSobrenome());
+					Jogador updated = jogadorRepository.save(record);
+					return ResponseEntity.ok().body(updated);
+				}).orElse(ResponseEntity.notFound().build());
 	}
 	
 	@GetMapping

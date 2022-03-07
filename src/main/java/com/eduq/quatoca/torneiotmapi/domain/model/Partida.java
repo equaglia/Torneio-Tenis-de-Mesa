@@ -30,7 +30,7 @@ public class Partida {
 	private Long id;
 
 	@ManyToMany(mappedBy = "partidas")
-//	@JsonIgnore
+	@JsonIgnore
 	private Set<Jogador> jogadores = new HashSet<Jogador>();
 	
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
@@ -50,23 +50,5 @@ public class Partida {
 		jogadores.add(jogador);
 		System.out.println("numero de jogadores em partida = " + jogadores.size());
 		jogador.getPartidas().add(this);
-	}
-
-	public void addJogadores(Jogador jogadorA, Jogador jogadorB) {
-		Set<Jogador> jogadoresAB = new HashSet<>();
-		jogadoresAB.add(jogadorA);
-		jogadoresAB.add(jogadorB);
-		this.setJogadores(jogadoresAB);
-		System.out.println("jogador nome = "+jogadorA.getNome());
-//		jogadores.add(jogadorA);
-		jogadorA.getPartidas().add(this);
-		System.out.println("jogador A partidas: "+ jogadorA.getPartidas().size());
-		
-		System.out.println("jogador nome = "+jogadorB.getNome());
-//		jogadores.add(jogadorB);
-		jogadorB.getPartidas().add(this);
-		System.out.println("jogador B partidas: "+ jogadorB.getPartidas().size());
-
-		System.out.println("numero de jogadores em partida = " + jogadores.size());
 	}
 }

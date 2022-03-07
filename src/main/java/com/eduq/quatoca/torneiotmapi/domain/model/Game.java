@@ -38,8 +38,9 @@ public class Game {
 	private OffsetDateTime inicio;
 	private OffsetDateTime fim;
 	
-	public void addPontuacao(Pontuacao pontuacao) {
+	public void addPontuacao(Pontuacao pontuacao, Jogador jogador) {
 		pontos.add(pontuacao);
 		pontuacao.setGame(this);
+		pontuacao.setJogador(jogador);
 	}
 }

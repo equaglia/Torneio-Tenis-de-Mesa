@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -45,13 +46,11 @@ public class Jogador {
 	@Column(nullable = false)
 	private String sobrenome;
 	
-//	@NotBlank(message = "Categoria é mandatório")
 	@NotNull(message = "Categoria é mandatório")
 	@Enumerated(EnumType.STRING)
 	private CategoriaJogador categoria;
 	
-	//TODO confirmar se este relacionamento é necessário
-//	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
-//	private Set<Pontuacao> pontos;
+	@OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL)
+	private Set<Pontuacao> pontos;
 
 }
