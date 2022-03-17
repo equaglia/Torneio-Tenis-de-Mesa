@@ -75,14 +75,4 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(ex, problema, new HttpHeaders(), status, request);
 	}
 	
-	public ResponseEntity<Object> jogadorComPartidaRegistrada(NegocioException ex, WebRequest request) {
-		HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-		
-		Problema problema = new Problema();
-		problema.setStatus(status.value());
-		problema.setDataHora(OffsetDateTime.now());
-		problema.setTitulo(ex.getMessage());
-
-		return handleExceptionInternal(ex, problema, new HttpHeaders(), status, request);
-	}
 }

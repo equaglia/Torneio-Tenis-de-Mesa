@@ -1,10 +1,10 @@
 package com.eduq.quatoca.torneiotmapi.domain.exception;
 
-public class JogoException extends RuntimeException {
+public class JogadorException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
-	public JogoException(String message) {
+	public JogadorException(String message) {
 		super(message);
 	}
 }

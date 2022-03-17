@@ -1,9 +1,13 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.eduq.quatoca.torneiotmapi.domain.exception.JogoException;
+import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
+import com.eduq.quatoca.torneiotmapi.domain.exception.JogadorException;
+import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.repository.JogadorRepository;
 
@@ -15,10 +19,9 @@ public class CatalogoJogadorService {
 
 	private JogadorRepository jogadorRepository;
 	
-	@Transactional
 	public Jogador buscar(Long jogadorId) {
 		return jogadorRepository.findById(jogadorId)
-				.orElseThrow(() -> new JogoException("Jogador não encontrado"));
+				.orElseThrow(() -> new JogadorException("Jogador não encontrado CatalogoJogadorService"));
 	}
 
 	@Transactional
@@ -29,12 +32,14 @@ public class CatalogoJogadorService {
 
 	@Transactional
 	public void excluir(Long jogadorId) {
-		Jogador jogadorParaExcluir = jogadorRepository.findById(jogadorId).get();
+		Jogador jogadorParaExcluir = jogadorRepository.findById(jogadorId)
+				.orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado"));
+
 		if (jogadorParaExcluir.getPartidas().isEmpty()) {
 			jogadorRepository.deleteById(jogadorId);
-			System.out.println("Jogador deletado do sistema");
+			new ResponseEntity<>("Jogador deletado do sistema", HttpStatus.NO_CONTENT);
 		} else {
-			throw(new JogoException("Jogador com partida registrada não pode ser deletado."));
+			throw(new NegocioException("Jogador com partida registrada não pode ser deletado."));
 		}
 	}
 }

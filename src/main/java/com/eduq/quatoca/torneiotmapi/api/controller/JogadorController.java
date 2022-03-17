@@ -52,7 +52,7 @@ public class JogadorController {
 					record.setCategoria(jogador.getCategoria());
 					record.setNome(jogador.getNome());
 					record.setSobrenome(jogador.getSobrenome());
-					Jogador updated = jogadorRepository.save(record);
+					Jogador updated = catalogoJogadorService.salvar(record);
 					return ResponseEntity.ok().body(updated);
 				}).orElse(ResponseEntity.notFound().build());
 	}
@@ -67,13 +67,12 @@ public class JogadorController {
 		return jogadorRepository.findById(jogadorId)
 				.map(jogador -> ResponseEntity.ok(jogadorPartidasAssembler.toModel(jogador)))
 				.orElse(ResponseEntity.notFound().build());
+//				.orElseThrow(() -> new JogadorException("Jogador não encontrado JogadorController"));
+//				.orElse(ResponseEntity.badRequest().body(null));
 	}
 	
 	@DeleteMapping("/{jogadorId}")
 	public ResponseEntity<Void> excluir(@PathVariable Long jogadorId) {
-		if (!jogadorRepository.existsById(jogadorId)) {
-			return ResponseEntity.notFound().build();
-		}
 		catalogoJogadorService.excluir(jogadorId);
 		return ResponseEntity.noContent().build();
 	}

@@ -12,7 +12,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @JsonInclude(Include.NON_NULL)
-@Data
+@Getter
+@Setter
 public class Problema {
 	
 	private Integer status;

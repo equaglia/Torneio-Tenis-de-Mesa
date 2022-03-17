@@ -20,11 +20,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Entity
-@EqualsAndHashCode(exclude = {"games", "inicio", "fim"})
 public class Partida {
-	
+
+	@EqualsAndHashCode.Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -46,9 +47,7 @@ public class Partida {
 	}
 	
 	public void addJogador(Jogador jogador) {
-		System.out.println("jogador nome = "+jogador.getNome());
 		jogadores.add(jogador);
-		System.out.println("numero de jogadores em partida = " + jogadores.size());
 		jogador.getPartidas().add(this);
 	}
 }

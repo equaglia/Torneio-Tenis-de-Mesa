@@ -13,12 +13,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Entity
 @Embeddable
-@EqualsAndHashCode(exclude = {"jogador", "game", "pontos"})
 public class Pontuacao {
 	
+	@EqualsAndHashCode.Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -32,4 +33,12 @@ public class Pontuacao {
 	private Jogador jogador;
 
 	private Integer pontos = 0;
+	
+	public void mais1ponto() {
+		this.setPontos(pontos++);
+	}
+	
+	public void menos1ponto() {
+		this.setPontos(pontos--);
+	}
 }
