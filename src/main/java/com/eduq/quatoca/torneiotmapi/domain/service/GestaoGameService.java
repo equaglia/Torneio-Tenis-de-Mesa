@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
+import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
 import com.eduq.quatoca.torneiotmapi.domain.repository.GameRepository;
 
 import lombok.AllArgsConstructor;
@@ -31,11 +32,6 @@ public class GestaoGameService {
 		return gameRepository.save(game);
 	}
 
-//	@Transactional
-//	public Game atualizarGame(Game game) {
-//		
-//	}
-
 	@Transactional
 	public Game prepararGame(Optional<Jogador> jogadorA, Optional<Jogador> jogadorB, OffsetDateTime horarioInicial) {
 		Game game = this.prepararGame(jogadorA, jogadorB);
@@ -54,4 +50,41 @@ public class GestaoGameService {
 		this.salvar(game);
 		return game;
 	}
+	
+	@Transactional
+	public Game somaUmPonto(Long gameId, Long pontoId) {
+		Game game = this.buscar(gameId);
+		Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
+		Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
+		if (pontuacaoJogadorA.getId() == pontoId) {
+			pontuacaoJogadorA.setPontos(pontuacaoJogadorA.mais1ponto());
+			gestaoPontuacaoService.salvar(pontuacaoJogadorA);
+		
+		} else if (pontuacaoJogadorB.getId() == pontoId) {
+			pontuacaoJogadorB.setPontos(pontuacaoJogadorB.mais1ponto());
+			gestaoPontuacaoService.salvar(pontuacaoJogadorB);
+			
+		} else throw new EntidadeNaoEncontradaException("Game não encontrado");
+		return game;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

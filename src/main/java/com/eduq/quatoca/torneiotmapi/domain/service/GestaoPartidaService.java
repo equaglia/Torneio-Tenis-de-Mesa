@@ -43,8 +43,8 @@ public class GestaoPartidaService {
 		
 		Partida partida = new Partida();
 
-		Optional<Jogador> jogadorA = Optional.of(catalogoJogadorService.buscar(jogadorAId));
-		Optional<Jogador> jogadorB = Optional.of(catalogoJogadorService.buscar(jogadorBId));
+		Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
+		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
 		partida.addJogador(jogadorA.get());
 		partida.addJogador(jogadorB.get());
 

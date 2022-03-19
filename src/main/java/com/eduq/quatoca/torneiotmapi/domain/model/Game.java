@@ -46,4 +46,6 @@ public class Game {
 		pontuacao.setGame(this);
 		pontuacao.setJogador(jogador);
 	}
+	
+
 }

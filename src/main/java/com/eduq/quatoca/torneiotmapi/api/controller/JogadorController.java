@@ -21,7 +21,6 @@ import com.eduq.quatoca.torneiotmapi.api.assembler.JogadorPartidasAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.JogadorModel;
 import com.eduq.quatoca.torneiotmapi.api.model.JogadorPartidasModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
-import com.eduq.quatoca.torneiotmapi.domain.repository.JogadorRepository;
 import com.eduq.quatoca.torneiotmapi.domain.service.CatalogoJogadorService;
 
 import lombok.AllArgsConstructor;
@@ -31,7 +30,6 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/jogadores")
 public class JogadorController {
 	
-	private JogadorRepository jogadorRepository;
 	private JogadorAssembler jogadorAssembler;
 	private JogadorPartidasAssembler jogadorPartidasAssembler;
 	private CatalogoJogadorService catalogoJogadorService;
@@ -47,7 +45,7 @@ public class JogadorController {
 	public ResponseEntity<Jogador> atualizar(
 			@PathVariable Long jogadorId,
 			@Valid @RequestBody Jogador jogador) {
-		return jogadorRepository.findById(jogadorId)
+		return catalogoJogadorService.buscar(jogadorId)
 				.map(record -> {
 					record.setCategoria(jogador.getCategoria());
 					record.setNome(jogador.getNome());
@@ -59,12 +57,12 @@ public class JogadorController {
 	
 	@GetMapping
 	public List<JogadorModel> listar() {
-		return jogadorAssembler.toCollectionModel(jogadorRepository.findAll());
+		return jogadorAssembler.toCollectionModel(catalogoJogadorService.listar());
 	}
 	
 	@GetMapping("/{jogadorId}")
 	public ResponseEntity<JogadorPartidasModel> buscar(@PathVariable Long jogadorId) {
-		return jogadorRepository.findById(jogadorId)
+		return catalogoJogadorService.buscar(jogadorId)
 				.map(jogador -> ResponseEntity.ok(jogadorPartidasAssembler.toModel(jogador)))
 				.orElse(ResponseEntity.notFound().build());
 //				.orElseThrow(() -> new JogadorException("Jogador não encontrado JogadorController"));

@@ -1,5 +1,7 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class GestaoPontuacaoService {
 	
 	private PontuacaoRepository pontuacaoRepository;
 
+//	public Optional<Pontuacao> buscar(Long pontuacaoId) { //TBD usar este método
 	public Pontuacao buscar(Long pontuacaoId) { //TBD usar este método
 		return pontuacaoRepository.findById(pontuacaoId)
 				.orElseThrow(() -> new EntidadeNaoEncontradaException("Pontuacao não encontrada GestaoPontuacaoService"));

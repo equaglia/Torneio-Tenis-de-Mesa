@@ -32,13 +32,15 @@ public class Pontuacao {
 	@JsonIgnore
 	private Jogador jogador;
 
-	private Integer pontos = 0;
+	private int pontos = 0;
 	
-	public void mais1ponto() {
-		this.setPontos(pontos++);
+	public int mais1ponto() {
+		int novaPontuacao = this.getPontos() + 1;
+		return novaPontuacao;
 	}
 	
-	public void menos1ponto() {
-		this.setPontos(pontos--);
+	public int menos1ponto() {
+		int novaPontuacao = this.getPontos() - 1;
+		return novaPontuacao;
 	}
 }
