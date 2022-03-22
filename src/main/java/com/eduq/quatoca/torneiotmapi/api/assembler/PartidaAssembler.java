@@ -7,7 +7,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaModel;
-import com.eduq.quatoca.torneiotmapi.api.model.input.PartidaInput;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 
 import lombok.AllArgsConstructor;

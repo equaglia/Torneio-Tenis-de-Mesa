@@ -24,7 +24,8 @@ public class CatalogoJogadorService {
 	
 	public Optional<Jogador> buscar(Long jogadorId) {
 		return Optional.of(jogadorRepository.findById(jogadorId)
-				.orElseThrow(() -> new JogadorException("Jogador não encontrado CatalogoJogadorService")));
+				.orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado CatalogoJogadorService")));
+//				.orElseThrow(() -> new JogadorException("Jogador não encontrado CatalogoJogadorService")));
 	}
 	
 	public List<Jogador> listar() {

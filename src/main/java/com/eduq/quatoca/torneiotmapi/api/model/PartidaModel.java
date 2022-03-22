@@ -4,6 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
+import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogo;
+
 import lombok.Data;
 
 @Data
@@ -15,5 +17,6 @@ public class PartidaModel {
 	private List<GameModel> games;
 	private OffsetDateTime inicioPartida;
 	private OffsetDateTime fimPartida;
+	private StatusJogo partidaStatus;
 
 }
