@@ -45,8 +45,9 @@ public class GameController {
 			@PathVariable Long gameId, 
 			@PathVariable Long pontoId) {
 		return gestaoGameService.somaUmPonto(gameId, pontoId);
-//		return gestaoGameService.buscar(gameId)
 	}
+	
+	
 }
 
 

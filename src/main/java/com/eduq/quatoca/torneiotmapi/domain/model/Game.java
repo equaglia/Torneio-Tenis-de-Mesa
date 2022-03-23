@@ -60,4 +60,36 @@ public class Game {
 	}
 	
 
+	public void iniciar() {
+		this.setStatus(StatusJogo.EmAndamento);
+	}
+	
+	public void finalizar() {
+		this.setStatus(StatusJogo.Finalizado);
+	}
+	
+	public Boolean preparado() {
+		return this.getStatus() == StatusJogo.Preparado;
+	}
+
+	public Boolean emAndamento() {
+		return this.getStatus() == StatusJogo.EmAndamento;
+	}
+
+	public Boolean finalizado() {
+		return this.getStatus() == StatusJogo.Finalizado;
+	}
+
+	public Boolean interrompido() {
+		return this.getStatus() == StatusJogo.Interrompido;
+	}
+
+	public Boolean cancelado() {
+		return this.getStatus() == StatusJogo.Cancelado;
+	}
+	
+	public Boolean emCurso() {
+		return this.getPartida().buscarGameEmAndamento() == this;
+	}
+
 }

@@ -18,29 +18,39 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Service
 public class GestaoPartidaService {
-	
+
 	private CatalogoJogadorService catalogoJogadorService;
 	private PartidaRepository partidaRepository;
 	private GestaoGameService gestaoGameService;
+//	private Integer numMaxGames = 5;
+//	public int getNumMaxGames() {
+//		return numMaxGames;
+//	}
+//
+//	public void setNumMaxGames(int numMaxGames) {
+//		this.numMaxGames = numMaxGames;
+//	}
 
-	public Partida buscar(Long partidaId) { //TBD usar este método
+	public Partida buscar(Long partidaId) {
 		return partidaRepository.findById(partidaId)
 				.orElseThrow(() -> new EntidadeNaoEncontradaException("Partida não encontrada GestaoPartidaService"));
 	}
-	
+
 	public List<Partida> listar() {
 		return partidaRepository.findAll();
 	}
-	
+
 	@Transactional
 	public Partida salvar(Partida partida) {
 		return partidaRepository.save(partida);
 	}
-	
+
 	@Transactional
 	public Partida prepararPartida(Long jogadorAId, Long jogadorBId) {
 		OffsetDateTime horarioInicial = OffsetDateTime.now();
-		
+
+		int numDeGames = 5;
+
 		Partida partida = new Partida();
 
 		Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
@@ -49,7 +59,7 @@ public class GestaoPartidaService {
 		partida.addJogador(jogadorB.get());
 
 		partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB, horarioInicial));
-		for (int i = 1; i < 2; i++) {
+		for (int i = 1; i < numDeGames; i++) {
 			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB));
 		}
 
@@ -58,5 +68,13 @@ public class GestaoPartidaService {
 		partida.setInicio(horarioInicial);
 		this.salvar(partida);
 		return partida;
+	}
+
+	@Transactional
+	public Partida iniciarPartida(Long partidaId) {
+		Partida partida = this.buscar(partidaId);
+		partida.iniciar();
+		gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
+		return this.salvar(partida);
 	}
 }

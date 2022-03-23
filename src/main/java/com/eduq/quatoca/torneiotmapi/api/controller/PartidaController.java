@@ -8,12 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaModel;
+import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPartidaService;
 
 import lombok.AllArgsConstructor;
@@ -43,6 +45,12 @@ public class PartidaController {
 	@RequestMapping("/{jogadorAId}/{jogadorBId}")
 	public PartidaModel adicionar(@PathVariable Long jogadorAId, @PathVariable Long jogadorBId) {
 		return partidaAssembler.toModel(gestaoPartidaService.prepararPartida(jogadorAId, jogadorBId));
+	}
+	
+	@PutMapping
+	@RequestMapping("/iniciarPartida/{partidaId}")
+	public Partida iniciarPartida(@PathVariable Long partidaId) {
+		return gestaoPartidaService.iniciarPartida(partidaId);
 	}
 
 }
