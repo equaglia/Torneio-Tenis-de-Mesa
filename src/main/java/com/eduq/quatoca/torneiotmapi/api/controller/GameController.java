@@ -39,8 +39,8 @@ public class GameController {
 		return gameRepository.save(new Game());
 	}
 	
-	@PutMapping("/{gameId}/{pontoId}")
-//	@ResponseStatus(HttpStatus.OK)
+	@PutMapping("/gameId/{gameId}/pontoId/{pontoId}")
+	@ResponseStatus(HttpStatus.OK)
 	public Game somarUmPonto(
 			@PathVariable Long gameId, 
 			@PathVariable Long pontoId) {

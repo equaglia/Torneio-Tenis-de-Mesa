@@ -5,14 +5,13 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
+import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogo;
 import com.eduq.quatoca.torneiotmapi.domain.repository.GameRepository;
 
 import lombok.AllArgsConstructor;
@@ -71,7 +70,6 @@ public class GestaoGameService {
 		Game game = this.buscar(gameId);
 		Boolean gameAtivo = false;
 		if (gameSendoJogado(game)) {
-//			logger.info("entrou if (gameSendoJogado(game)) { GestaoGameService:somaUmPonto");
 			System.out.println("entrou if (gameSendoJogado(game)) { GestaoGameService:somaUmPonto");
 			gameAtivo = true;
 		} else if (proximoGameProntoParaIniciar(game)) {
@@ -82,6 +80,7 @@ public class GestaoGameService {
 			gameAtivo = true;
 		}
 
+		if (!(game.getStatus() == StatusJogo.EmAndamento)) gameAtivo = false;
 		if (gameAtivo) {
 			System.out.println("gameAtivo=true GestaoGameService:somaUmPonto");
 			Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
@@ -89,15 +88,16 @@ public class GestaoGameService {
 			if (pontuacaoJogadorA.getId() == pontoId) {
 				incrementar(pontuacaoJogadorA);
 				finalizarGameComOnzePontosOuDiferencaMaiorQueDois(game, pontuacaoJogadorA, pontuacaoJogadorB);
+//				gameAtivo = false;
 
 			} else if (pontuacaoJogadorB.getId() == pontoId) {
 				incrementar(pontuacaoJogadorB);
 				finalizarGameComOnzePontosOuDiferencaMaiorQueDois(game, pontuacaoJogadorB, pontuacaoJogadorA);
+//				gameAtivo = false;
 
 			} else
 				throw new EntidadeNaoEncontradaException("Game não encontrado");
 		}
-//		logger.info("saindo GestaoGameService:somaUmPonto");
 		System.out.println("saindo GestaoGameService:somaUmPonto");
 		return game;
 	}
@@ -113,7 +113,7 @@ public class GestaoGameService {
 		int pontosParaVencer = 11;
 		if (pontuacaoJogadorA.getPontos() >= pontosParaVencer
 				&& Math.abs(pontuacaoJogadorA.getPontos() - pontuacaoJogadorB.getPontos()) >= 2) {
-			game.finalizar();;
+			game.finalizar();
 			this.salvar(game);
 		}
 	}
@@ -131,17 +131,4 @@ public class GestaoGameService {
 		pontuacao.setPontos(pontuacao.mais1ponto());
 		gestaoPontuacaoService.salvar(pontuacao);
 	}
-
-
-//	private boolean gameEmCurso(Game game) {
-//		if (game.preparado()) {
-//			game.iniciar();
-//			this.salvar(game);
-//			return true;
-//		} else if (game.emAndamento()) {
-//			return true;
-//		}
-//		return false;
-//	}
-
 }

@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
+import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -61,8 +62,26 @@ public class Game {
 	
 
 	public void iniciar() {
-		this.setStatus(StatusJogo.EmAndamento);
-	}
+		switch (this.getStatus()) {
+		case Preparado:
+			this.setStatus(StatusJogo.EmAndamento);
+			break;
+		case EmAndamento:
+			new NegocioException("Game não pode ser iniciado, pois já estava Em Andamento");
+			break;
+		case Cancelado:
+			new NegocioException("Game Cancelado não pode ser iniciado");
+			break;
+		case Finalizado:
+			new NegocioException("Game já foi Finalizado então não pode ser iniciado");
+			break;
+		case Interrompido:
+			new NegocioException("Game Interrompido precisa voltar para o status Preparado para ser reiniciado");
+			break;
+		default:
+			new NegocioException("Ops, algo deu errado...");
+			break;
+		}	}
 	
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
