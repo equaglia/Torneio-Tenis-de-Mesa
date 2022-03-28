@@ -85,6 +85,7 @@ public class Game {
 	
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
+		this.setFim(OffsetDateTime.now());
 	}
 	
 	public Boolean preparado() {

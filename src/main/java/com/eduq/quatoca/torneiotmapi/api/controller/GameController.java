@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eduq.quatoca.torneiotmapi.api.assembler.GameAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.GameModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
-import com.eduq.quatoca.torneiotmapi.domain.repository.GameRepository;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoGameService;
 
 import lombok.AllArgsConstructor;
@@ -24,21 +23,29 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/games")
 public class GameController {
 
-	private GameRepository gameRepository;
 	private GameAssembler gameAssembler;
 	private GestaoGameService gestaoGameService;
 
 	@GetMapping
 	public List<GameModel> listar() {
-		return gameAssembler.toCollectionModel(gameRepository.findAll());
+		return gameAssembler.toCollectionModel(gestaoGameService.listar());
 	}
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Game adicionar() {
-		return gameRepository.save(new Game());
+		return gestaoGameService.salvar(new Game());
 	}
 	
+	@PutMapping("/gameId/{gameId}/pontos/{pontuacaoA}/{pontuacaoB}")
+	@ResponseStatus(HttpStatus.OK)
+	public Game atualizarPontuacao(
+			@PathVariable Long gameId, 
+			@PathVariable int pontuacaoA,
+			@PathVariable int pontuacaoB) {
+		return gestaoGameService.atualizarPontuacao(gameId, pontuacaoA, pontuacaoB);
+	}
+
 	@PutMapping("/gameId/{gameId}/pontoId/{pontoId}")
 	@ResponseStatus(HttpStatus.OK)
 	public Game somarUmPonto(
@@ -46,7 +53,6 @@ public class GameController {
 			@PathVariable Long pontoId) {
 		return gestaoGameService.somaUmPonto(gameId, pontoId);
 	}
-	
 	
 }
 

@@ -99,14 +99,17 @@ public class Partida {
 
 	public Game gameAnterior() {
 		int size = games.size();
-		if (primeiroGameDaPartida() == buscarGameEmAndamento())
+		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
+			new NegocioException("Este é o primeiro game da partida");
 			return null;
+		}
 		int i = 1;
 		while (i <= size) {
 			if (games.get(i).emAndamento())
 				return games.get(i - 1);
 			i++;
 		}
+		new NegocioException("Não há game em andamento");
 		return null;
 	}
 
@@ -136,6 +139,7 @@ public class Partida {
 
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
+		this.setFim(OffsetDateTime.now());
 	}
 
 	public Boolean preparado() {
