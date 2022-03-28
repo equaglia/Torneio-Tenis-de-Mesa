@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
-import com.eduq.quatoca.torneiotmapi.domain.exception.JogadorException;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.repository.JogadorRepository;

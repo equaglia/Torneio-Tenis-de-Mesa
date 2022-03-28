@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaAssembler;
+import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaResumoAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaModel;
+import com.eduq.quatoca.torneiotmapi.api.model.PartidaResumoModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPartidaService;
 
@@ -26,11 +28,17 @@ import lombok.AllArgsConstructor;
 public class PartidaController {
 	
 	private PartidaAssembler partidaAssembler;
+	private PartidaResumoAssembler partidaResumoAssembler;
 	private GestaoPartidaService gestaoPartidaService;
 	
 	@GetMapping
 	public List<PartidaModel> listar() {
 		return partidaAssembler.toCollectionModel(gestaoPartidaService.listar());
+	}
+
+	@GetMapping("/resumo")
+	public List<PartidaResumoModel> listarResumo() {
+		return partidaResumoAssembler.toCollectionResumoModel(gestaoPartidaService.listar());
 	}
 
 	@GetMapping("/{partidaId}")
