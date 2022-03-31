@@ -65,8 +65,6 @@ public class JogadorController {
 		return catalogoJogadorService.buscar(jogadorId)
 				.map(jogador -> ResponseEntity.ok(jogadorPartidasAssembler.toModel(jogador)))
 				.orElse(ResponseEntity.notFound().build());
-//				.orElseThrow(() -> new JogadorException("Jogador não encontrado JogadorController"));
-//				.orElse(ResponseEntity.badRequest().body(null));
 	}
 	
 	@DeleteMapping("/{jogadorId}")

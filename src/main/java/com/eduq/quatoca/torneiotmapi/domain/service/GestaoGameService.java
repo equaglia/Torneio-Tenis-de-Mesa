@@ -1,6 +1,5 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,14 +38,6 @@ public class GestaoGameService {
 	}
 
 	@Transactional
-	public Game prepararGame(Optional<Jogador> jogadorA, Optional<Jogador> jogadorB, OffsetDateTime horarioInicial) {
-		Game game = this.prepararGame(jogadorA, jogadorB);
-		game.setInicio(horarioInicial);
-		this.salvar(game);
-		return game;
-	}
-
-	@Transactional
 	public Game prepararGame(Optional<Jogador> jogadorA, Optional<Jogador> jogadorB) {
 //		String datesmall = "2022-02-03T16:05"; // TBD provisório
 		Game game = new Game();
@@ -65,33 +56,27 @@ public class GestaoGameService {
 
 	@Transactional
 		public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
-			if (pontuacaoA < 0 || pontuacaoB <0) {
-				new NegocioException("Pontuaçõe devem ter valores positivos");
-				return null;
+			if (pontuacaoA < 0 || pontuacaoB < 0) {
+				throw(new NegocioException("Pontuações devem ter valores positivos"));
 			}
 			Game game = this.buscar(gameId);
-			Boolean gameAtivo = gameSendoJogado(game);
+			Boolean gameAtivo = gameEmAndamento(game);
 			if (!gameAtivo && proximoGameProntoParaIniciar(game)) {
 				garantirGameAnteriorJaFinalizado(game);
 				gameAtivo = iniciarGame(game);
 			}
 	
-			if (!(game.emAndamento())) gameAtivo = false; //TODO acho que não precisa desta linha
 			if (gameAtivo) {
 				Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
 				Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
 	
-				if (pontuacaoA < 11 && pontuacaoB < 11) {
+				if (pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
 					atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-				} else if (pontuacaoA == 11 && pontuacaoB < 10
-						|| pontuacaoA < 10 && pontuacaoB == 11
-						|| Math.abs(pontuacaoA - pontuacaoB) == 2) {
+				} else if (pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
 					atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-					game.finalizar();
-					this.salvar(game);
+					finalizarGame(game);
 				} else {
-					new NegocioException("Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores");
-					return null;
+					throw(new NegocioException("Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
 				}
 			}
 			return game;
@@ -100,63 +85,78 @@ public class GestaoGameService {
 	@Transactional
 	public Game somaUmPonto(Long gameId, Long pontoId) {
 		Game game = this.buscar(gameId);
-		Boolean gameAtivo = gameSendoJogado(game);
+		Boolean gameAtivo = gameEmAndamento(game);
 		if (!gameAtivo && proximoGameProntoParaIniciar(game)) {
 			garantirGameAnteriorJaFinalizado(game);
 			gameAtivo = iniciarGame(game);
 		}
-		if (!(game.emAndamento())) gameAtivo = false; // TODO talvez não precise desta linha
 		if (gameAtivo) {
 			Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
 			Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
 			if (pontuacaoJogadorA.getId() == pontoId) {
 				incrementar(pontuacaoJogadorA);
-				finalizarGameComOnzePontosOuDiferencaMaiorQueDois(game, pontuacaoJogadorA, pontuacaoJogadorB);
 			} else if (pontuacaoJogadorB.getId() == pontoId) {
 				incrementar(pontuacaoJogadorB);
-				finalizarGameComOnzePontosOuDiferencaMaiorQueDois(game, pontuacaoJogadorB, pontuacaoJogadorA);
 			} else
 				throw new EntidadeNaoEncontradaException("Game não encontrado");
+			if (pontuacaoParaFinalizarGame(pontuacaoJogadorA.getPontos(), pontuacaoJogadorB.getPontos())) {
+				finalizarGame(game);
+			}
 		}
 		return game;
 	}
 
-	private void finalizarGameComOnzePontosOuDiferencaMaiorQueDois(Game game, Pontuacao pontuacaoJogadorA, Pontuacao pontuacaoJogadorB) {
-		int pontosParaVencer = 11;
-		if (pontuacaoJogadorA.getPontos() >= pontosParaVencer
-				&& Math.abs(pontuacaoJogadorA.getPontos() - pontuacaoJogadorB.getPontos()) >= 2) {
-			game.finalizar();
-			this.salvar(game);
-		}
+	@Transactional
+	private Boolean iniciarGame(Game game) {
+		game.iniciar();
+		this.salvar(game);
+		return true;//TODO ???
+	}
+
+	@Transactional
+	private void finalizarGame(Game game) {
+		game.finalizar();
+		this.salvar(game);
+	}
+
+	private boolean pontuacaoParaContinuarGame(int pontuacaoA, int pontuacaoB) {
+		return pontuacaoA < 11 && pontuacaoB < 11;
+	}
+
+	private boolean pontuacaoParaFinalizarGame(int pontuacaoA, int pontuacaoB) {
+		return pontuacaoA == 11 && pontuacaoB < 10
+				|| pontuacaoA < 10 && pontuacaoB == 11
+				|| (pontuacaoA >= 10 && pontuacaoB >= 10 
+				&& Math.abs(pontuacaoA - pontuacaoB) == 2);
 	}
 
 	private boolean proximoGameProntoParaIniciar(Game game) {
-		return game.getPartida().gameAnterior().finalizado() && game.preparado() && game.getPartida().emAndamento();
+		return game.getPartida().gameAnterior().finalizado() 
+				&& game.preparado() 
+				&& game.getPartida().emAndamento();
 	}
 
-	private boolean gameSendoJogado(Game game) {
+	private boolean gameEmAndamento(Game game) {
 		return game.getPartida().buscarGameEmAndamento() == game;
 	}
 
+	@Transactional
 	private void incrementar(Pontuacao pontuacao) {
 		pontuacao.setPontos(pontuacao.mais1ponto());
 		gestaoPontuacaoService.salvar(pontuacao);
 	}
 
-	private void atualizarPontosAmbosJogadores(int pontuacaoA, int pontuacaoB, Pontuacao pontuacaoJogadorA,
+	@Transactional
+	private void atualizarPontosAmbosJogadores(int pontosA, int pontosB, 
+			Pontuacao pontuacaoJogadorA,
 			Pontuacao pontuacaoJogadorB) {
-		pontuacaoJogadorA.setPontos(pontuacaoA);
-		pontuacaoJogadorB.setPontos(pontuacaoB);
+		pontuacaoJogadorA.setPontos(pontosA);
+		pontuacaoJogadorB.setPontos(pontosB);
 		gestaoPontuacaoService.salvar(pontuacaoJogadorA);
 		gestaoPontuacaoService.salvar(pontuacaoJogadorB);
 	}
 
-	private Boolean iniciarGame(Game game) {
-		game.iniciar();
-		this.salvar(game);
-		return true;
-	}
-
+	@Transactional
 	private void garantirGameAnteriorJaFinalizado(Game game) {
 		game.getPartida().gameAnterior().finalizar();
 		this.salvar(game.getPartida().gameAnterior());

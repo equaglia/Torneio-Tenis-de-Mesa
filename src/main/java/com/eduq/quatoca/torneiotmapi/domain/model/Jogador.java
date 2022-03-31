@@ -51,7 +51,28 @@ public class Jogador {
 	@Enumerated(EnumType.STRING)
 	private CategoriaJogador categoria;
 	
+	@NotNull(message = "Status é mandatório")
+	@Enumerated(EnumType.STRING)
+	private StatusJogador status;
+	
 	@OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL)
 	private Set<Pontuacao> pontos;
+
+	public Jogador() {
+		super();
+		this.setStatus(StatusJogador.Disponivel);
+	}
+	
+	public Boolean disponivel() {
+		return this.getStatus() == StatusJogador.Disponivel;
+	}
+	
+	public void convocar() {
+		this.setStatus(StatusJogador.NaoDisponivel);
+	}
+	
+	public void liberar() {
+		this.setStatus(StatusJogador.Disponivel);
+	}
 
 }

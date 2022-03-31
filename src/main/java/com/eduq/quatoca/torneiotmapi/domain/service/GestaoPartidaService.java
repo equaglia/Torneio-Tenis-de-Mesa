@@ -1,6 +1,5 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +46,6 @@ public class GestaoPartidaService {
 
 	@Transactional
 	public Partida prepararPartida(Long jogadorAId, Long jogadorBId) {
-		OffsetDateTime horarioInicial = OffsetDateTime.now();
 
 		int numDeGames = 5;
 
@@ -58,14 +56,12 @@ public class GestaoPartidaService {
 		partida.addJogador(jogadorA.get());
 		partida.addJogador(jogadorB.get());
 
-		partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB, horarioInicial));
-		for (int i = 1; i < numDeGames; i++) {
+		for (int i = 0; i < numDeGames; i++) {
 			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB));
 		}
 
 		catalogoJogadorService.salvar(jogadorA.get());
 		catalogoJogadorService.salvar(jogadorB.get());
-		partida.setInicio(horarioInicial);
 		this.salvar(partida);
 		return partida;
 	}

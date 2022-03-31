@@ -16,8 +16,8 @@ public class GestaoPontuacaoService {
 	
 	private PontuacaoRepository pontuacaoRepository;
 
-//	public Optional<Pontuacao> buscar(Long pontuacaoId) { //TBD usar este método
-	public Pontuacao buscar(Long pontuacaoId) { //TBD usar este método
+//	public Optional<Pontuacao> buscar(Long pontuacaoId) { 
+	public Pontuacao buscar(Long pontuacaoId) { 
 		return pontuacaoRepository.findById(pontuacaoId)
 				.orElseThrow(() -> new EntidadeNaoEncontradaException("Pontuacao não encontrada GestaoPontuacaoService"));
 	}

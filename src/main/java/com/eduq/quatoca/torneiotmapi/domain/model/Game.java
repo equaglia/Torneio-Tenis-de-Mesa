@@ -59,29 +59,29 @@ public class Game {
 		super();
 		this.status = StatusJogo.Preparado;
 	}
-	
 
 	public void iniciar() {
-		switch (this.getStatus()) {
-		case Preparado:
-			this.setStatus(StatusJogo.EmAndamento);
-			break;
-		case EmAndamento:
-			new NegocioException("Game não pode ser iniciado, pois já estava Em Andamento");
-			break;
-		case Cancelado:
-			new NegocioException("Game Cancelado não pode ser iniciado");
-			break;
-		case Finalizado:
-			new NegocioException("Game já foi Finalizado então não pode ser iniciado");
-			break;
-		case Interrompido:
-			new NegocioException("Game Interrompido precisa voltar para o status Preparado para ser reiniciado");
-			break;
-		default:
-			new NegocioException("Ops, algo deu errado...");
-			break;
-		}	}
+		if (!this.getPartida().emAndamento()){
+			throw(new NegocioException("Game não pode iniciar, pois partida não está em andamento"));
+		} else {
+			switch (this.getStatus()) {
+			case Preparado:
+				this.setStatus(StatusJogo.EmAndamento);
+				this.setInicio(OffsetDateTime.now());
+				break;
+			case EmAndamento:
+				break;
+			case Cancelado:
+				throw(new NegocioException("Game Cancelado não pode ser iniciado"));
+			case Finalizado:
+				throw(new NegocioException("Game já Finalizado não pode ser iniciado"));
+			case Interrompido:
+				throw(new NegocioException("Game Interrompido precisa voltar para o status Preparado para ser reiniciado"));
+			default:
+				throw(new NegocioException("Ops, algo deu errado..."));
+			}
+		}
+	}
 	
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
@@ -111,5 +111,4 @@ public class Game {
 	public Boolean emCurso() {
 		return this.getPartida().buscarGameEmAndamento() == this;
 	}
-
 }

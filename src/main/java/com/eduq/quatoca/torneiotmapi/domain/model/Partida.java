@@ -55,8 +55,11 @@ public class Partida {
 	}
 
 	public void addJogador(Jogador jogador) {
-		jogadores.add(jogador);
-		jogador.getPartidas().add(this);
+		if (jogador.disponivel()) {
+			jogadores.add(jogador);
+			jogador.getPartidas().add(this);
+		} else
+			throw (new NegocioException("Jogador não disponível"));
 	}
 
 	public Partida() {
@@ -65,22 +68,22 @@ public class Partida {
 	}
 
 	public Game buscarGameEmAndamento() {
-		System.out.println("entrou Partida:gameEmCurso() ");
 		int size = games.size();
 
 		int i = 0;
 		while (i < size) {
-			System.out.println("entrou while Partida:gameEmCurso() i= " + i);
 			if (games.get(i).emAndamento())
 				return games.get(i);
 			i++;
 		}
-		System.out.println("saindo return null Partida:gameEmCurso() ");
-		primeiroGameDaPartida().iniciar();
-		return primeiroGameDaPartida();
+		if (primeiroGameDaPartida().preparado()) {
+			primeiroGameDaPartida().iniciar();
+			return primeiroGameDaPartida();
+		}
+		throw (new NegocioException("Não há game em andamento na partida"));
 	}
 
-	private Game primeiroGameDaPartida() {
+	public Game primeiroGameDaPartida() {
 		return games.get(0);
 	}
 
@@ -94,14 +97,13 @@ public class Partida {
 		}
 		if (games.get(i + 1).preparado())
 			return games.get(i + 1);
-		return null;
+		throw (new NegocioException("Não há próximo game para jogar na partida"));
 	}
 
 	public Game gameAnterior() {
 		int size = games.size();
 		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
-			new NegocioException("Este é o primeiro game da partida");
-			return null;
+			throw (new NegocioException("Este é o primeiro game da partida"));
 		}
 		int i = 1;
 		while (i <= size) {
@@ -109,36 +111,47 @@ public class Partida {
 				return games.get(i - 1);
 			i++;
 		}
-		new NegocioException("Não há game em andamento");
-		return null;
+		throw (new NegocioException("Não há game em andamento"));
 	}
 
 	public void iniciar() {
 		switch (this.getStatus()) {
 		case Preparado:
-			this.setStatus(StatusJogo.EmAndamento);
-			this.getGames().get(0).iniciar();
+			Boolean dispo = checarSeJogadoresDisponiveisParaIniciarPartida();
+			if (dispo) {
+				this.setStatus(StatusJogo.EmAndamento);
+				this.getGames().get(0).iniciar();
+				this.setInicio(OffsetDateTime.now());
+				for (Jogador jogador : this.jogadores) {
+					jogador.convocar();
+				}
+			} else {
+				throw new NegocioException("Ao menos um dos jogadores não está disponível para a partida");
+			}
 			break;
 		case EmAndamento:
-			new NegocioException("Partida não pode ser iniciada, pois já estava Em Andamento");
 			break;
 		case Cancelado:
-			new NegocioException("Partida Cancelada não pode ser iniciada");
-			break;
+			throw (new NegocioException("Partida Cancelada não pode ser iniciada"));
 		case Finalizado:
-			new NegocioException("Partida já foi Finalizada então não pode ser iniciada");
-			break;
+			throw (new NegocioException("Partida já foi Finalizada então não pode ser iniciada"));
 		case Interrompido:
-			new NegocioException("Partida Interrompida precisa voltar para o status Preparado para ser reiniciada");
-			break;
+			throw (new NegocioException("Partida Interrompida precisa voltar para o status Preparado para ser reiniciada"));
 		default:
-			new NegocioException("Ops, algo deu errado...");
-			break;
+			throw (new NegocioException("Ops, algo deu errado..."));
 		}
+	}
+
+	public Boolean checarSeJogadoresDisponiveisParaIniciarPartida() {
+		Boolean disponibilidade = true;
+		for (Jogador jog : this.jogadores) disponibilidade = jog.disponivel() && disponibilidade;
+		return disponibilidade;
 	}
 
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
+		this.jogadores.stream().forEach(jogador -> jogador.liberar());
+//		for (Jogador jogador : this.jogadores) jogador.liberar();
 		this.setFim(OffsetDateTime.now());
 	}
 
@@ -161,5 +174,4 @@ public class Partida {
 	public Boolean cancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
 	}
-
 }
