@@ -34,12 +34,12 @@ public class Pontuacao {
 
 	private int pontos = 0;
 	
-	public int mais1ponto() {
+	public int maisUmPonto() {
 		int novaPontuacao = this.getPontos() + 1;
 		return novaPontuacao;
 	}
 	
-	public int menos1ponto() {
+	public int menosUmPonto() {
 		int novaPontuacao = this.getPontos() - 1;
 		return novaPontuacao;
 	}

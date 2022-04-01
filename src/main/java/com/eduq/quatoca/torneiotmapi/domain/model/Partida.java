@@ -54,13 +54,21 @@ public class Partida {
 		game.setPartida(this);
 	}
 
+//	public void addJogador(Jogador jogador) {
+//	if (jogador.disponivel()) {
+//		jogadores.add(jogador);
+//		jogador.getPartidas().add(this);
+//	} else
+//		throw (new NegocioException("Jogador não disponível"));
+//}
 	public void addJogador(Jogador jogador) {
-		if (jogador.disponivel()) {
-			jogadores.add(jogador);
-			jogador.getPartidas().add(this);
-		} else
-			throw (new NegocioException("Jogador não disponível"));
-	}
+		if (this.jogadores.size() < 2) {
+		jogadores.add(jogador);
+		jogador.getPartidas().add(this);
+		} else {
+			throw new NegocioException("Os dois jogadores da partida já haviam sido selecionados");
+		}
+}
 
 	public Partida() {
 		super();
@@ -68,12 +76,12 @@ public class Partida {
 	}
 
 	public Game buscarGameEmAndamento() {
-		int size = games.size();
+		int size = this.games.size();
 
 		int i = 0;
 		while (i < size) {
-			if (games.get(i).emAndamento())
-				return games.get(i);
+			if (this.games.get(i).emAndamento())
+				return this.games.get(i);
 			i++;
 		}
 		if (primeiroGameDaPartida().preparado()) {
@@ -84,31 +92,31 @@ public class Partida {
 	}
 
 	public Game primeiroGameDaPartida() {
-		return games.get(0);
+		return this.games.get(0);
 	}
 
 	public Game proximoGame() {
-		int size = games.size();
+		int size = this.games.size();
 		int i = 0;
 		while (i < size) {
-			if (games.get(i).emAndamento())
-				return games.get(i + 1);
+			if (this.games.get(i).emAndamento())
+				return this.games.get(i + 1);
 			i++;
 		}
-		if (games.get(i + 1).preparado())
-			return games.get(i + 1);
+		if (this.games.get(i + 1).preparado())
+			return this.games.get(i + 1);
 		throw (new NegocioException("Não há próximo game para jogar na partida"));
 	}
 
 	public Game gameAnterior() {
-		int size = games.size();
+		int size = this.games.size();
 		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
 			throw (new NegocioException("Este é o primeiro game da partida"));
 		}
 		int i = 1;
 		while (i <= size) {
-			if (games.get(i).emAndamento())
-				return games.get(i - 1);
+			if (this.games.get(i).emAndamento())
+				return this.games.get(i - 1);
 			i++;
 		}
 		throw (new NegocioException("Não há game em andamento"));
@@ -122,9 +130,9 @@ public class Partida {
 				this.setStatus(StatusJogo.EmAndamento);
 				this.getGames().get(0).iniciar();
 				this.setInicio(OffsetDateTime.now());
-				for (Jogador jogador : this.jogadores) {
-					jogador.convocar();
-				}
+				this.jogadores
+					.stream()
+					.forEach(jogador -> jogador.convocar());
 			} else {
 				throw new NegocioException("Ao menos um dos jogadores não está disponível para a partida");
 			}

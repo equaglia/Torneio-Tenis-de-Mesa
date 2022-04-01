@@ -12,6 +12,7 @@ import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
+import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogo;
 import com.eduq.quatoca.torneiotmapi.domain.repository.GameRepository;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @Service
 public class GestaoGameService {
-	
+
 	private GameRepository gameRepository;
 	private GestaoPontuacaoService gestaoPontuacaoService;
 
@@ -27,7 +28,7 @@ public class GestaoGameService {
 		return gameRepository.findById(gameId)
 				.orElseThrow(() -> new EntidadeNaoEncontradaException("Game não encontrado GestaoGameService"));
 	}
-	
+
 	public List<Game> listar() {
 		return gameRepository.findAll();
 	}
@@ -51,36 +52,37 @@ public class GestaoGameService {
 	public void iniciarGame(Long gameId) {
 		Game game = this.buscar(gameId);
 		game.iniciar();
-		this.salvar(game);		
+		this.salvar(game);
 	}
 
 	@Transactional
-		public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
-			if (pontuacaoA < 0 || pontuacaoB < 0) {
-				throw(new NegocioException("Pontuações devem ter valores positivos"));
-			}
-			Game game = this.buscar(gameId);
-			Boolean gameAtivo = gameEmAndamento(game);
-			if (!gameAtivo && proximoGameProntoParaIniciar(game)) {
-				garantirGameAnteriorJaFinalizado(game);
-				gameAtivo = iniciarGame(game);
-			}
-	
-			if (gameAtivo) {
-				Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
-				Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
-	
-				if (pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
-					atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-				} else if (pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
-					atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-					finalizarGame(game);
-				} else {
-					throw(new NegocioException("Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
-				}
-			}
-			return game;
+	public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
+		if (pontuacaoA < 0 || pontuacaoB < 0) {
+			throw (new NegocioException("Pontuações devem ter valores positivos"));
 		}
+		Game game = this.buscar(gameId);
+		Boolean gameAtivo = gameEmAndamento(game);
+		if (!gameAtivo && proximoGameProntoParaIniciar(game)) {
+			garantirGameAnteriorJaFinalizado(game);
+			gameAtivo = iniciarGame(game);
+		}
+
+		if (gameAtivo) {
+			Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
+			Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
+
+			if (pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
+				atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
+			} else if (pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
+				atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
+				finalizarGame(game);
+			} else {
+				throw (new NegocioException(
+						"Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
+			}
+		}
+		return game;
+	}
 
 	@Transactional
 	public Game somaUmPonto(Long gameId, Long pontoId) {
@@ -107,10 +109,35 @@ public class GestaoGameService {
 	}
 
 	@Transactional
+	public Game diminueUmPonto(Long gameId, Long pontoId) {
+		Game game = this.buscar(gameId);
+		Boolean gameAtivo = game.emAndamento();
+		if (!gameAtivo && game.finalizado()) {
+			game.setStatus(StatusJogo.EmAndamento);
+			gameAtivo = true;
+		}
+		if (gameAtivo) {
+			Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
+			Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
+			if (pontuacaoJogadorA.getId() == pontoId) {
+				if (pontuacaoJogadorA.getPontos() > 0) {
+					decrementar(pontuacaoJogadorA);
+				}
+			} else if (pontuacaoJogadorB.getId() == pontoId) {
+				if (pontuacaoJogadorB.getPontos() > 0) {
+					decrementar(pontuacaoJogadorB);
+				}
+			}
+		} else
+			throw new EntidadeNaoEncontradaException("Game não encontrado");
+		return game;
+	}
+
+	@Transactional
 	private Boolean iniciarGame(Game game) {
 		game.iniciar();
 		this.salvar(game);
-		return true;//TODO ???
+		return true;// TODO ???
 	}
 
 	@Transactional
@@ -124,16 +151,12 @@ public class GestaoGameService {
 	}
 
 	private boolean pontuacaoParaFinalizarGame(int pontuacaoA, int pontuacaoB) {
-		return pontuacaoA == 11 && pontuacaoB < 10
-				|| pontuacaoA < 10 && pontuacaoB == 11
-				|| (pontuacaoA >= 10 && pontuacaoB >= 10 
-				&& Math.abs(pontuacaoA - pontuacaoB) == 2);
+		return pontuacaoA == 11 && pontuacaoB < 10 || pontuacaoA < 10 && pontuacaoB == 11
+				|| (pontuacaoA >= 10 && pontuacaoB >= 10 && Math.abs(pontuacaoA - pontuacaoB) == 2);
 	}
 
 	private boolean proximoGameProntoParaIniciar(Game game) {
-		return game.getPartida().gameAnterior().finalizado() 
-				&& game.preparado() 
-				&& game.getPartida().emAndamento();
+		return game.getPartida().gameAnterior().finalizado() && game.preparado() && game.getPartida().emAndamento();
 	}
 
 	private boolean gameEmAndamento(Game game) {
@@ -142,13 +165,18 @@ public class GestaoGameService {
 
 	@Transactional
 	private void incrementar(Pontuacao pontuacao) {
-		pontuacao.setPontos(pontuacao.mais1ponto());
+		pontuacao.setPontos(pontuacao.maisUmPonto());
 		gestaoPontuacaoService.salvar(pontuacao);
 	}
 
 	@Transactional
-	private void atualizarPontosAmbosJogadores(int pontosA, int pontosB, 
-			Pontuacao pontuacaoJogadorA,
+	private void decrementar(Pontuacao pontuacao) {
+		pontuacao.setPontos(pontuacao.menosUmPonto());
+		gestaoPontuacaoService.salvar(pontuacao);
+	}
+
+	@Transactional
+	private void atualizarPontosAmbosJogadores(int pontosA, int pontosB, Pontuacao pontuacaoJogadorA,
 			Pontuacao pontuacaoJogadorB) {
 		pontuacaoJogadorA.setPontos(pontosA);
 		pontuacaoJogadorB.setPontos(pontosB);

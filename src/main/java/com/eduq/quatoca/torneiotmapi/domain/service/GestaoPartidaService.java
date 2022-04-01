@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
+import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.repository.PartidaRepository;
@@ -55,6 +56,8 @@ public class GestaoPartidaService {
 		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
 		partida.addJogador(jogadorA.get());
 		partida.addJogador(jogadorB.get());
+		
+		checaSeJogadoresSelecionadosCorretamente(partida);
 
 		for (int i = 0; i < numDeGames; i++) {
 			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB));
@@ -72,5 +75,20 @@ public class GestaoPartidaService {
 		partida.iniciar();
 		gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
 		return this.salvar(partida);
+	}
+
+	private void checaSeJogadoresSelecionadosCorretamente(Partida partida) {
+		switch (partida.getJogadores().size()) {
+		case 0:
+			throw new NegocioException("Nenhum jogador foi selecionado para a partida");
+		case 1:
+			Jogador jogadorSelecionado = new Jogador();
+			for (Jogador jogador : partida.getJogadores()) jogadorSelecionado = jogador;
+			throw new NegocioException("Somente o jogador "+jogadorSelecionado.getNome()+ " foi selecionado para a partida");
+		case 2:
+			break;
+		default:
+			throw new NegocioException("Mais de 2 jogadores foram selecionados para a partida");
+		}
 	}
 }
