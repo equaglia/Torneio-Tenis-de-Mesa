@@ -23,6 +23,15 @@ public class GestaoGameService {
 
 	private GameRepository gameRepository;
 	private GestaoPontuacaoService gestaoPontuacaoService;
+	
+//	private Pontuacao pontuacaoJogadorA;
+//	private Pontuacao pontuacaoJogadorB;
+//	
+//	public GestaoGameService() {
+//		super();
+//		pontuacaoJogadorA = new Pontuacao();
+//		pontuacaoJogadorB = new Pontuacao();
+//	}
 
 	public Game buscar(Long gameId) {
 		return gameRepository.findById(gameId)
@@ -51,46 +60,48 @@ public class GestaoGameService {
 	@Transactional
 	public void iniciarGame(Long gameId) {
 		Game game = this.buscar(gameId);
+		iniciarGame(game);
+	}
+
+	@Transactional
+	private void iniciarGame(Game game) {
 		game.iniciar();
 		this.salvar(game);
 	}
 
 	@Transactional
 	public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
-		if (pontuacaoA < 0 || pontuacaoB < 0) {
-			throw (new NegocioException("Pontuações devem ter valores positivos"));
-		}
+		garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
 		Game game = this.buscar(gameId);
 		Boolean gameAtivo = gameEmAndamento(game);
 		if (!gameAtivo && proximoGameProntoParaIniciar(game)) {
 			garantirGameAnteriorJaFinalizado(game);
-			gameAtivo = iniciarGame(game);
+			iniciarGame(game);
+			gameAtivo = true;
 		}
 
 		if (gameAtivo) {
-			Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
-			Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
-
-			if (pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
-				atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-			} else if (pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
-				atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-				finalizarGame(game);
-			} else {
-				throw (new NegocioException(
-						"Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
-			}
+			efetivarAtualizacaoDePontuacao(pontuacaoA, pontuacaoB, game);
 		}
 		return game;
 	}
 
+	@Transactional
+	public Game atualizarPontuacaoGameFinalizado(Long gameId, int pontuacaoA, int pontuacaoB) {
+		garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
+		Game game = this.buscar(gameId);
+		efetivarAtualizacaoDePontuacao(pontuacaoA, pontuacaoB, game);
+		return game;
+	}
+	
 	@Transactional
 	public Game somaUmPonto(Long gameId, Long pontoId) {
 		Game game = this.buscar(gameId);
 		Boolean gameAtivo = gameEmAndamento(game);
 		if (!gameAtivo && proximoGameProntoParaIniciar(game)) {
 			garantirGameAnteriorJaFinalizado(game);
-			gameAtivo = iniciarGame(game);
+			iniciarGame(game);
+			gameAtivo = true;
 		}
 		if (gameAtivo) {
 			Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
@@ -133,11 +144,26 @@ public class GestaoGameService {
 		return game;
 	}
 
-	@Transactional
-	private Boolean iniciarGame(Game game) {
-		game.iniciar();
-		this.salvar(game);
-		return true;// TODO ???
+	private void garantirPontuacaoPositiva(int pontuacaoA, int pontuacaoB) {
+		if (pontuacaoA < 0 || pontuacaoB < 0) {
+			throw (new NegocioException("Pontuações devem ter valores positivos"));
+		}
+	}
+
+	private void efetivarAtualizacaoDePontuacao(int pontuacaoA, int pontuacaoB, Game game) {
+		Pontuacao pontuacaoJogadorA = gestaoPontuacaoService.buscar(game.getPontos().get(0).getId());
+		Pontuacao pontuacaoJogadorB = gestaoPontuacaoService.buscar(game.getPontos().get(1).getId());
+	
+		if (pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
+			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
+			game.setStatus(StatusJogo.EmAndamento);
+		} else if (pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
+			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
+			finalizarGame(game);
+		} else {
+			throw (new NegocioException(
+					"Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
+		}
 	}
 
 	@Transactional
@@ -176,8 +202,7 @@ public class GestaoGameService {
 	}
 
 	@Transactional
-	private void atualizarPontosAmbosJogadores(int pontosA, int pontosB, Pontuacao pontuacaoJogadorA,
-			Pontuacao pontuacaoJogadorB) {
+	private void atualizarPontosAmbosJogadores(int pontosA, int pontosB, Pontuacao pontuacaoJogadorA, Pontuacao pontuacaoJogadorB) {
 		pontuacaoJogadorA.setPontos(pontosA);
 		pontuacaoJogadorB.setPontos(pontosB);
 		gestaoPontuacaoService.salvar(pontuacaoJogadorA);

@@ -46,6 +46,15 @@ public class GameController {
 		return gestaoGameService.atualizarPontuacao(gameId, pontuacaoA, pontuacaoB);
 	}
 
+	@PutMapping("/finalizado/gameId/{gameId}/pontos/{pontuacaoA}/{pontuacaoB}")
+	@ResponseStatus(HttpStatus.OK)
+	public Game atualizarPontuacaoGameFinalizado(
+			@PathVariable Long gameId, 
+			@PathVariable int pontuacaoA,
+			@PathVariable int pontuacaoB) {
+		return gestaoGameService.atualizarPontuacaoGameFinalizado(gameId, pontuacaoA, pontuacaoB);
+	}
+
 	@PutMapping("/soma/gameId/{gameId}/pontoId/{pontoId}")
 	@ResponseStatus(HttpStatus.OK)
 	public Game somarUmPonto(
