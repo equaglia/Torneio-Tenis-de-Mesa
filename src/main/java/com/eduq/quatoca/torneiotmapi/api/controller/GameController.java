@@ -15,6 +15,7 @@ import com.eduq.quatoca.torneiotmapi.api.assembler.GameAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.GameModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoGameService;
+import com.eduq.quatoca.torneiotmapi.domain.service.PontuacaoEmGameService;
 
 import lombok.AllArgsConstructor;
 
@@ -25,6 +26,7 @@ public class GameController {
 
 	private GameAssembler gameAssembler;
 	private GestaoGameService gestaoGameService;
+	private PontuacaoEmGameService pontuacaoEmGameService;
 
 	@GetMapping
 	public List<GameModel> listar() {
@@ -43,7 +45,7 @@ public class GameController {
 			@PathVariable Long gameId, 
 			@PathVariable int pontuacaoA,
 			@PathVariable int pontuacaoB) {
-		return gestaoGameService.atualizarPontuacao(gameId, pontuacaoA, pontuacaoB);
+		return pontuacaoEmGameService.atualizarPontuacao(gameId, pontuacaoA, pontuacaoB);
 	}
 
 	@PutMapping("/finalizado/gameId/{gameId}/pontos/{pontuacaoA}/{pontuacaoB}")
@@ -52,7 +54,7 @@ public class GameController {
 			@PathVariable Long gameId, 
 			@PathVariable int pontuacaoA,
 			@PathVariable int pontuacaoB) {
-		return gestaoGameService.atualizarPontuacaoGameFinalizado(gameId, pontuacaoA, pontuacaoB);
+		return pontuacaoEmGameService.atualizarPontuacaoGameFinalizado(gameId, pontuacaoA, pontuacaoB);
 	}
 
 	@PutMapping("/soma/gameId/{gameId}/pontoId/{pontoId}")
@@ -60,7 +62,7 @@ public class GameController {
 	public Game somarUmPonto(
 			@PathVariable Long gameId, 
 			@PathVariable Long pontoId) {
-		return gestaoGameService.somaUmPonto(gameId, pontoId);
+		return pontuacaoEmGameService.somaUmPonto(gameId, pontoId);
 	}
 	
 	@PutMapping("/diminue/gameId/{gameId}/pontoId/{pontoId}")
@@ -68,7 +70,7 @@ public class GameController {
 	public Game diminuirUmPonto(
 			@PathVariable Long gameId, 
 			@PathVariable Long pontoId) {
-		return gestaoGameService.diminueUmPonto(gameId, pontoId);
+		return pontuacaoEmGameService.diminueUmPonto(gameId, pontoId);
 	}
 	
 }
