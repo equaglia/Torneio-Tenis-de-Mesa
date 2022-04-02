@@ -63,12 +63,12 @@ public class Partida {
 //}
 	public void addJogador(Jogador jogador) {
 		if (this.jogadores.size() < 2) {
-		jogadores.add(jogador);
-		jogador.getPartidas().add(this);
+			jogadores.add(jogador);
+			jogador.getPartidas().add(this);
 		} else {
 			throw new NegocioException("Os dois jogadores da partida já haviam sido selecionados");
 		}
-}
+	}
 
 	public Partida() {
 		super();
@@ -96,16 +96,24 @@ public class Partida {
 	}
 
 	public Game proximoGame() {
-		int size = this.games.size();
-		int i = 0;
-		while (i < size) {
-			if (this.games.get(i).emAndamento())
-				return this.games.get(i + 1);
-			i++;
+		if (this.emAndamento()) {
+			int size = this.games.size();
+			int i = 0;
+			while (i < size) {
+				Game thisGame = this.games.get(i);
+				if (thisGame.finalizado()) {
+					if (i == size - 1)
+						this.finalizar();
+					i++;
+				} else if (thisGame.preparado() 
+						|| thisGame.emAndamento()) {
+					System.out.println("Partida.proximoGame thisgame id = "+thisGame.getId());
+					return thisGame;
+				} else throw new NegocioException("Partida impedida de continuar");
+			}
 		}
-		if (this.games.get(i + 1).preparado())
-			return this.games.get(i + 1);
-		throw (new NegocioException("Não há próximo game para jogar na partida"));
+//		throw new NegocioException("Não há próximo game para jogar na partida");
+		return null;
 	}
 
 	public Game gameAnterior() {
@@ -130,9 +138,7 @@ public class Partida {
 				this.setStatus(StatusJogo.EmAndamento);
 				this.getGames().get(0).iniciar();
 				this.setInicio(OffsetDateTime.now());
-				this.jogadores
-					.stream()
-					.forEach(jogador -> jogador.convocar());
+				this.jogadores.stream().forEach(jogador -> jogador.convocar());
 			} else {
 				throw new NegocioException("Ao menos um dos jogadores não está disponível para a partida");
 			}
@@ -144,7 +150,8 @@ public class Partida {
 		case Finalizado:
 			throw (new NegocioException("Partida já foi Finalizada então não pode ser iniciada"));
 		case Interrompido:
-			throw (new NegocioException("Partida Interrompida precisa voltar para o status Preparado para ser reiniciada"));
+			throw (new NegocioException(
+					"Partida Interrompida precisa voltar para o status Preparado para ser reiniciada"));
 		default:
 			throw (new NegocioException("Ops, algo deu errado..."));
 		}
@@ -152,7 +159,8 @@ public class Partida {
 
 	public Boolean checarSeJogadoresDisponiveisParaIniciarPartida() {
 		Boolean disponibilidade = true;
-		for (Jogador jog : this.jogadores) disponibilidade = jog.disponivel() && disponibilidade;
+		for (Jogador jog : this.jogadores)
+			disponibilidade = jog.disponivel() && disponibilidade;
 		return disponibilidade;
 	}
 

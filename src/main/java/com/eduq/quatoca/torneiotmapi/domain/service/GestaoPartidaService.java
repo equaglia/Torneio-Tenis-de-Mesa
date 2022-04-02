@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.eduq.quatoca.torneiotmapi.TmapiConfig;
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
+import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.repository.PartidaRepository;
@@ -56,7 +57,6 @@ public class GestaoPartidaService {
 		
 		checaSeJogadoresSelecionadosCorretamente(partida);
 
-		myConfig.setNumMaxGames(1);
 		for (int i = 0; i < myConfig.getNumMaxGames(); i++) {
 			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB));
 		}
@@ -72,6 +72,17 @@ public class GestaoPartidaService {
 		Partida partida = this.buscar(partidaId);
 		partida.iniciar();
 		gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
+		return this.salvar(partida);
+	}
+	
+	@Transactional
+	public Partida continuarPartida(Long partidaId) {
+		Partida partida = this.buscar(partidaId);
+		Game proximoGame = partida.proximoGame();
+		if (proximoGame == null) {
+			finalizarPartida(partida);
+		} else 
+			gestaoGameService.iniciarGame(proximoGame);
 		return this.salvar(partida);
 	}
 	

@@ -61,4 +61,9 @@ public class PartidaController {
 		return gestaoPartidaService.iniciarPartida(partidaId);
 	}
 
+	@PutMapping
+	@RequestMapping("/continuarPartida/{partidaId}")
+	public Partida continuarPartida(@PathVariable Long partidaId) {
+		return gestaoPartidaService.continuarPartida(partidaId);
+	}
 }
