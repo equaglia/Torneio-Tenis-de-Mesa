@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +14,7 @@ import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
+import com.eduq.quatoca.torneiotmapi.domain.model.Resultado;
 import com.eduq.quatoca.torneiotmapi.domain.repository.PartidaRepository;
 
 import lombok.AllArgsConstructor;
@@ -28,9 +27,9 @@ public class GestaoPartidaService {
 	private CatalogoJogadorService catalogoJogadorService;
 	private PartidaRepository partidaRepository;
 	private GestaoGameService gestaoGameService;
-	
-	private TmapiConfig myConfig;
-	
+
+	private TmapiConfig tmapiConfig;
+
 	public Partida buscar(Long partidaId) {
 		return partidaRepository.findById(partidaId)
 				.orElseThrow(() -> new EntidadeNaoEncontradaException("Partida não encontrada GestaoPartidaService"));
@@ -54,10 +53,10 @@ public class GestaoPartidaService {
 		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
 		partida.addJogador(jogadorA.get());
 		partida.addJogador(jogadorB.get());
-		
+
 		checaSeJogadoresSelecionadosCorretamente(partida);
 
-		for (int i = 0; i < myConfig.getNumMaxGames(); i++) {
+		for (int i = 0; i < tmapiConfig.getNumMaxGames(); i++) {
 			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB));
 		}
 
@@ -74,24 +73,33 @@ public class GestaoPartidaService {
 		gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
 		return this.salvar(partida);
 	}
-	
+
 	@Transactional
 	public Partida continuarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
-		Game proximoGame = partida.proximoGame();
-		if (proximoGame == null) {
-			finalizarPartida(partida);
-		} else 
-			gestaoGameService.iniciarGame(proximoGame);
+		if (partida.finalizado()) {
+			return partida;
+		} else {
+			List<Resultado> resultado = Resultado.resultadoCorrente(partida);
+//			List<Resultado> resultado = gestaoResultadoService.resultadoCorrente(partida);
+			if (partidaJaTemVencedor(resultado)) {
+				finalizarPartida(partida);
+			} else {
+				Game proximoGame = partida.proximoGame();
+				if (proximoGame == null) {
+					finalizarPartida(partida);
+				} else
+					gestaoGameService.iniciarGame(proximoGame);
+			}
+		}
 		return this.salvar(partida);
 	}
-	
+
 	@Transactional
 	public void finalizarPartida(Partida partida) {
 		partida.finalizar();
 		this.salvar(partida);
 	}
-
 
 	public void checaSeJogadoresSelecionadosCorretamente(Partida partida) {
 		switch (partida.getJogadores().size()) {
@@ -99,13 +107,24 @@ public class GestaoPartidaService {
 			throw new NegocioException("Nenhum jogador foi selecionado para a partida");
 		case 1:
 			Jogador jogadorSelecionado = new Jogador();
-			for (Jogador jogador : partida.getJogadores()) jogadorSelecionado = jogador;
-			throw new NegocioException("Somente o jogador "+jogadorSelecionado.getNome()+ " foi selecionado para a partida");
-		case 2: //Jogadores selecionados corretamente
+			for (Jogador jogador : partida.getJogadores())
+				jogadorSelecionado = jogador;
+			throw new NegocioException(
+					"Somente o jogador " + jogadorSelecionado.getNome() + " foi selecionado para a partida");
+		case 2: // Jogadores selecionados corretamente
 			break;
 		default:
 			throw new NegocioException("Mais de 2 jogadores foram selecionados para a partida");
 		}
+	}
+
+	public boolean partidaJaTemVencedor(List<Resultado> resultado) {
+		return resultado.get(0).getResultado() == gamesParaVencerPartida()
+				|| resultado.get(1).getResultado() == gamesParaVencerPartida();
+	}
+
+	private int gamesParaVencerPartida() {
+		return tmapiConfig.getNumMaxGames() / 2 + 1;
 	}
 
 }

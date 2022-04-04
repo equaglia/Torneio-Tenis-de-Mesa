@@ -54,13 +54,6 @@ public class Partida {
 		game.setPartida(this);
 	}
 
-//	public void addJogador(Jogador jogador) {
-//	if (jogador.disponivel()) {
-//		jogadores.add(jogador);
-//		jogador.getPartidas().add(this);
-//	} else
-//		throw (new NegocioException("Jogador não disponível"));
-//}
 	public void addJogador(Jogador jogador) {
 		if (this.jogadores.size() < 2) {
 			jogadores.add(jogador);
@@ -76,7 +69,7 @@ public class Partida {
 	}
 
 	public Game buscarGameEmAndamento() {
-		int size = this.games.size();
+		int size = getQuantidadeGamesDaPartida();
 
 		int i = 0;
 		while (i < size) {
@@ -97,27 +90,24 @@ public class Partida {
 
 	public Game proximoGame() {
 		if (this.emAndamento()) {
-			int size = this.games.size();
-			int i = 0;
-			while (i < size) {
-				Game thisGame = this.games.get(i);
+			int proximoGame = 0;
+			while (proximoGame < getQuantidadeGamesDaPartida()) {
+				Game thisGame = this.games.get(proximoGame);
 				if (thisGame.finalizado()) {
-					if (i == size - 1)
+					if (proximoGame == getQuantidadeGamesDaPartida() - 1)
 						this.finalizar();
-					i++;
-				} else if (thisGame.preparado() 
-						|| thisGame.emAndamento()) {
-					System.out.println("Partida.proximoGame thisgame id = "+thisGame.getId());
+					proximoGame++;
+				} else if (thisGame.preparado() || thisGame.emAndamento()) {
 					return thisGame;
-				} else throw new NegocioException("Partida impedida de continuar");
+				} else
+					throw new NegocioException("Partida impedida de continuar");
 			}
 		}
-//		throw new NegocioException("Não há próximo game para jogar na partida");
 		return null;
 	}
 
 	public Game gameAnterior() {
-		int size = this.games.size();
+		int size = getQuantidadeGamesDaPartida();
 		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
 			throw (new NegocioException("Este é o primeiro game da partida"));
 		}
@@ -167,7 +157,10 @@ public class Partida {
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
 		this.jogadores.stream().forEach(jogador -> jogador.liberar());
-//		for (Jogador jogador : this.jogadores) jogador.liberar();
+		this.games.stream().forEach(game -> {
+			if (game.preparado())
+				game.cancelar();
+		});
 		this.setFim(OffsetDateTime.now());
 	}
 
@@ -189,5 +182,9 @@ public class Partida {
 
 	public Boolean cancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
+	}
+
+	private int getQuantidadeGamesDaPartida() {
+		return this.games.size();
 	}
 }

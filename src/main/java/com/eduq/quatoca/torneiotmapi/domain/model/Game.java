@@ -111,4 +111,8 @@ public class Game {
 	public Boolean emCurso() {
 		return this.getPartida().buscarGameEmAndamento() == this;
 	}
+
+	public void cancelar() {
+		this.setStatus(StatusJogo.Cancelado);
+	}
 }

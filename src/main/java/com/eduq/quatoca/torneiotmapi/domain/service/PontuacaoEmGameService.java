@@ -4,10 +4,13 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
+import com.eduq.quatoca.torneiotmapi.common.CalculosGlobais;
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
+import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
+import com.eduq.quatoca.torneiotmapi.domain.model.Resultado;
 import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogo;
 
 import lombok.AllArgsConstructor;
@@ -18,10 +21,11 @@ public class PontuacaoEmGameService {
 
 	private GestaoPontuacaoService gestaoPontuacaoService;
 	private GestaoGameService gestaoGameService;
+	private GestaoPartidaService gestaoPartidaService;
 
 	@Transactional
 	public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
-		garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
+		CalculosGlobais.garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
 		Game game = gestaoGameService.buscar(gameId);
 		Boolean gameAtivo = gestaoGameService.gameEmAndamento(game);
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
@@ -37,7 +41,7 @@ public class PontuacaoEmGameService {
 
 	@Transactional
 	public Game atualizarPontuacaoGameFinalizado(Long gameId, int pontuacaoA, int pontuacaoB) {
-		garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
+		CalculosGlobais.garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
 		Game game = gestaoGameService.buscar(gameId);
 		efetivarAtualizacaoDePontuacao(pontuacaoA, pontuacaoB, game);
 		return game;
@@ -61,7 +65,7 @@ public class PontuacaoEmGameService {
 				incrementar(pontuacaoJogadorB);
 			} else
 				throw new EntidadeNaoEncontradaException("Game não encontrado");
-			if (pontuacaoParaFinalizarGame(pontuacaoJogadorA.getPontos(), pontuacaoJogadorB.getPontos())) {
+			if (CalculosGlobais.pontuacaoParaFinalizarGame(pontuacaoJogadorA.getPontos(), pontuacaoJogadorB.getPontos())) {
 				gestaoGameService.finalizarGame(game);
 			}
 		}
@@ -102,12 +106,20 @@ public class PontuacaoEmGameService {
 		Pontuacao pontuacaoJogadorA = buscarPontosDeJogador(game, 0);
 		Pontuacao pontuacaoJogadorB = buscarPontosDeJogador(game, 1);
 
-		if (pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
+		if (CalculosGlobais.pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
 			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-			game.setStatus(StatusJogo.EmAndamento);
-		} else if (pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
+			gestaoGameService.iniciarGame(game);
+//			game.setStatus(StatusJogo.EmAndamento);
+		} else if (CalculosGlobais.pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
 			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
 			gestaoGameService.finalizarGame(game);
+			Partida partida = game.getPartida();
+			Game proximoGame = partida.proximoGame();//TODO proximoGame null se partida ja deu resultado
+			if (proximoGame == null
+					|| gestaoPartidaService.partidaJaTemVencedor(Resultado.resultadoCorrente(partida))) {
+				gestaoPartidaService.finalizarPartida(partida);
+//				partida.finalizar();
+			}
 		} else {
 			throw (new NegocioException(
 					"Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
@@ -126,21 +138,6 @@ public class PontuacaoEmGameService {
 		gestaoPontuacaoService.salvar(pontuacao);
 	}
 
-	private void garantirPontuacaoPositiva(int pontuacaoA, int pontuacaoB) {
-		if (pontuacaoA < 0 || pontuacaoB < 0) {
-			throw (new NegocioException("Pontuações devem ter valores positivos"));
-		}
-	}
-
-	private boolean pontuacaoParaContinuarGame(int pontuacaoA, int pontuacaoB) {
-		return pontuacaoA < 11 && pontuacaoB < 11;
-	}
-
-	private boolean pontuacaoParaFinalizarGame(int pontuacaoA, int pontuacaoB) {
-		return pontuacaoA == 11 && pontuacaoB < 10 || pontuacaoA < 10 && pontuacaoB == 11
-				|| (pontuacaoA >= 10 && pontuacaoB >= 10 && Math.abs(pontuacaoA - pontuacaoB) == 2);
-	}
-
 	@Transactional
 	private void atualizarPontosAmbosJogadores(int pontosA, int pontosB, Pontuacao pontuacaoJogadorA,
 			Pontuacao pontuacaoJogadorB) {
@@ -150,4 +147,5 @@ public class PontuacaoEmGameService {
 		gestaoPontuacaoService.salvar(pontuacaoJogadorB);
 	}
 
+	
 }

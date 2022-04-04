@@ -37,7 +37,6 @@ public class GestaoGameService {
 
 	@Transactional
 	public Game prepararGame(Optional<Jogador> jogadorA, Optional<Jogador> jogadorB) {
-//		String datesmall = "2022-02-03T16:05"; // TBD provisório
 		Game game = new Game();
 		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorA.get());
 		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorB.get());
