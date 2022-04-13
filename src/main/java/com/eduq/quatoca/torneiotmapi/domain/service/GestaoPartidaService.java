@@ -27,6 +27,7 @@ public class GestaoPartidaService {
 	private CatalogoJogadorService catalogoJogadorService;
 	private PartidaRepository partidaRepository;
 	private GestaoGameService gestaoGameService;
+//	private ControleSacadorService controleSacadorService;
 
 	private TmapiConfig tmapiConfig;
 
@@ -126,5 +127,9 @@ public class GestaoPartidaService {
 	private int gamesParaVencerPartida() {
 		return tmapiConfig.getNumMaxGames() / 2 + 1;
 	}
+
+//	public void definirPrimeiroSacador(Long partidaId, Long jogadorId) {
+//		controleSacadorService.definirPrimeiroSacador(partidaId, jogadorId);
+//	}
 
 }

@@ -18,6 +18,7 @@ import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaResumoAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaModel;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaResumoModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
+import com.eduq.quatoca.torneiotmapi.domain.service.ControleSacadorService;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPartidaService;
 
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class PartidaController {
 	private PartidaAssembler partidaAssembler;
 	private PartidaResumoAssembler partidaResumoAssembler;
 	private GestaoPartidaService gestaoPartidaService;
+	private ControleSacadorService controleSacadorService;
 	
 	@GetMapping
 	public List<PartidaModel> listar() {
@@ -65,5 +67,11 @@ public class PartidaController {
 	@RequestMapping("/continuarPartida/{partidaId}")
 	public Partida continuarPartida(@PathVariable Long partidaId) {
 		return gestaoPartidaService.continuarPartida(partidaId);
+	}
+	
+	@PutMapping
+	@RequestMapping("/partida/{partidaId}/primeiroSacador/{jogadorId}")
+	public void definirPrimeiroSacador(@PathVariable Long partidaId, @PathVariable Long jogadorId) {
+		controleSacadorService.definirPrimeiroSacador(partidaId, jogadorId);
 	}
 }

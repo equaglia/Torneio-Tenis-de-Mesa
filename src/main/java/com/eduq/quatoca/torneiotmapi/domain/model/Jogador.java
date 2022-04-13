@@ -58,9 +58,6 @@ public class Jogador {
 	@OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL)
 	private Set<Pontuacao> pontos;
 
-//	@OneToMany(mappedBy = "primeiroSacador", cascade = CascadeType.ALL)
-//	private Partida partida;
-	
 	public Jogador() {
 		super();
 		this.setStatus(StatusJogador.Disponivel);

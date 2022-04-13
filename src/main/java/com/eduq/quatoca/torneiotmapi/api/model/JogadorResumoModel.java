@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class JogadorResumoModel {
-//	private Long id;
+	private Long id;
 	private String nome;
 
 }

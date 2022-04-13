@@ -180,6 +180,13 @@ public class Partida {
 	public Boolean emAndamento() {
 		return this.getStatus() == StatusJogo.EmAndamento;
 	}
+	
+	public boolean jaRegistrouPontuacao() {
+		return !(((this.emAndamento() 
+					&& this.getGames().get(0).getPontos().get(0).getPontos() == 0)
+					&& this.getGames().get(0).getPontos().get(1).getPontos() == 0) 
+				|| this.preparado());
+	}
 
 	public Boolean finalizado() {
 		return this.getStatus() == StatusJogo.Finalizado;
