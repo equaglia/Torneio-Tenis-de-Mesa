@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
@@ -37,6 +38,10 @@ public class Partida {
 	@ManyToMany(mappedBy = "partidas")
 	@JsonIgnore
 	private Set<Jogador> jogadores = new HashSet<Jogador>();
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Jogador primeiroSacador;
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
 	@Embedded
@@ -57,6 +62,9 @@ public class Partida {
 	public void addJogador(Jogador jogador) {
 		if (this.jogadores.size() < 2) {
 			jogadores.add(jogador);
+			if (this.primeiroSacador == null) {
+				this.setPrimeiroSacador(jogador);
+			}
 			jogador.getPartidas().add(this);
 		} else {
 			throw new NegocioException("Os dois jogadores da partida já haviam sido selecionados");
@@ -69,10 +77,10 @@ public class Partida {
 	}
 
 	public Game buscarGameEmAndamento() {
-		int size = getQuantidadeGamesDaPartida();
+		int quantidadeGames = getQuantidadeGamesDaPartida();
 
 		int i = 0;
-		while (i < size) {
+		while (i < quantidadeGames) {
 			if (this.games.get(i).emAndamento())
 				return this.games.get(i);
 			i++;
@@ -91,7 +99,8 @@ public class Partida {
 	public Game proximoGame() {
 		if (this.emAndamento()) {
 			int proximoGame = 0;
-			while (proximoGame < getQuantidadeGamesDaPartida()) {
+			int quantidadeGames = getQuantidadeGamesDaPartida();
+			while (proximoGame < quantidadeGames) {
 				Game thisGame = this.games.get(proximoGame);
 				if (thisGame.finalizado()) {
 					if (proximoGame == getQuantidadeGamesDaPartida() - 1)
@@ -107,12 +116,12 @@ public class Partida {
 	}
 
 	public Game gameAnterior() {
-		int size = getQuantidadeGamesDaPartida();
+		int quantidadeGames = getQuantidadeGamesDaPartida();
 		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
 			throw (new NegocioException("Este é o primeiro game da partida"));
 		}
 		int i = 1;
-		while (i <= size) {
+		while (i <= quantidadeGames) {
 			if (this.games.get(i).emAndamento())
 				return this.games.get(i - 1);
 			i++;
@@ -123,8 +132,8 @@ public class Partida {
 	public void iniciar() {
 		switch (this.getStatus()) {
 		case Preparado:
-			Boolean dispo = checarSeJogadoresDisponiveisParaIniciarPartida();
-			if (dispo) {
+			Boolean jogadoresDisponiveis = checarSeJogadoresDisponiveisParaIniciarPartida();
+			if (jogadoresDisponiveis) {
 				this.setStatus(StatusJogo.EmAndamento);
 				this.getGames().get(0).iniciar();
 				this.setInicio(OffsetDateTime.now());

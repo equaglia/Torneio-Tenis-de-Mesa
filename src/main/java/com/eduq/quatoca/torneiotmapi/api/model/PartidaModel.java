@@ -14,9 +14,10 @@ public class PartidaModel {
 //	private Long id;
 //	private List<JogadorModel> jogadores;
 	private Set<JogadorModel> jogadores;
-	private List<GameModel> games;
 	private OffsetDateTime inicioPartida;
 	private OffsetDateTime fimPartida;
 	private StatusJogo partidaStatus;
+	private JogadorResumoModel jogadorPrimeiroSacador;
+	private List<GameModel> games;
 
 }
