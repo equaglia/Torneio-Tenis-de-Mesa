@@ -63,7 +63,7 @@ public class GestaoGameService {
 	}
 
 	public boolean proximoGameProntoParaIniciar(Game game) {
-		return game.getPartida().gameAnterior().finalizado() && game.preparado() && game.getPartida().emAndamento();
+		return game.getPartida().gameAnterior().isFinalizado() && game.isPreparado() && game.getPartida().isEmAndamento();
 	}
 
 	public boolean gameEmAndamento(Game game) {
@@ -74,5 +74,24 @@ public class GestaoGameService {
 	void garantirGameAnteriorJaFinalizado(Game game) {
 		game.getPartida().gameAnterior().finalizar();
 		salvar(game.getPartida().gameAnterior());
+	}
+	
+	public boolean isGamePar(Game game) {
+		int gameIndice = game.getPartida().getGames().indexOf(game);
+		if (gameIndice%2 == 0)
+			return true;
+		return false;
+	}
+	
+	public boolean isGameImpar(Game game) {
+		if (isGamePar(game))
+			return false;
+		return true;
+	}
+	
+	public int getTotalPontos(Game game) {
+		return game.getPontos().get(0).getPontos() 
+				+ game.getPontos().get(1).getPontos();
+		
 	}
 }

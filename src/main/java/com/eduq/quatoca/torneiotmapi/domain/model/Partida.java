@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -11,6 +12,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,7 +41,7 @@ public class Partida {
 	@JsonIgnore
 	private Set<Jogador> jogadores = new HashSet<Jogador>();
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JsonIgnore
 	private Jogador primeiroSacador;
 
@@ -81,11 +83,11 @@ public class Partida {
 
 		int i = 0;
 		while (i < quantidadeGames) {
-			if (this.games.get(i).emAndamento())
+			if (this.games.get(i).isEmAndamento())
 				return this.games.get(i);
 			i++;
 		}
-		if (primeiroGameDaPartida().preparado()) {
+		if (primeiroGameDaPartida().isPreparado()) {
 			primeiroGameDaPartida().iniciar();
 			return primeiroGameDaPartida();
 		}
@@ -97,16 +99,16 @@ public class Partida {
 	}
 
 	public Game proximoGame() {
-		if (this.emAndamento()) {
+		if (this.isEmAndamento()) {
 			int proximoGame = 0;
 			int quantidadeGames = getQuantidadeGamesDaPartida();
 			while (proximoGame < quantidadeGames) {
 				Game thisGame = this.games.get(proximoGame);
-				if (thisGame.finalizado()) {
+				if (thisGame.isFinalizado()) {
 					if (proximoGame == getQuantidadeGamesDaPartida() - 1)
 						this.finalizar();
 					proximoGame++;
-				} else if (thisGame.preparado() || thisGame.emAndamento()) {
+				} else if (thisGame.isPreparado() || thisGame.isEmAndamento()) {
 					return thisGame;
 				} else
 					throw new NegocioException("Partida impedida de continuar");
@@ -122,7 +124,7 @@ public class Partida {
 		}
 		int i = 1;
 		while (i <= quantidadeGames) {
-			if (this.games.get(i).emAndamento())
+			if (this.games.get(i).isEmAndamento())
 				return this.games.get(i - 1);
 			i++;
 		}
@@ -162,41 +164,56 @@ public class Partida {
 			disponibilidade = jog.disponivel() && disponibilidade;
 		return disponibilidade;
 	}
+	
+	public boolean isJogadorDaPartida(Jogador jogador) {
+		return this.jogadores.contains(jogador);
+	}
+
+	public boolean isGameDaPartida(Game game) {
+		return this.games.contains(game);
+	}
+	
+	public Jogador getNaoPrimeiroSacador() {
+		Optional<Jogador> naoSacador = this.jogadores.stream()
+				.filter(p -> !(this.getPrimeiroSacador() == p))
+				.findAny();
+				return naoSacador.get();
+	}
+
+	public boolean jaRegistrouPontuacao() {
+		return !(((this.isEmAndamento() 
+					&& this.getGames().get(0).getPontos().get(0).getPontos() == 0)
+					&& this.getGames().get(0).getPontos().get(1).getPontos() == 0) 
+				|| this.isPreparado());
+	}
 
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
 		this.jogadores.stream().forEach(jogador -> jogador.liberar());
 		this.games.stream().forEach(game -> {
-			if (game.preparado())
+			if (game.isPreparado())
 				game.cancelar();
 		});
 		this.setFim(OffsetDateTime.now());
 	}
 
-	public Boolean preparado() {
+	public Boolean isPreparado() {
 		return this.getStatus() == StatusJogo.Preparado;
 	}
 
-	public Boolean emAndamento() {
+	public Boolean isEmAndamento() {
 		return this.getStatus() == StatusJogo.EmAndamento;
 	}
 	
-	public boolean jaRegistrouPontuacao() {
-		return !(((this.emAndamento() 
-					&& this.getGames().get(0).getPontos().get(0).getPontos() == 0)
-					&& this.getGames().get(0).getPontos().get(1).getPontos() == 0) 
-				|| this.preparado());
-	}
-
-	public Boolean finalizado() {
+	public Boolean isFinalizado() {
 		return this.getStatus() == StatusJogo.Finalizado;
 	}
 
-	public Boolean interrompido() {
+	public Boolean isInterrompido() {
 		return this.getStatus() == StatusJogo.Interrompido;
 	}
 
-	public Boolean cancelado() {
+	public Boolean isCancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
 	}
 

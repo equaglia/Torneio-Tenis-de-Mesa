@@ -75,8 +75,8 @@ public class PontuacaoEmGameService {
 	@Transactional
 	public Game diminueUmPonto(Long gameId, Long pontoId) {
 		Game game = gestaoGameService.buscar(gameId);
-		Boolean gameAtivo = game.emAndamento();
-		if (!gameAtivo && game.finalizado()) {
+		Boolean gameAtivo = game.isEmAndamento();
+		if (!gameAtivo && game.isFinalizado()) {
 			game.setStatus(StatusJogo.EmAndamento);
 			gameAtivo = true;
 		}
@@ -106,6 +106,12 @@ public class PontuacaoEmGameService {
 		Pontuacao pontuacaoJogadorA = buscarPontosDeJogador(game, 0);
 		Pontuacao pontuacaoJogadorB = buscarPontosDeJogador(game, 1);
 
+		//TODO Corrigir pontuacao de game em partida já finalizada, tipo, errou ultimo ponto da partida
+//		if (gestaoPartidaService.buscar(game.getPartida().getId())) {
+//			
+//		}
+//		if (game.getPartida().isFinalizado())
+//			game.getPartida().setStatus(StatusJogo.EmAndamento);
 		if (CalculosGlobais.pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
 			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
 			gestaoGameService.iniciarGame(game);

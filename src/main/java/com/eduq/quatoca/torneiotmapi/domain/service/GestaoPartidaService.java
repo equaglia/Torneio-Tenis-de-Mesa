@@ -78,7 +78,7 @@ public class GestaoPartidaService {
 	@Transactional
 	public Partida continuarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
-		if (partida.finalizado()) {
+		if (partida.isFinalizado()) {
 			return partida;
 		} else {
 			List<Resultado> resultado = Resultado.resultadoCorrente(partida);

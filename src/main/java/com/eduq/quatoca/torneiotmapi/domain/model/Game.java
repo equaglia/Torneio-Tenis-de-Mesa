@@ -61,7 +61,7 @@ public class Game {
 	}
 
 	public void iniciar() {
-		if (!this.getPartida().emAndamento()){
+		if (!this.getPartida().isEmAndamento()){
 			throw(new NegocioException("Game não pode iniciar, pois partida não está em andamento"));
 		} else {
 			switch (this.getStatus()) {
@@ -88,27 +88,27 @@ public class Game {
 		this.setFim(OffsetDateTime.now());
 	}
 	
-	public Boolean preparado() {
+	public Boolean isPreparado() {
 		return this.getStatus() == StatusJogo.Preparado;
 	}
 
-	public Boolean emAndamento() {
+	public Boolean isEmAndamento() {
 		return this.getStatus() == StatusJogo.EmAndamento;
 	}
 
-	public Boolean finalizado() {
+	public Boolean isFinalizado() {
 		return this.getStatus() == StatusJogo.Finalizado;
 	}
 
-	public Boolean interrompido() {
+	public Boolean isInterrompido() {
 		return this.getStatus() == StatusJogo.Interrompido;
 	}
 
-	public Boolean cancelado() {
+	public Boolean isCancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
 	}
 	
-	public Boolean emCurso() {
+	public Boolean isEmCurso() {
 		return this.getPartida().buscarGameEmAndamento() == this;
 	}
 

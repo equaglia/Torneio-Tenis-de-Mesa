@@ -24,7 +24,7 @@ public class Resultado {
 		int gamesVencidosJogadorA = 0;
 		int gamesVencidosJogadorB = 0;
 		for (Game game : partida.getGames()) {
-			if (game.finalizado()) {
+			if (game.isFinalizado()) {
 				int pontosJogadorA = game.getPontos().get(0).getPontos();
 				int pontosJogadorB = game.getPontos().get(1).getPontos();
 				if (CalculosGlobais.pontuacaoParaFinalizarGame(pontosJogadorA, pontosJogadorB)) {

@@ -20,4 +20,15 @@ public class CalculosGlobais {
 				|| (pontuacaoA >= 10 && pontuacaoB >= 10 && Math.abs(pontuacaoA - pontuacaoB) == 2);
 	}
 
+	public static boolean isPar(int numero) {
+		if (numero%2 == 0)
+			return true;
+		return false;
+	}
+	
+	public static boolean isImpar(int numero) {
+		if (!isPar(numero))
+			return true;
+		return false;
+	}
 }

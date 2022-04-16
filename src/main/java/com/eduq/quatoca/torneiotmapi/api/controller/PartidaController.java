@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eduq.quatoca.torneiotmapi.api.assembler.JogadorAssembler;
 import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaAssembler;
 import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaResumoAssembler;
+import com.eduq.quatoca.torneiotmapi.api.model.JogadorModel;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaModel;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaResumoModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
@@ -30,6 +32,7 @@ public class PartidaController {
 	
 	private PartidaAssembler partidaAssembler;
 	private PartidaResumoAssembler partidaResumoAssembler;
+	private JogadorAssembler jogadorAssembler;
 	private GestaoPartidaService gestaoPartidaService;
 	private ControleSacadorService controleSacadorService;
 	
@@ -65,13 +68,23 @@ public class PartidaController {
 
 	@PutMapping
 	@RequestMapping("/continuarPartida/{partidaId}")
-	public Partida continuarPartida(@PathVariable Long partidaId) {
-		return gestaoPartidaService.continuarPartida(partidaId);
+	public ResponseEntity<PartidaModel> continuarPartida(@PathVariable Long partidaId) {
+		return Optional.of(gestaoPartidaService.continuarPartida(partidaId))
+				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
+				.orElse(ResponseEntity.notFound().build());
 	}
 	
 	@PutMapping
 	@RequestMapping("/partida/{partidaId}/primeiroSacador/{jogadorId}")
 	public void definirPrimeiroSacador(@PathVariable Long partidaId, @PathVariable Long jogadorId) {
 		controleSacadorService.definirPrimeiroSacador(partidaId, jogadorId);
+	}
+	
+	@GetMapping
+	@RequestMapping("/partida/{partidaId}/game/{gameId}")
+	public ResponseEntity<JogadorModel> sacador(@PathVariable Long partidaId, @PathVariable Long gameId) {
+		return Optional.of(controleSacadorService.getSacador(partidaId, gameId))
+				.map(jogador -> ResponseEntity.ok(jogadorAssembler.toModel(jogador)))
+				.orElse(ResponseEntity.notFound().build());
 	}
 }
