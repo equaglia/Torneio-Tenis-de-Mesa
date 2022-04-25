@@ -1,5 +1,6 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,7 +73,8 @@ public class GestaoPartidaService {
 		Partida partida = this.buscar(partidaId);
 		partida.iniciar();
 		gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
-		return this.salvar(partida);
+		this.salvar(partida);
+		return partida;
 	}
 
 	@Transactional
@@ -87,10 +89,15 @@ public class GestaoPartidaService {
 				finalizarPartida(partida);
 			} else {
 				Game proximoGame = partida.proximoGame();
-				if (proximoGame == null) {
-					finalizarPartida(partida);
-				} else
-					gestaoGameService.iniciarGame(proximoGame);
+				if (partida.isEmAndamento()) {
+
+					if (proximoGame == null) {
+						finalizarPartida(partida);
+					} else
+						gestaoGameService.iniciarGame(proximoGame);
+				} else {
+					throw new NegocioException("Partida ainda precisa ser iniciada");
+				}
 			}
 		}
 		return this.salvar(partida);
@@ -100,6 +107,12 @@ public class GestaoPartidaService {
 	public void finalizarPartida(Partida partida) {
 		partida.finalizar();
 		this.salvar(partida);
+	}
+
+	public void setPartidaEmAndamento(Partida partida) {
+		partida.setEmAndamento();
+		this.salvar(partida);
+		System.out.println("partida = " + partida.getStatus());
 	}
 
 	public void checaSeJogadoresSelecionadosCorretamente(Partida partida) {
@@ -128,8 +141,13 @@ public class GestaoPartidaService {
 		return tmapiConfig.getNumMaxGames() / 2 + 1;
 	}
 
-//	public void definirPrimeiroSacador(Long partidaId, Long jogadorId) {
-//		controleSacadorService.definirPrimeiroSacador(partidaId, jogadorId);
-//	}
+	public boolean temGameEmAndamento(Partida partida) {
+		for (Iterator<Game> i = partida.getGames().iterator(); i.hasNext();) {
+			Game game = (Game) i.next();
+			if (game.isEmAndamento())
+				return true;
+		}
+		return false;
+	}
 
 }

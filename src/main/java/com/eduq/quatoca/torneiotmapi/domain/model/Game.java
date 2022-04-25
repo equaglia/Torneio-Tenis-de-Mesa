@@ -88,6 +88,11 @@ public class Game {
 		this.setFim(OffsetDateTime.now());
 	}
 	
+	public void setPreparado() {
+		this.setStatus(StatusJogo.Preparado);
+		this.setFim(null);		
+	}
+
 	public Boolean isPreparado() {
 		return this.getStatus() == StatusJogo.Preparado;
 	}
@@ -114,5 +119,10 @@ public class Game {
 
 	public void cancelar() {
 		this.setStatus(StatusJogo.Cancelado);
+	}
+
+	public void setEmAndamento() {
+		this.setStatus(StatusJogo.EmAndamento);
+		this.setFim(null);		
 	}
 }

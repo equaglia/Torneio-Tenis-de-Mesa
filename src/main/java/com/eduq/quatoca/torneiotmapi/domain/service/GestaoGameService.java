@@ -56,6 +56,12 @@ public class GestaoGameService {
 		this.salvar(game);
 	}
 
+	public void setEmAndamento(Game game) {
+		game.setEmAndamento();
+		game.setFim(null);
+		this.salvar(game);
+	}
+
 	@Transactional
 	public void finalizarGame(Game game) {
 		game.finalizar();
@@ -63,10 +69,12 @@ public class GestaoGameService {
 	}
 
 	public boolean proximoGameProntoParaIniciar(Game game) {
-		return game.getPartida().gameAnterior().isFinalizado() && game.isPreparado() && game.getPartida().isEmAndamento();
+		return game.getPartida().gameAnterior().isFinalizado() 
+				&& game.isPreparado() 
+				&& game.getPartida().isEmAndamento();
 	}
 
-	public boolean gameEmAndamento(Game game) {
+	public boolean isGameEmAndamento(Game game) {
 		return game.getPartida().buscarGameEmAndamento() == game;
 	}
 

@@ -3,6 +3,7 @@ package com.eduq.quatoca.torneiotmapi.domain.model;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class Partida {
 	@ManyToMany(mappedBy = "partidas")
 	@JsonIgnore
 	private Set<Jogador> jogadores = new HashSet<Jogador>();
-	
+
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JsonIgnore
 	private Jogador primeiroSacador;
@@ -137,7 +138,7 @@ public class Partida {
 			Boolean jogadoresDisponiveis = checarSeJogadoresDisponiveisParaIniciarPartida();
 			if (jogadoresDisponiveis) {
 				this.setStatus(StatusJogo.EmAndamento);
-				this.getGames().get(0).iniciar();
+//				this.getGames().get(0).iniciar();
 				this.setInicio(OffsetDateTime.now());
 				this.jogadores.stream().forEach(jogador -> jogador.convocar());
 			} else {
@@ -158,35 +159,6 @@ public class Partida {
 		}
 	}
 
-	public Boolean checarSeJogadoresDisponiveisParaIniciarPartida() {
-		Boolean disponibilidade = true;
-		for (Jogador jog : this.jogadores)
-			disponibilidade = jog.disponivel() && disponibilidade;
-		return disponibilidade;
-	}
-	
-	public boolean isJogadorDaPartida(Jogador jogador) {
-		return this.jogadores.contains(jogador);
-	}
-
-	public boolean isGameDaPartida(Game game) {
-		return this.games.contains(game);
-	}
-	
-	public Jogador getNaoPrimeiroSacador() {
-		Optional<Jogador> naoSacador = this.jogadores.stream()
-				.filter(p -> !(this.getPrimeiroSacador() == p))
-				.findAny();
-				return naoSacador.get();
-	}
-
-	public boolean jaRegistrouPontuacao() {
-		return !(((this.isEmAndamento() 
-					&& this.getGames().get(0).getPontos().get(0).getPontos() == 0)
-					&& this.getGames().get(0).getPontos().get(1).getPontos() == 0) 
-				|| this.isPreparado());
-	}
-
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
 		this.jogadores.stream().forEach(jogador -> jogador.liberar());
@@ -197,24 +169,78 @@ public class Partida {
 		this.setFim(OffsetDateTime.now());
 	}
 
-	public Boolean isPreparado() {
+	public Boolean checarSeJogadoresDisponiveisParaIniciarPartida() {
+		Boolean disponibilidade = true;
+		for (Jogador jog : this.jogadores)
+			disponibilidade = jog.disponivel() && disponibilidade;
+		return disponibilidade;
+	}
+
+	public boolean isJogadorDaPartida(Jogador jogador) {
+		return this.jogadores.contains(jogador);
+	}
+
+	public boolean isGameDaPartida(Game game) {
+		return this.games.contains(game);
+	}
+
+	public Jogador buscarNaoPrimeiroSacador() {
+		Optional<Jogador> naoSacador = this.jogadores.stream()
+				.filter(p -> !(this.getPrimeiroSacador() == p))
+				.findAny();
+		return naoSacador.get();
+	}
+
+	public boolean jaRegistrouPontuacao() {
+		return !(((this.isEmAndamento() && this.getGames().get(0).getPontos().get(0).getPontos() == 0)
+				&& this.getGames().get(0).getPontos().get(1).getPontos() == 0) || this.isPreparado());
+	}
+
+	public void setEmAndamento() {
+		if (this.getStatus() == StatusJogo.Finalizado) {
+			this.setStatus(StatusJogo.EmAndamento);
+			this.jogadores.stream().forEach(jogador -> jogador.convocar());
+			this.games.stream().forEach(game -> {
+				if (game.isCancelado())
+					game.setPreparado();
+			});
+			this.garantirNoMaximoUmGameEmAndamento();
+			this.setFim(null);
+		}
+	}
+
+	public boolean isPreparado() {
 		return this.getStatus() == StatusJogo.Preparado;
 	}
 
-	public Boolean isEmAndamento() {
+	public boolean isEmAndamento() {
 		return this.getStatus() == StatusJogo.EmAndamento;
 	}
-	
-	public Boolean isFinalizado() {
+
+	public boolean isFinalizado() {
 		return this.getStatus() == StatusJogo.Finalizado;
 	}
 
-	public Boolean isInterrompido() {
+	public boolean isInterrompido() {
 		return this.getStatus() == StatusJogo.Interrompido;
 	}
 
-	public Boolean isCancelado() {
+	public boolean isCancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
+	}
+	
+	private void garantirNoMaximoUmGameEmAndamento() {
+		boolean temGameEmAndamento = false;
+		for (Iterator<Game> i = games.iterator(); i.hasNext();) {
+			Game game = (Game) i.next();
+			if (game.isEmAndamento()) {
+				if (!temGameEmAndamento) {
+					temGameEmAndamento = true;
+				} else {
+					game.setStatus(StatusJogo.Preparado);
+				}
+			}
+		}
 	}
 
 	private int getQuantidadeGamesDaPartida() {

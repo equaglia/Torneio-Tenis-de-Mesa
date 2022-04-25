@@ -48,9 +48,9 @@ public class ControleSacadorService {
 		Jogador outroJogador;
 		if (gestaoGameService.isGamePar(game)) {
 			primeiroSacadorDoGame = partida.getPrimeiroSacador();
-			outroJogador = partida.getNaoPrimeiroSacador();
+			outroJogador = partida.buscarNaoPrimeiroSacador();
 		} else {
-			primeiroSacadorDoGame = partida.getNaoPrimeiroSacador();
+			primeiroSacadorDoGame = partida.buscarNaoPrimeiroSacador();
 			outroJogador = partida.getPrimeiroSacador();
 		}
 		int totalPontosGame = gestaoGameService.getTotalPontos(game);

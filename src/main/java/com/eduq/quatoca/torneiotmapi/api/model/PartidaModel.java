@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class PartidaModel {
 
-//	private Long id;
+	private Long id;
 //	private List<JogadorModel> jogadores;
 	private Set<JogadorModel> jogadores;
 	private OffsetDateTime inicioPartida;

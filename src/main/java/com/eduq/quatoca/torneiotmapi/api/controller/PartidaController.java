@@ -19,7 +19,6 @@ import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaResumoAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.JogadorModel;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaModel;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaResumoModel;
-import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.service.ControleSacadorService;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPartidaService;
 
@@ -56,14 +55,18 @@ public class PartidaController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping("/{jogadorAId}/{jogadorBId}")
-	public PartidaModel adicionar(@PathVariable Long jogadorAId, @PathVariable Long jogadorBId) {
-		return partidaAssembler.toModel(gestaoPartidaService.prepararPartida(jogadorAId, jogadorBId));
+	public ResponseEntity<PartidaModel> adicionar(@PathVariable Long jogadorAId, @PathVariable Long jogadorBId) {
+		return Optional.of(gestaoPartidaService.prepararPartida(jogadorAId, jogadorBId))
+				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
+				.orElse(ResponseEntity.notFound().build());
 	}
 	
 	@PutMapping
 	@RequestMapping("/iniciarPartida/{partidaId}")
-	public Partida iniciarPartida(@PathVariable Long partidaId) {
-		return gestaoPartidaService.iniciarPartida(partidaId);
+	public ResponseEntity<PartidaModel> iniciarPartida(@PathVariable Long partidaId) {
+		return Optional.of(gestaoPartidaService.iniciarPartida(partidaId))
+				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 	@PutMapping

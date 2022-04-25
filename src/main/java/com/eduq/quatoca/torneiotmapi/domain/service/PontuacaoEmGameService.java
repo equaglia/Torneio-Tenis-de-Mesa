@@ -11,7 +11,6 @@ import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
 import com.eduq.quatoca.torneiotmapi.domain.model.Resultado;
-import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogo;
 
 import lombok.AllArgsConstructor;
 
@@ -27,7 +26,10 @@ public class PontuacaoEmGameService {
 	public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
 		CalculosGlobais.garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
 		Game game = gestaoGameService.buscar(gameId);
-		Boolean gameAtivo = gestaoGameService.gameEmAndamento(game);
+		Boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
+		if (gestaoPartidaService.temGameEmAndamento(game.getPartida()) && !gameAtivo) {
+			throw new NegocioException("Game "+gameId+" não é o próximo game da partida.");
+		}
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
 			gestaoGameService.garantirGameAnteriorJaFinalizado(game);
 			gestaoGameService.iniciarGame(game);
@@ -50,7 +52,7 @@ public class PontuacaoEmGameService {
 	@Transactional
 	public Game somaUmPonto(Long gameId, Long pontoId) {
 		Game game = gestaoGameService.buscar(gameId);
-		Boolean gameAtivo = gestaoGameService.gameEmAndamento(game);
+		Boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
 			gestaoGameService.garantirGameAnteriorJaFinalizado(game);
 			gestaoGameService.iniciarGame(game);
@@ -77,7 +79,8 @@ public class PontuacaoEmGameService {
 		Game game = gestaoGameService.buscar(gameId);
 		Boolean gameAtivo = game.isEmAndamento();
 		if (!gameAtivo && game.isFinalizado()) {
-			game.setStatus(StatusJogo.EmAndamento);
+			game.setEmAndamento();
+//			game.setStatus(StatusJogo.EmAndamento);
 			gameAtivo = true;
 		}
 		if (gameAtivo) {
@@ -102,29 +105,28 @@ public class PontuacaoEmGameService {
 		return pontuacaoJogadorA;
 	}
 
+	@Transactional
 	private void efetivarAtualizacaoDePontuacao(int pontuacaoA, int pontuacaoB, Game game) {
 		Pontuacao pontuacaoJogadorA = buscarPontosDeJogador(game, 0);
 		Pontuacao pontuacaoJogadorB = buscarPontosDeJogador(game, 1);
 
 		//TODO Corrigir pontuacao de game em partida já finalizada, tipo, errou ultimo ponto da partida
-//		if (gestaoPartidaService.buscar(game.getPartida().getId())) {
-//			
-//		}
-//		if (game.getPartida().isFinalizado())
-//			game.getPartida().setStatus(StatusJogo.EmAndamento);
+		if (game.getPartida().isFinalizado()) {
+			gestaoPartidaService.setPartidaEmAndamento(game.getPartida());
+		}
 		if (CalculosGlobais.pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
 			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
-			gestaoGameService.iniciarGame(game);
-//			game.setStatus(StatusJogo.EmAndamento);
+			gestaoGameService.setEmAndamento(game);
+//			gestaoGameService.iniciarGame(game);
 		} else if (CalculosGlobais.pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)) {
 			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
 			gestaoGameService.finalizarGame(game);
 			Partida partida = game.getPartida();
 			Game proximoGame = partida.proximoGame();//TODO proximoGame null se partida ja deu resultado
+			System.out.println("efetivarAtualizacaoDePontuacao proximoGame = "+proximoGame.getStatus());
 			if (proximoGame == null
 					|| gestaoPartidaService.partidaJaTemVencedor(Resultado.resultadoCorrente(partida))) {
 				gestaoPartidaService.finalizarPartida(partida);
-//				partida.finalizar();
 			}
 		} else {
 			throw (new NegocioException(
