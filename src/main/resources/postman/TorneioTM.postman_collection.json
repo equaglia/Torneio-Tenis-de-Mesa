@@ -1,0 +1,1726 @@
+{
+	"info": {
+		"_postman_id": "2249601a-3e80-4b6d-ae2f-81652f481e13",
+		"name": "TorneioTM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Simulador",
+			"item": [
+				{
+					"name": "PostJogador Edu",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 201\"] = responseCode.code === 201;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Edu\",\r\n    \"sobrenome\": \"Quaglia\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/jogadores",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogadorClaudia",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 201\"] = responseCode.code === 201;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Claudia\",\r\n    \"sobrenome\": \"Tocantins\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/jogadores",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogadorMax",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 201\"] = responseCode.code === 201;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Max\",\r\n    \"sobrenome\": \"Tocantins Quaglia\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/jogadores",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogadorMauro",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 201\"] = responseCode.code === 201;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Mauro\",\r\n    \"sobrenome\": \"Ipe\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/jogadores",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 1: 1 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    //pm.environment.set(\"_partida\", 1);\r",
+									"    pm.environment.set(\"_game\", 1);\r",
+									"    pm.environment.set(\"_gameInicial\", 1);\r",
+									"    pm.environment.set(\"_gameReferencia\", 1);\r",
+									"    pm.environment.set(\"_pontoId\", 1);\r",
+									"    pm.environment.set(\"_pontoIdReferencia\", 1);\r",
+									"    pm.environment.set(\"_pontoIdInicial\", 1);\r",
+									"    pm.environment.set(\"_pontoIdCandidatoA\", 1);\r",
+									"    pm.environment.set(\"_pontoIdCandidatoB\", 2);\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"_partida\", 1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/1/2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 2: 3 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/3/4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"3",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 3: 1 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/1/3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get partida 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"_partidaStatus\", jsonData.partidaStatus);\r",
+									"console.log(\"partidaStatus = \"+jsonData.partidaStatus);\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Partida 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, [pm.environment.get('_tempoCurto')]);\r",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/iniciarPartida/{{_partida}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"iniciarPartida",
+								"{{_partida}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Partida 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, [pm.environment.get('_tempoCurto')]);\r",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/iniciarPartida/2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"iniciarPartida",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Continuar Partida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function () { }, [pm.environment.get(\"_tempoCurto\")]);\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"_partidaStatus\", jsonData.partidaStatus);\r",
+									"console.log(\"partidaStatus (jsonData.partidaStatus) = \"+jsonData.partidaStatus);\r",
+									"console.log(jsonData);\r",
+									"let codeValue = 200;\r",
+									"if (pm.environment.get(\"_partida\") == 3) {\r",
+									"    codeValue = 400;\r",
+									"    postman.setNextRequest(\"Iniciar Partida 3\");\r",
+									"} \r",
+									"tests[\"Status code is \"+codeValue] = responseCode.code === codeValue;\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/continuarPartida/{{_partida}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"continuarPartida",
+								"{{_partida}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soma 1 ponto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// for generating random number \r",
+									"function randomNumber(min, max) { \r",
+									"    return Math.random() * (max - min) + min;\r",
+									"} \r",
+									"\r",
+									"function randomInteger(min, max) {\r",
+									"   return Math.round((Math.random() * Math.abs(max - min)) + min);\r",
+									"}\r",
+									"\r",
+									"function somas(valor, vezes){\r",
+									"    let resultado = valor;\r",
+									"    let contar = 0;\r",
+									"    while (contar < vezes) {\r",
+									"        resultado++;\r",
+									"        contar++;\r",
+									"    }\r",
+									"    return resultado;\r",
+									"}\r",
+									"\r",
+									"setTimeout(function () { }, [pm.environment.get(\"_tempoCurto\")]);\r",
+									"var partidaStatus = pm.environment.get(\"_partidaStatus\");\r",
+									"var gameReferencia = pm.environment.get(\"_gameReferencia\");\r",
+									"var PontoIdReferencia = pm.environment.get(\"_pontoIdReferencia\");\r",
+									"var PontoIdCandidatoA = pm.environment.get(\"_pontoIdCandidatoA\");\r",
+									"var PontoIdCandidatoB = pm.environment.get(\"_pontoIdCandidatoB\");\r",
+									"var partida = pm.environment.get(\"_partida\");\r",
+									"if (partidaStatus == \"Finalizado\" || partidaStatus == \"Cancelado\"){\r",
+									"    partida = somas(partida, 1);\r",
+									"    pm.environment.set(\"_partida\", partida);\r",
+									"    \r",
+									"    gameReferencia = pm.environment.get(\"_gameInicial\");\r",
+									"    gameReferencia = somas(gameReferencia, 5);\r",
+									"    pm.environment.set(\"_game\", gameReferencia);\r",
+									"    pm.environment.set(\"_gameInicial\", gameReferencia);\r",
+									"    pm.environment.set(\"_gameReferencia\", gameReferencia);\r",
+									"\r",
+									"    PontoIdReferencia = pm.environment.get(\"_pontoIdInicial\");\r",
+									"    PontoIdReferencia = somas(PontoIdReferencia, 10);\r",
+									"    pm.environment.set(\"_pontoId\", PontoIdReferencia);\r",
+									"    pm.environment.set(\"_pontoIdInicial\", PontoIdReferencia);\r",
+									"    pm.environment.set(\"_pontoIdReferencia\", PontoIdReferencia);\r",
+									"\r",
+									"    PontoIdCandidatoA = PontoIdReferencia;\r",
+									"    PontoIdCandidatoB = somas(PontoIdReferencia, 1);\r",
+									"    pm.environment.set(\"_pontoIdCandidatoA\", PontoIdCandidatoA);\r",
+									"    pm.environment.set(\"_pontoIdCandidatoB\", PontoIdCandidatoB);\r",
+									"    postman.setNextRequest(\"Continuar Partida\");\r",
+									"} else {\r",
+									"    pm.test(\"Status code is 200\", function() {\r",
+									"        var jsonData = JSON.parse(responseBody);\r",
+									"        var currentGame = pm.environment.get(\"_game\");\r",
+									"        var gameStatus = jsonData.gameStatus;\r",
+									"        console.log(\"partida \"+partida+\" = \"+partidaStatus+\"     game \"+currentGame+\" = \"+gameStatus+\"    PontoId = \"+pm.environment.get(\"_pontoId\"));\r",
+									"        if (partidaStatus == \"EmAndamento\" || partidaStatus == \"Preparado\") {\r",
+									"            if (gameStatus == \"Finalizado\") {\r",
+									"                let nextGame = somas(currentGame, 1);\r",
+									"                pm.environment.set(\"_game\", nextGame);\r",
+									"                PontoIdReferencia = somas(PontoIdReferencia, 2);\r",
+									"                PontoIdCandidatoA = PontoIdReferencia;\r",
+									"                PontoIdCandidatoB = somas(PontoIdReferencia, 1);\r",
+									"                pm.environment.set(\"_pontoId\", PontoIdReferencia);\r",
+									"                pm.environment.set(\"_pontoIdReferencia\", PontoIdReferencia);\r",
+									"                pm.environment.set(\"_pontoIdCandidatoA\", PontoIdCandidatoA);\r",
+									"                pm.environment.set(\"_pontoIdCandidatoB\", PontoIdCandidatoB);\r",
+									"                postman.setNextRequest(\"Continuar Partida\");\r",
+									"            } else {\r",
+									"                pm.environment.set(\"_pontoId\", randomInteger(PontoIdCandidatoA, PontoIdCandidatoB));\r",
+									"                postman.setNextRequest(\"Soma 1 ponto\");\r",
+									"            }\r",
+									"        } else if (partidaStatus == \"Interrompido\"){\r",
+									"            postman.setNextRequest(\"Continuar Partida\");\r",
+									"        }\r",
+									"        pm.response.to.have.status(200);\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{host}}/games/soma/gameId/{{_game}}/pontoId/{{_pontoId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"games",
+								"soma",
+								"gameId",
+								"{{_game}}",
+								"pontoId",
+								"{{_pontoId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Partida 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"setTimeout(function(){}, [pm.environment.get('_tempoCurto')]);\r",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/iniciarPartida/3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"iniciarPartida",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "BACK",
+			"item": [
+				{
+					"name": "Continuar Partida n",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    setTimeout(function(){}, [pm.environment.get(\"tempoLongo\")]);\r",
+									"    pm.response.to.have.status(200); \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/continuarPartida/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"continuarPartida",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    setTimeout(function(){}, [pm.environment.get(\"tempoLongo\")]);\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/games/gameId/2/pontos/6/11",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"games",
+								"gameId",
+								"2",
+								"pontos",
+								"6",
+								"11"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    setTimeout(function(){}, [pm.environment.get(\"tempoLongo\")]);\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/games/gameId/3/pontos/11/7",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"games",
+								"gameId",
+								"3",
+								"pontos",
+								"11",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Continuar Partida 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/continuarPartida/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"continuarPartida",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    setTimeout(function(){}, [pm.environment.get(\"tempoLongo\")]);\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/games/gameId/4/pontos/11/7",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"games",
+								"gameId",
+								"4",
+								"pontos",
+								"11",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Simu2",
+			"item": [
+				{
+					"name": "PostJogador Edu Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Edu\",\r\n    \"sobrenome\": \"Quaglia\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogadorClaudia Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Claudia\",\r\n    \"sobrenome\": \"Tocantins\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 1 2 Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/1/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"1",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Partida 1 Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/partidas/iniciarPartida/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"iniciarPartida",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 1 Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/gameId/3/pontos/11/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"gameId",
+								"3",
+								"pontos",
+								"11",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soma 1 ponto Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/soma/gameId/2/pontoId/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"soma",
+								"gameId",
+								"2",
+								"pontoId",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Continuar Partida 1 Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/partidas/continuarPartida/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"continuarPartida",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Jogador",
+			"item": [
+				{
+					"name": "GetJogadores",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/jogadores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetJogador",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/jogadores/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogador campos vazios",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"\",\r\n    \"sobrenome\": \"\",\r\n    \"categoria\": \"A\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogador Edu",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Edu\",\r\n    \"sobrenome\": \"Quaglia\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PutJogador",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Claudia modificado\",\r\n    \"sobrenome\": \"Quaglia\",\r\n    \"categoria\": \"D\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteJogador",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogadorClaudia",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Claudia\",\r\n    \"sobrenome\": \"Tocantins\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostJogadorMax",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Max\",\r\n    \"sobrenome\": \"Tocantins Quaglia\",\r\n    \"categoria\": \"D\",\r\n    \"status\": \"Disponivel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/jogadores",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"jogadores"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Partida",
+			"item": [
+				{
+					"name": "PostPartida 3 1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/3/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"3",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 3 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/3/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"3",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 1 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/1/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"1",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetPartidas",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetPartidas Resumo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/resumo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"resumo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetPartidas 1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Partida 1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/partidas/iniciarPartida/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"iniciarPartida",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Continuar Partida 1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/partidas/continuarPartida/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"continuarPartida",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Primeiro sacador partida 1 jogador 1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/partidas/partida/1/primeiroSacador/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"partida",
+								"1",
+								"primeiroSacador",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetSacador",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/partidas/partida/5/game/21",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"partida",
+								"5",
+								"game",
+								"21"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Game",
+			"item": [
+				{
+					"name": "Get Game 1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soma 1 ponto",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/soma/gameId/2/pontoId/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"soma",
+								"gameId",
+								"2",
+								"pontoId",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Soma 1 ponto game 2",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/soma/gameId/2/pontoId/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"soma",
+								"gameId",
+								"2",
+								"pontoId",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Diminue 1 ponto",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/diminue/gameId/3/pontoId/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"diminue",
+								"gameId",
+								"3",
+								"pontoId",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/gameId/3/pontos/11/9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"gameId",
+								"3",
+								"pontos",
+								"11",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 2",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/gameId/2/pontos/11/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"gameId",
+								"2",
+								"pontos",
+								"11",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 3",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/gameId/3/pontos/11/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"gameId",
+								"3",
+								"pontos",
+								"11",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 4",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/gameId/4/pontos/11/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"gameId",
+								"4",
+								"pontos",
+								"11",
+								"7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores game 5",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/gameId/5/pontos/11/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"gameId",
+								"5",
+								"pontos",
+								"11",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualiza pontuação dos 2 jogadores com Game Finalizado",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/games/finalizado/gameId/1/pontos/10/0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"games",
+								"finalizado",
+								"gameId",
+								"1",
+								"pontos",
+								"10",
+								"0"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
