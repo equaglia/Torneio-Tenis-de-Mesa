@@ -93,27 +93,27 @@ public class Game {
 		this.setFim(null);		
 	}
 
-	public Boolean isPreparado() {
+	public boolean isPreparado() {
 		return this.getStatus() == StatusJogo.Preparado;
 	}
 
-	public Boolean isEmAndamento() {
+	public boolean isEmAndamento() {
 		return this.getStatus() == StatusJogo.EmAndamento;
 	}
 
-	public Boolean isFinalizado() {
+	public boolean isFinalizado() {
 		return this.getStatus() == StatusJogo.Finalizado;
 	}
 
-	public Boolean isInterrompido() {
+	public boolean isInterrompido() {
 		return this.getStatus() == StatusJogo.Interrompido;
 	}
 
-	public Boolean isCancelado() {
+	public boolean isCancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
 	}
 	
-	public Boolean isEmCurso() {
+	public boolean isEmCurso() {
 		return this.getPartida().buscarGameEmAndamento() == this;
 	}
 
@@ -124,5 +124,13 @@ public class Game {
 	public void setEmAndamento() {
 		this.setStatus(StatusJogo.EmAndamento);
 		this.setFim(null);		
+	}
+	
+	public int getPontosJogador(int i) {
+		return this.getPontos().get(i).getPontos();
+	}
+	
+	public void setPontosJogador(int i, int pontuacao) {
+		this.getPontos().get(i).setPontos(pontuacao);
 	}
 }

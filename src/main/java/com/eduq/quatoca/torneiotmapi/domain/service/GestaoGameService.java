@@ -100,6 +100,5 @@ public class GestaoGameService {
 	public int getTotalPontos(Game game) {
 		return game.getPontos().get(0).getPontos() 
 				+ game.getPontos().get(1).getPontos();
-		
 	}
 }

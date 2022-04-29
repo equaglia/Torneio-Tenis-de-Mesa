@@ -1,15 +1,18 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
+import java.time.OffsetDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 import com.eduq.quatoca.torneiotmapi.TmapiConfig;
+import com.eduq.quatoca.torneiotmapi.common.CalculosGlobais;
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
@@ -28,7 +31,10 @@ public class GestaoPartidaService {
 	private CatalogoJogadorService catalogoJogadorService;
 	private PartidaRepository partidaRepository;
 	private GestaoGameService gestaoGameService;
-//	private ControleSacadorService controleSacadorService;
+	private GestaoResultadoService gestaoResultadoService;
+	
+	private static int jogadorA = 0;
+	private static int jogadorB = 1;
 
 	private TmapiConfig tmapiConfig;
 
@@ -84,7 +90,6 @@ public class GestaoPartidaService {
 			return partida;
 		} else {
 			List<Resultado> resultado = Resultado.resultadoCorrente(partida);
-//			List<Resultado> resultado = gestaoResultadoService.resultadoCorrente(partida);
 			if (partidaJaTemVencedor(resultado)) {
 				finalizarPartida(partida);
 			} else {
@@ -112,7 +117,6 @@ public class GestaoPartidaService {
 	public void setPartidaEmAndamento(Partida partida) {
 		partida.setEmAndamento();
 		this.salvar(partida);
-		System.out.println("partida = " + partida.getStatus());
 	}
 
 	public void checaSeJogadoresSelecionadosCorretamente(Partida partida) {
@@ -142,12 +146,67 @@ public class GestaoPartidaService {
 	}
 
 	public boolean temGameEmAndamento(Partida partida) {
+		Game game;
 		for (Iterator<Game> i = partida.getGames().iterator(); i.hasNext();) {
-			Game game = (Game) i.next();
+			game = i.next();
 			if (game.isEmAndamento())
 				return true;
 		}
 		return false;
 	}
 
+	@Transactional
+	public Partida completarPontuacaoEFinalizarPartida(Long partidaId, @Valid Partida partidaInput) {
+		Partida partidaOut = this.buscar(partidaId);
+		Game gameOut;
+		Game gameIn;
+		OffsetDateTime inicioIn = OffsetDateTime.now();
+		OffsetDateTime fimIn = OffsetDateTime.now();
+		List<Game> gamesIn = partidaInput.getGames();
+		for (int i = 0; i < partidaOut.getGames().size(); i++) {
+			if (i == 0) {
+				partidaOut.iniciar();
+				partidaOut.setInicio(getInicioValido(gamesIn.get(0), inicioIn));
+			}
+			gameOut = gestaoGameService.buscar(partidaOut.getGame(i).getId());
+			if (gamesIn.size() > i) {
+				gameIn = gamesIn.get(i);
+				int pontosJogadorA = gameIn.getPontosJogador(jogadorA);
+				int pontosJogadorB = gameIn.getPontosJogador(jogadorB);
+				gameOut.setPontosJogador(jogadorA, pontosJogadorA);
+				gameOut.setPontosJogador(jogadorB, pontosJogadorB);
+				if (CalculosGlobais.pontuacaoParaFinalizarGame(pontosJogadorA, pontosJogadorB)) {
+					gameOut.finalizar();
+					inicioIn = getInicioValido(gameIn, inicioIn);
+					fimIn = getFimValido(gameIn, fimIn);
+					if (inicioIn.isBefore(fimIn)) {
+						gameOut.setInicio(inicioIn);
+						gameOut.setFim(fimIn);
+					} else
+						throw new NegocioException("Data início após data final");
+					gestaoGameService.salvar(gameOut);
+				} else
+					throw new NegocioException("Pontuacao não finaliza o game");
+			} else
+				break;
+		}
+
+		if (partidaJaTemVencedor(gestaoResultadoService.resultadoCorrente(partidaOut))) {
+			this.finalizarPartida(partidaOut);
+			this.salvar(partidaOut);
+		}
+		return partidaOut;
+	}
+
+	private OffsetDateTime getFimValido(Game gameIn, OffsetDateTime fimIn) {
+		if (!(gameIn.getFim() == null))
+			fimIn = gameIn.getFim();
+		return fimIn;
+	}
+
+	private OffsetDateTime getInicioValido(Game gameIn, OffsetDateTime inicioIn) {
+		if (!(gameIn.getInicio() == null))
+			inicioIn = gameIn.getInicio();
+		return inicioIn;
+	}
 }

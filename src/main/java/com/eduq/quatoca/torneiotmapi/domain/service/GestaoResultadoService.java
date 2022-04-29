@@ -17,6 +17,9 @@ import lombok.AllArgsConstructor;
 @Service
 public class GestaoResultadoService {
 
+	private static int jogadorA = 0;
+	private static int jogadorB = 1;
+
 	public List<Resultado> resultadoCorrente(Partida partida) {
 
 		ArrayList<Resultado> resultados = new ArrayList<>();
@@ -29,14 +32,14 @@ public class GestaoResultadoService {
 		int gamesVencidosJogadorB = 0;
 		for (Game game : partida.getGames()) {
 			if (game.isFinalizado()) {
-				int pontosJogadorA = game.getPontos().get(0).getPontos();
-				int pontosJogadorB = game.getPontos().get(1).getPontos();
+				int pontosJogadorA = game.getPontosJogador(jogadorA);
+				int pontosJogadorB = game.getPontosJogador(jogadorB);
 				if (CalculosGlobais.pontuacaoParaFinalizarGame(pontosJogadorA, pontosJogadorB)) {
 					if (pontosJogadorA > pontosJogadorB)
 						gamesVencidosJogadorA++;
 					else if (pontosJogadorB > pontosJogadorA)
 						gamesVencidosJogadorB++;
-					else 
+					else
 						throw new NegocioException("Partida finalizada não poderia acabar empatada");
 
 				} else
@@ -47,6 +50,5 @@ public class GestaoResultadoService {
 		resultadoJogadorA.setResultado(gamesVencidosJogadorA);
 		resultadoJogadorB.setResultado(gamesVencidosJogadorB);
 		return resultados;
-
 	}
 }

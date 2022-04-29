@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eduq.quatoca.torneiotmapi.api.assembler.GameAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.GameModel;
-import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoGameService;
 import com.eduq.quatoca.torneiotmapi.domain.service.PontuacaoEmGameService;
 
@@ -42,11 +40,12 @@ public class GameController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 	
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public Game adicionar() {
-		return gestaoGameService.salvar(new Game());
-	}
+	/* Parece que só faz sentido adicionar game em partida */
+//	@PostMapping
+//	@ResponseStatus(HttpStatus.CREATED)
+//	public Game adicionar() {
+//		return gestaoGameService.salvar(new Game());
+//	}
 	
 	@PutMapping("/gameId/{gameId}/pontos/{pontuacaoA}/{pontuacaoB}")
 	@ResponseStatus(HttpStatus.OK)
@@ -82,29 +81,12 @@ public class GameController {
 	
 	@PutMapping("/diminue/gameId/{gameId}/pontoId/{pontoId}")
 	@ResponseStatus(HttpStatus.OK)
-	public Game diminuirUmPonto(
+	public ResponseEntity<GameModel> diminuirUmPonto(
 			@PathVariable Long gameId, 
 			@PathVariable Long pontoId) {
-		return pontuacaoEmGameService.diminueUmPonto(gameId, pontoId);
+		return Optional.of(pontuacaoEmGameService.diminueUmPonto(gameId, pontoId))
+				.map(game -> ResponseEntity.ok(gameAssembler.toModel(game)))
+				.orElse(ResponseEntity.notFound().build());
 	}
-	
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

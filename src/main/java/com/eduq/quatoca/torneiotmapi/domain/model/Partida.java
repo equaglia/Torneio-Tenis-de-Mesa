@@ -138,7 +138,6 @@ public class Partida {
 			Boolean jogadoresDisponiveis = checarSeJogadoresDisponiveisParaIniciarPartida();
 			if (jogadoresDisponiveis) {
 				this.setStatus(StatusJogo.EmAndamento);
-//				this.getGames().get(0).iniciar();
 				this.setInicio(OffsetDateTime.now());
 				this.jogadores.stream().forEach(jogador -> jogador.convocar());
 			} else {
@@ -227,6 +226,10 @@ public class Partida {
 
 	public boolean isCancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
+	}
+	
+	public Game getGame(int i) {
+		return this.getGames().get(i);
 	}
 	
 	private void garantirNoMaximoUmGameEmAndamento() {
