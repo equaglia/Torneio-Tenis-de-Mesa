@@ -29,8 +29,6 @@ public class ControleSacadorService {
 			throw new NegocioException("Partida já registrou pontuacao e não pode alterar o 'primeiro sacador'");
 		} else {
 			Optional<Jogador> jogador = catalogoJogadorService.buscar(jogadorId);
-			if (partida.isJogadorDaPartida(jogador.get()))
-				throw new NegocioException("Jogador com ID "+jogador.get().getId()+" não faz parte da partida "+partida.getId());
 			if (partida.isJogadorDaPartida(jogador.get())) {
 				partida.setPrimeiroSacador(jogador.get());
 			} else {

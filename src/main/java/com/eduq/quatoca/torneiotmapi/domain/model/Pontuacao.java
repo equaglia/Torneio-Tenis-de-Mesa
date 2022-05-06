@@ -28,7 +28,8 @@ public class Pontuacao {
 	@JsonIgnore
 	private Game game;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+//	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
 	@JsonIgnore
 	private Jogador jogador;
 

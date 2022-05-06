@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,6 +57,14 @@ public class PartidaController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 	
+	@GetMapping
+		@RequestMapping("/{partidaId}/games/{gameId}/sacador")
+		public ResponseEntity<JogadorModel> sacador(@PathVariable Long partidaId, @PathVariable Long gameId) {
+			return Optional.of(controleSacadorService.getSacador(partidaId, gameId))
+					.map(jogador -> ResponseEntity.ok(jogadorAssembler.toModel(jogador)))
+					.orElse(ResponseEntity.notFound().build());
+		}
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping("/{jogadorAId}/{jogadorBId}")
@@ -66,7 +75,7 @@ public class PartidaController {
 	}
 	
 	@PutMapping
-	@RequestMapping("/iniciarPartida/{partidaId}")
+	@RequestMapping("/{partidaId}/iniciar")
 	public ResponseEntity<PartidaModel> iniciarPartida(@PathVariable Long partidaId) {
 		return Optional.of(gestaoPartidaService.iniciarPartida(partidaId))
 				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
@@ -74,7 +83,7 @@ public class PartidaController {
 	}
 
 	@PutMapping
-	@RequestMapping("/continuarPartida/{partidaId}")
+	@RequestMapping("/{partidaId}/continuar")
 	public ResponseEntity<PartidaModel> continuarPartida(@PathVariable Long partidaId) {
 		return Optional.of(gestaoPartidaService.continuarPartida(partidaId))
 				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
@@ -82,13 +91,13 @@ public class PartidaController {
 	}
 	
 	@PutMapping
-	@RequestMapping("/partida/{partidaId}/primeiroSacador/{jogadorId}")
+	@RequestMapping("/{partidaId}/primeiro-sacador/{jogadorId}")
 	public void definirPrimeiroSacador(@PathVariable Long partidaId, @PathVariable Long jogadorId) {
 		controleSacadorService.definirPrimeiroSacador(partidaId, jogadorId);
 	}
 	
 	@PutMapping
-	@RequestMapping("partidaCompleta/{partidaId}")
+	@RequestMapping("/{partidaId}/completar")
 	public ResponseEntity<PartidaModel> completarPartida(@PathVariable Long partidaId,
 			@Valid @RequestBody Partida partidaIN) {//		@Valid @RequestBody List<Game> games) {
 		return Optional.of(gestaoPartidaService.completarPontuacaoEFinalizarPartida(partidaId, partidaIN))
@@ -96,11 +105,19 @@ public class PartidaController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 	
-	@GetMapping
-	@RequestMapping("/partida/{partidaId}/game/{gameId}")
-	public ResponseEntity<JogadorModel> sacador(@PathVariable Long partidaId, @PathVariable Long gameId) {
-		return Optional.of(controleSacadorService.getSacador(partidaId, gameId))
-				.map(jogador -> ResponseEntity.ok(jogadorAssembler.toModel(jogador)))
+	@PutMapping
+	@RequestMapping("/{partidaId}/cancelar")
+	public ResponseEntity<PartidaModel> cancelarPartida(@PathVariable Long partidaId) {
+		return Optional.of(gestaoPartidaService.cancelarPartida(partidaId))
+				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
 				.orElse(ResponseEntity.notFound().build());
+	}
+	
+	
+	@DeleteMapping
+	@RequestMapping("/{partidaId}")
+	public ResponseEntity<Void> excluir(@PathVariable Long partidaId) {
+		gestaoPartidaService.excluirPartida(partidaId);
+		return ResponseEntity.noContent().build();
 	}
 }

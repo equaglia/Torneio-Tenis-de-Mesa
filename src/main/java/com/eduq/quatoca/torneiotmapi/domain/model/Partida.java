@@ -17,6 +17,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -38,11 +40,17 @@ public class Partida {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToMany(mappedBy = "partidas")
+//	@ManyToMany(mappedBy = "partidas")
+	@ManyToMany(cascade = 
+		{CascadeType.PERSIST,
+		CascadeType.MERGE})
+	@JoinTable(name = "jogadores_partidas",
+		joinColumns = @JoinColumn(name="jogador_id"),
+		inverseJoinColumns = @JoinColumn(name="partida_id"))
 	@JsonIgnore
 	private Set<Jogador> jogadores = new HashSet<Jogador>();
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JsonIgnore
 	private Jogador primeiroSacador;
 
@@ -72,6 +80,10 @@ public class Partida {
 		} else {
 			throw new NegocioException("Os dois jogadores da partida já haviam sido selecionados");
 		}
+	}
+	
+	public void liberarJogadores() {
+		this.jogadores.forEach(jogador -> jogador.liberar());
 	}
 
 	public Partida() {
@@ -135,7 +147,7 @@ public class Partida {
 	public void iniciar() {
 		switch (this.getStatus()) {
 		case Preparado:
-			Boolean jogadoresDisponiveis = checarSeJogadoresDisponiveisParaIniciarPartida();
+			Boolean jogadoresDisponiveis = jogadoresDisponiveisParaIniciarPartida();
 			if (jogadoresDisponiveis) {
 				this.setStatus(StatusJogo.EmAndamento);
 				this.setInicio(OffsetDateTime.now());
@@ -167,9 +179,13 @@ public class Partida {
 		});
 		this.setFim(OffsetDateTime.now());
 	}
+	
+	public void cancelar() {
+		this.setStatus(StatusJogo.Cancelado);
+	}
 
-	public Boolean checarSeJogadoresDisponiveisParaIniciarPartida() {
-		Boolean disponibilidade = true;
+	public boolean jogadoresDisponiveisParaIniciarPartida() {
+		boolean disponibilidade = true;
 		for (Jogador jog : this.jogadores)
 			disponibilidade = jog.disponivel() && disponibilidade;
 		return disponibilidade;

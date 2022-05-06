@@ -31,8 +31,9 @@ public class GestaoPartidaService {
 	private CatalogoJogadorService catalogoJogadorService;
 	private PartidaRepository partidaRepository;
 	private GestaoGameService gestaoGameService;
+	private GestaoPontuacaoService gestaoPontuacaoService;
 	private GestaoResultadoService gestaoResultadoService;
-	
+
 	private static int jogadorA = 0;
 	private static int jogadorB = 1;
 
@@ -114,6 +115,38 @@ public class GestaoPartidaService {
 		this.salvar(partida);
 	}
 
+	@Transactional
+	public Partida cancelarPartida(Long partidaId) {
+		Partida partida = this.buscar(partidaId);
+		if (partida.isCancelado())
+			throw new NegocioException("Partida com id:" + partida.getId() + " já estava cancelada");
+		if (partida.isEmAndamento() || partida.isInterrompido()) {
+			partida.liberarJogadores();
+		}
+		partida.cancelar();
+		return partida;
+	}
+
+	@Transactional
+	public void excluirPartida(Long partidaId) {
+		Partida partida = this.buscar(partidaId);
+		if (partida.isCancelado()) {
+			partida.getGames().forEach(game -> {
+				game.getPontos().forEach(pontuacao -> {
+					gestaoPontuacaoService.excluir(pontuacao);
+				});
+				game.setPontos(null);
+				gestaoGameService.excluir(game);
+			});
+			partida.setGames(null);
+			partida.setJogadores(null);
+			partida.setPrimeiroSacador(null);
+			partidaRepository.delete(partida);
+		} else
+			throw new NegocioException("Somente partida CANCELADA pode ser excluída");
+	}
+
+	@Transactional
 	public void setPartidaEmAndamento(Partida partida) {
 		partida.setEmAndamento();
 		this.salvar(partida);
@@ -194,6 +227,8 @@ public class GestaoPartidaService {
 		if (partidaJaTemVencedor(gestaoResultadoService.resultadoCorrente(partidaOut))) {
 			this.finalizarPartida(partidaOut);
 			this.salvar(partidaOut);
+		} else {
+			throw new NegocioException("Pontuacao não finaliza o game");
 		}
 		return partidaOut;
 	}

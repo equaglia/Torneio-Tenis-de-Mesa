@@ -34,4 +34,9 @@ public class GestaoPontuacaoService {
 		this.salvar(pontuacao);
 		return pontuacao;
 	}
+
+	public void excluir(Pontuacao pontuacao) {
+		pontuacaoRepository.delete(pontuacao);
+		
+	}
 }
