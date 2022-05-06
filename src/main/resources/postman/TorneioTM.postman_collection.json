@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2249601a-3e80-4b6d-ae2f-81652f481e13",
+		"_postman_id": "09145d4a-c163-4ea7-b7c8-def68e45b770",
 		"name": "TorneioTM",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -151,6 +151,45 @@
 							],
 							"path": [
 								"jogadores"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Completar Partida 3 não iniciada",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 404\"] = responseCode.code === 404;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"jogadores\": [\r\n        {\r\n            \"id\": 2,\r\n            \"nome\": \"Claudia\",\r\n            \"sobrenome\": \"Tocantins\",\r\n            \"status\": \"Disponivel\"\r\n        },\r\n        {\r\n            \"id\": 1,\r\n            \"nome\": \"Edu\",\r\n            \"sobrenome\": \"Quaglia\",\r\n            \"status\": \"NaoDisponivel\"\r\n        }\r\n    ],\r\n    \"inicioPartida\": \"2022-04-26T19:48:45.174047-03:00\",\r\n    \"fimPartida\": \"2022-04-26T19:49:01.535044-03:00\",\r\n    \"partidaStatus\": \"Finalizado\",\r\n    \"jogadorPrimeiroSacador\": {\r\n        \"id\": 1,\r\n        \"nome\": \"Edu\"\r\n    },\r\n    \"games\": [\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 8\r\n                }\r\n            ],\r\n            \"inicio\": \"2022-04-26T19:48:45.180046-03:00\",\r\n            \"fim\": \"2022-04-26T19:48:49.476047-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 12\r\n                },\r\n                {\r\n                    \"pontos\": 10\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:49.667046-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:53.885045-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 7\r\n                },\r\n                {\r\n                    \"pontos\": 11\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:54.078048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:57.704048-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 6\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:57.911048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:49:01.52205-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/3/completar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"3",
+								"completar"
 							]
 						}
 					},
@@ -351,14 +390,14 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/partidas/iniciarPartida/{{_partida}}",
+							"raw": "{{host}}/partidas/{{_partida}}/iniciar",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"partidas",
-								"iniciarPartida",
-								"{{_partida}}"
+								"{{_partida}}",
+								"iniciar"
 							]
 						}
 					},
@@ -383,14 +422,14 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/partidas/iniciarPartida/2",
+							"raw": "{{host}}/partidas/2/iniciar",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"partidas",
-								"iniciarPartida",
-								"2"
+								"2",
+								"iniciar"
 							]
 						}
 					},
@@ -425,14 +464,14 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/partidas/continuarPartida/{{_partida}}",
+							"raw": "{{host}}/partidas/{{_partida}}/continuar",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"partidas",
-								"continuarPartida",
-								"{{_partida}}"
+								"{{_partida}}",
+								"continuar"
 							]
 						}
 					},
@@ -497,7 +536,7 @@
 									"        var jsonData = JSON.parse(responseBody);\r",
 									"        var currentGame = pm.environment.get(\"_game\");\r",
 									"        var gameStatus = jsonData.gameStatus;\r",
-									"        console.log(\"partida \"+partida+\" = \"+partidaStatus+\"     game \"+currentGame+\" = \"+gameStatus+\"    PontoId = \"+pm.environment.get(\"_pontoId\"));\r",
+									"        //console.log(\"partida \"+partida+\" = \"+partidaStatus+\"     game \"+currentGame+\" = \"+gameStatus+\"    PontoId = \"+pm.environment.get(\"_pontoId\"));\r",
 									"        if (partidaStatus == \"EmAndamento\" || partidaStatus == \"Preparado\") {\r",
 									"            if (gameStatus == \"Finalizado\") {\r",
 									"                let nextGame = somas(currentGame, 1);\r",
@@ -533,17 +572,16 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{host}}/games/soma/gameId/{{_game}}/pontoId/{{_pontoId}}",
+							"raw": "{{host}}/games/{{_game}}/pontuar/{{_pontoId}}/somar",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"games",
-								"soma",
-								"gameId",
 								"{{_game}}",
-								"pontoId",
-								"{{_pontoId}}"
+								"pontuar",
+								"{{_pontoId}}",
+								"somar"
 							]
 						}
 					},
@@ -568,14 +606,533 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/partidas/iniciarPartida/3",
+							"raw": "{{host}}/partidas/3/iniciar",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"partidas",
-								"iniciarPartida",
+								"3",
+								"iniciar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Completar Partida 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"jogadores\": [\r\n        {\r\n            \"id\": 2,\r\n            \"nome\": \"Claudia\",\r\n            \"sobrenome\": \"Tocantins\",\r\n            \"status\": \"Disponivel\"\r\n        },\r\n        {\r\n            \"id\": 1,\r\n            \"nome\": \"Edu\",\r\n            \"sobrenome\": \"Quaglia\",\r\n            \"status\": \"NaoDisponivel\"\r\n        }\r\n    ],\r\n    \"inicioPartida\": \"2022-04-26T19:48:45.174047-03:00\",\r\n    \"fimPartida\": \"2022-04-26T19:49:01.535044-03:00\",\r\n    \"partidaStatus\": \"Finalizado\",\r\n    \"jogadorPrimeiroSacador\": {\r\n        \"id\": 1,\r\n        \"nome\": \"Edu\"\r\n    },\r\n    \"games\": [\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 8\r\n                }\r\n            ],\r\n            \"inicio\": \"2022-04-26T19:48:45.180046-03:00\",\r\n            \"fim\": \"2022-04-26T19:48:49.476047-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 12\r\n                },\r\n                {\r\n                    \"pontos\": 10\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:49.667046-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:53.885045-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 7\r\n                },\r\n                {\r\n                    \"pontos\": 11\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:54.078048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:57.704048-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 6\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:57.911048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:49:01.52205-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/3/completar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"3",
+								"completar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 4: 2 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/2/3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"2",
 								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 5: 1 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/1/4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Completar Partida 4 não finalizada 2x2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 400\"] = responseCode.code === 400;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"games\": [\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 8\r\n                }\r\n            ],\r\n            \"inicio\": \"2022-04-26T19:48:45.180046-03:00\",\r\n            \"fim\": \"2022-04-26T19:48:49.476047-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 12\r\n                },\r\n                {\r\n                    \"pontos\": 10\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:49.667046-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:53.885045-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 7\r\n                },\r\n                {\r\n                    \"pontos\": 11\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:54.078048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:57.704048-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 6\r\n                },\r\n                {\r\n                    \"pontos\": 11\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:57.911048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:49:01.52205-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/4/completar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"4",
+								"completar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Completar Partida 4 finalizada 3x1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"games\": [\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 8\r\n                }\r\n            ],\r\n            \"inicio\": \"2022-04-26T19:48:45.180046-03:00\",\r\n            \"fim\": \"2022-04-26T19:48:49.476047-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 12\r\n                },\r\n                {\r\n                    \"pontos\": 10\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:49.667046-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:53.885045-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 7\r\n                },\r\n                {\r\n                    \"pontos\": 11\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:54.078048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:57.704048-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 6\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:57.911048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:49:01.52205-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/4/completar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"4",
+								"completar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Completar Partida 5 errada 4x0",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 400\"] = responseCode.code === 400;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"games\": [\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 8\r\n                }\r\n            ],\r\n            \"inicio\": \"2022-04-26T19:48:45.180046-03:00\",\r\n            \"fim\": \"2022-04-26T19:48:49.476047-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 12\r\n                },\r\n                {\r\n                    \"pontos\": 10\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:49.667046-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:53.885045-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 7\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:54.078048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:57.704048-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 6\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:57.911048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:49:01.52205-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/5/completar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"5",
+								"completar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete partida 1 falha partida não cancelada",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 400\"] = responseCode.code === 400;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancelar Partida 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/1/cancelar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1",
+								"cancelar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete partida 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 204\"] = responseCode.code === 204;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/1",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete partida 6 partida não encontrada",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 404\"] = responseCode.code === 404;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/6",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PostPartida 6: 1 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"_partida\", 1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/1/2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"1",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Iniciar Partida 6",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/partidas/6/iniciar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"6",
+								"iniciar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pontuação 2 jogadores partida 6 game 1 (26)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/games/26/pontuar/11/9",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"games",
+								"26",
+								"pontuar",
+								"11",
+								"9"
 							]
 						}
 					},
@@ -882,7 +1439,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/partidas/iniciarPartida/1",
+							"raw": "http://localhost:8080/partidas/1/iniciar",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -890,8 +1447,8 @@
 							"port": "8080",
 							"path": [
 								"partidas",
-								"iniciarPartida",
-								"1"
+								"1",
+								"iniciar"
 							]
 						}
 					},
@@ -1307,6 +1864,36 @@
 					"response": []
 				},
 				{
+					"name": "Cancelar Partida 1",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/1/cancelar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"1",
+								"cancelar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "GetPartidas Resumo",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -1376,7 +1963,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/partidas/iniciarPartida/1",
+							"raw": "http://localhost:8080/partidas/5/iniciar",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1384,8 +1971,8 @@
 							"port": "8080",
 							"path": [
 								"partidas",
-								"iniciarPartida",
-								"1"
+								"5",
+								"iniciar"
 							]
 						}
 					},
@@ -1397,7 +1984,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/partidas/continuarPartida/1",
+							"raw": "http://localhost:8080/partidas/1/continuar",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1405,8 +1992,8 @@
 							"port": "8080",
 							"path": [
 								"partidas",
-								"continuarPartida",
-								"1"
+								"1",
+								"continuar"
 							]
 						}
 					},
@@ -1418,7 +2005,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/partidas/partida/1/primeiroSacador/1",
+							"raw": "http://localhost:8080/partidas/1/primeiro-sacador/1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1426,9 +2013,8 @@
 							"port": "8080",
 							"path": [
 								"partidas",
-								"partida",
 								"1",
-								"primeiroSacador",
+								"primeiro-sacador",
 								"1"
 							]
 						}
@@ -1441,7 +2027,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/partidas/partida/5/game/21",
+							"raw": "http://localhost:8080/partidas/5/games/21/sacador",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1449,10 +2035,67 @@
 							"port": "8080",
 							"path": [
 								"partidas",
-								"partida",
 								"5",
-								"game",
-								"21"
+								"games",
+								"21",
+								"sacador"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Completar Partida 3",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"games\": [\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 8\r\n                }\r\n            ],\r\n            \"inicio\": \"2022-04-26T19:48:45.180046-03:00\",\r\n            \"fim\": \"2022-04-26T19:48:49.476047-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 12\r\n                },\r\n                {\r\n                    \"pontos\": 10\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:49.667046-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:53.885045-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 7\r\n                },\r\n                {\r\n                    \"pontos\": 11\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:54.078048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:48:57.704048-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        },\r\n        {\r\n            \"pontos\": [\r\n                {\r\n                    \"pontos\": 11\r\n                },\r\n                {\r\n                    \"pontos\": 6\r\n                }\r\n            ],\r\n            \"inicioGame\": \"2022-04-26T19:48:57.911048-03:00\",\r\n            \"fimGame\": \"2022-04-26T19:49:01.52205-03:00\",\r\n            \"gameStatus\": \"Finalizado\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/partidas/3/completar",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"partidas",
+								"3",
+								"completar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete partida 1",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/partidas/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"partidas",
+								"1"
 							]
 						}
 					},
@@ -1513,7 +2156,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/soma/gameId/2/pontoId/4",
+							"raw": "http://localhost:8080/games/2/pontuar/4/somar",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1521,11 +2164,10 @@
 							"port": "8080",
 							"path": [
 								"games",
-								"soma",
-								"gameId",
 								"2",
-								"pontoId",
-								"4"
+								"pontuar",
+								"4",
+								"somar"
 							]
 						}
 					},
@@ -1537,7 +2179,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/diminue/gameId/3/pontoId/5",
+							"raw": "http://localhost:8080/games/3/pontuar/5/subtrair",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1545,11 +2187,10 @@
 							"port": "8080",
 							"path": [
 								"games",
-								"diminue",
-								"gameId",
 								"3",
-								"pontoId",
-								"5"
+								"pontuar",
+								"5",
+								"subtrair"
 							]
 						}
 					},
@@ -1561,7 +2202,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/gameId/3/pontos/11/9",
+							"raw": "http://localhost:8080/games/3/pontuar/11/9",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1569,9 +2210,8 @@
 							"port": "8080",
 							"path": [
 								"games",
-								"gameId",
 								"3",
-								"pontos",
+								"pontuar",
 								"11",
 								"9"
 							]
@@ -1585,7 +2225,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/gameId/2/pontos/11/6",
+							"raw": "http://localhost:8080/games/2/pontuar/11/6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1593,9 +2233,8 @@
 							"port": "8080",
 							"path": [
 								"games",
-								"gameId",
 								"2",
-								"pontos",
+								"pontuar",
 								"11",
 								"6"
 							]
@@ -1609,7 +2248,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/gameId/3/pontos/11/7",
+							"raw": "http://localhost:8080/games/3/pontuar/11/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1617,9 +2256,8 @@
 							"port": "8080",
 							"path": [
 								"games",
-								"gameId",
 								"3",
-								"pontos",
+								"pontuar",
 								"11",
 								"7"
 							]
@@ -1633,7 +2271,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/gameId/4/pontos/11/7",
+							"raw": "http://localhost:8080/games/4/pontuar/11/7",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1641,9 +2279,8 @@
 							"port": "8080",
 							"path": [
 								"games",
-								"gameId",
 								"4",
-								"pontos",
+								"pontuar",
 								"11",
 								"7"
 							]
@@ -1657,7 +2294,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/gameId/5/pontos/11/8",
+							"raw": "http://localhost:8080/games/5/pontuar/11/8",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1665,9 +2302,8 @@
 							"port": "8080",
 							"path": [
 								"games",
-								"gameId",
 								"5",
-								"pontos",
+								"pontuar",
 								"11",
 								"8"
 							]
@@ -1681,7 +2317,7 @@
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/games/finalizado/gameId/1/pontos/10/0",
+							"raw": "http://localhost:8080/games/finalizado/1/pontuar/10/0",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -1690,9 +2326,8 @@
 							"path": [
 								"games",
 								"finalizado",
-								"gameId",
 								"1",
-								"pontos",
+								"pontuar",
 								"10",
 								"0"
 							]

@@ -38,8 +38,9 @@ public class CatalogoJogadorService {
 
 	@Transactional
 	public void excluir(Long jogadorId) {
-		Jogador jogadorParaExcluir = jogadorRepository.findById(jogadorId)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado"));
+		Jogador jogadorParaExcluir = this.buscar(jogadorId).get();
+//		Jogador jogadorParaExcluir = jogadorRepository.findById(jogadorId)
+//				.orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado"));
 
 		if (jogadorParaExcluir.getPartidas().isEmpty()) {
 			jogadorRepository.deleteById(jogadorId);

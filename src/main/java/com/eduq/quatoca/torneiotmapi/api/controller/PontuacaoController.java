@@ -24,4 +24,7 @@ public class PontuacaoController {
 	}
 
 
+//	TODO GET pontuacao da partida. TBD
+//	TODO GET pontuacao do game. TBD
+//	TODO GET pontuacao do jogador na partida. TBD
 }

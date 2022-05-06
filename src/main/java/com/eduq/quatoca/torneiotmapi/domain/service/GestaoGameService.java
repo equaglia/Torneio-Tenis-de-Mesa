@@ -101,4 +101,9 @@ public class GestaoGameService {
 		return game.getPontos().get(0).getPontos() 
 				+ game.getPontos().get(1).getPontos();
 	}
+
+	public void excluir(Game game) {
+		gameRepository.delete(game);
+		
+	}
 }

@@ -47,7 +47,7 @@ public class GameController {
 //		return gestaoGameService.salvar(new Game());
 //	}
 	
-	@PutMapping("/gameId/{gameId}/pontos/{pontuacaoA}/{pontuacaoB}")
+	@PutMapping("/{gameId}/pontuar/{pontuacaoA}/{pontuacaoB}") 
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<GameModel> atualizarPontuacao(
 			@PathVariable Long gameId, 
@@ -58,7 +58,7 @@ public class GameController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
-	@PutMapping("/finalizado/gameId/{gameId}/pontos/{pontuacaoA}/{pontuacaoB}")
+	@PutMapping("/finalizado/{gameId}/pontuar/{pontuacaoA}/{pontuacaoB}") 
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<GameModel> atualizarPontuacaoGameFinalizado(
 			@PathVariable Long gameId, 
@@ -69,7 +69,7 @@ public class GameController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
-	@PutMapping("/soma/gameId/{gameId}/pontoId/{pontoId}")
+	@PutMapping("/{gameId}/pontuar/{pontoId}/somar") 
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<GameModel> somarUmPonto(
 			@PathVariable Long gameId, 
@@ -79,7 +79,7 @@ public class GameController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 	
-	@PutMapping("/diminue/gameId/{gameId}/pontoId/{pontoId}")
+	@PutMapping("/{gameId}/pontuar/{pontoId}/subtrair") 
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<GameModel> diminuirUmPonto(
 			@PathVariable Long gameId, 
@@ -88,5 +88,4 @@ public class GameController {
 				.map(game -> ResponseEntity.ok(gameAssembler.toModel(game)))
 				.orElse(ResponseEntity.notFound().build());
 	}
-
 }
