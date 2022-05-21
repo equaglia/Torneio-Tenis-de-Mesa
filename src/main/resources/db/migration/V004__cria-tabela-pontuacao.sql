@@ -1,6 +1,7 @@
 CREATE TABLE pontuacao (
 
-  id bigint NOT NULL AUTO_INCREMENT,
+  /* id bigint NOT NULL AUTO_INCREMENT, no mysql */
+  id SERIAL,
   pontos int DEFAULT 0,
   game_id bigint DEFAULT NULL,
   jogador_id bigint DEFAULT NULL,

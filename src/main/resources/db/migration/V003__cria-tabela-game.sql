@@ -1,8 +1,11 @@
 CREATE TABLE game (
 
-  id bigint NOT NULL AUTO_INCREMENT,
+  /* id bigint NOT NULL AUTO_INCREMENT,
   fim datetime(6) DEFAULT NULL,
-  inicio datetime(6) DEFAULT NULL,
+  inicio datetime(6) DEFAULT NULL, no mysql */
+  id SERIAL,
+  fim timestamp DEFAULT NULL,
+  inicio timestamp DEFAULT NULL,
   status varchar(20) DEFAULT NULL,
   partida_id bigint DEFAULT NULL,
   
