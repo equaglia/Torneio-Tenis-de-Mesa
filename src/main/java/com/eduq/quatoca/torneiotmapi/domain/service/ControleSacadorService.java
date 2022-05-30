@@ -65,9 +65,9 @@ public class ControleSacadorService {
 	private void fazSentidoTerSacador(Partida partida, Game game) {
 		if (!partida.isGameDaPartida(game))
 			throw new NegocioException("Game com ID "+game.getId()+" não faz parte da partida "+partida.getId());
-		if (partida.isFinalizado() || partida.isCancelado())
+		if (partida.finalizado() || partida.cancelado())
 			throw new NegocioException("Partida finalizada/cancelada não tem sacador");
-		if (game.isFinalizado() || game.isCancelado())
+		if (game.finalizado() || game.cancelado())
 			throw new NegocioException("Game finalizado/cancelado não tem sacador");
 	}
 }

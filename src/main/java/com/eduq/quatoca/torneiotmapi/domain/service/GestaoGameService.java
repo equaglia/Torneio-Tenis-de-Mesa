@@ -69,9 +69,10 @@ public class GestaoGameService {
 	}
 
 	public boolean proximoGameProntoParaIniciar(Game game) {
-		return game.getPartida().gameAnterior().isFinalizado() 
-				&& game.isPreparado() 
-				&& game.getPartida().isEmAndamento();
+		return game.getPartida().gameAnterior().finalizado() 
+				&& game.preparado() 
+//				&& this.isPreparado(game) 
+				&& game.getPartida().emAndamento();
 	}
 
 	public boolean isGameEmAndamento(Game game) {
@@ -106,4 +107,9 @@ public class GestaoGameService {
 		gameRepository.delete(game);
 		
 	}
+	
+//	public boolean isPreparado(Game game) {
+//		return game.getStatus() == StatusJogo.Preparado;
+//	}
+
 }

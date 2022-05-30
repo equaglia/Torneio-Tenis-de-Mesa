@@ -63,7 +63,7 @@ public class Jogador {
 		this.setStatus(StatusJogador.Disponivel);
 	}
 	
-	public Boolean disponivel() {
+	public boolean disponivel() {
 		return this.getStatus() == StatusJogador.Disponivel;
 	}
 	

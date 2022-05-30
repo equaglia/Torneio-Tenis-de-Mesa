@@ -87,7 +87,7 @@ public class GestaoPartidaService {
 	@Transactional
 	public Partida continuarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
-		if (partida.isFinalizado()) {
+		if (partida.finalizado()) {
 			return partida;
 		} else {
 			List<Resultado> resultado = Resultado.resultadoCorrente(partida);
@@ -95,7 +95,7 @@ public class GestaoPartidaService {
 				finalizarPartida(partida);
 			} else {
 				Game proximoGame = partida.proximoGame();
-				if (partida.isEmAndamento()) {
+				if (partida.emAndamento()) {
 
 					if (proximoGame == null) {
 						finalizarPartida(partida);
@@ -118,9 +118,9 @@ public class GestaoPartidaService {
 	@Transactional
 	public Partida cancelarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
-		if (partida.isCancelado())
+		if (partida.cancelado())
 			throw new NegocioException("Partida com id:" + partida.getId() + " já estava cancelada");
-		if (partida.isEmAndamento() || partida.isInterrompido()) {
+		if (partida.emAndamento() || partida.interrompido()) {
 			partida.liberarJogadores();
 		}
 		partida.cancelar();
@@ -130,7 +130,7 @@ public class GestaoPartidaService {
 	@Transactional
 	public void excluirPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
-		if (partida.isCancelado()) {
+		if (partida.cancelado()) {
 			partida.getGames().forEach(game -> {
 				game.getPontos().forEach(pontuacao -> {
 					gestaoPontuacaoService.excluir(pontuacao);
@@ -182,7 +182,7 @@ public class GestaoPartidaService {
 		Game game;
 		for (Iterator<Game> i = partida.getGames().iterator(); i.hasNext();) {
 			game = i.next();
-			if (game.isEmAndamento())
+			if (game.emAndamento())
 				return true;
 		}
 		return false;

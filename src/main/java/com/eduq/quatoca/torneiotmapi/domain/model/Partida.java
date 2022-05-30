@@ -88,7 +88,7 @@ public class Partida {
 
 	public Partida() {
 		super();
-		this.status = StatusJogo.Preparado;
+		this.setStatus(StatusJogo.Preparado);
 	}
 
 	public Game buscarGameEmAndamento() {
@@ -96,11 +96,11 @@ public class Partida {
 
 		int i = 0;
 		while (i < quantidadeGames) {
-			if (this.games.get(i).isEmAndamento())
+			if (this.games.get(i).emAndamento())
 				return this.games.get(i);
 			i++;
 		}
-		if (primeiroGameDaPartida().isPreparado()) {
+		if (primeiroGameDaPartida().preparado()) {
 			primeiroGameDaPartida().iniciar();
 			return primeiroGameDaPartida();
 		}
@@ -112,16 +112,16 @@ public class Partida {
 	}
 
 	public Game proximoGame() {
-		if (this.isEmAndamento()) {
+		if (this.emAndamento()) {
 			int proximoGame = 0;
 			int quantidadeGames = getQuantidadeGamesDaPartida();
 			while (proximoGame < quantidadeGames) {
 				Game thisGame = this.games.get(proximoGame);
-				if (thisGame.isFinalizado()) {
+				if (thisGame.finalizado()) {
 					if (proximoGame == getQuantidadeGamesDaPartida() - 1)
 						this.finalizar();
 					proximoGame++;
-				} else if (thisGame.isPreparado() || thisGame.isEmAndamento()) {
+				} else if (thisGame.preparado() || thisGame.emAndamento()) {
 					return thisGame;
 				} else
 					throw new NegocioException("Partida impedida de continuar");
@@ -137,7 +137,7 @@ public class Partida {
 		}
 		int i = 1;
 		while (i <= quantidadeGames) {
-			if (this.games.get(i).isEmAndamento())
+			if (this.games.get(i).emAndamento())
 				return this.games.get(i - 1);
 			i++;
 		}
@@ -174,7 +174,7 @@ public class Partida {
 		this.setStatus(StatusJogo.Finalizado);
 		this.jogadores.stream().forEach(jogador -> jogador.liberar());
 		this.games.stream().forEach(game -> {
-			if (game.isPreparado())
+			if (game.preparado())
 				game.cancelar();
 		});
 		this.setFim(OffsetDateTime.now());
@@ -207,8 +207,8 @@ public class Partida {
 	}
 
 	public boolean jaRegistrouPontuacao() {
-		return !(((this.isEmAndamento() && this.getGames().get(0).getPontos().get(0).getPontos() == 0)
-				&& this.getGames().get(0).getPontos().get(1).getPontos() == 0) || this.isPreparado());
+		return !(((this.emAndamento() && this.getGames().get(0).getPontos().get(0).getPontos() == 0)
+				&& this.getGames().get(0).getPontos().get(1).getPontos() == 0) || this.preparado());
 	}
 
 	public void setEmAndamento() {
@@ -216,7 +216,7 @@ public class Partida {
 			this.setStatus(StatusJogo.EmAndamento);
 			this.jogadores.stream().forEach(jogador -> jogador.convocar());
 			this.games.stream().forEach(game -> {
-				if (game.isCancelado())
+				if (game.cancelado())
 					game.setPreparado();
 			});
 			this.garantirNoMaximoUmGameEmAndamento();
@@ -224,23 +224,23 @@ public class Partida {
 		}
 	}
 
-	public boolean isPreparado() {
+	public boolean preparado() {
 		return this.getStatus() == StatusJogo.Preparado;
 	}
 
-	public boolean isEmAndamento() {
+	public boolean emAndamento() {
 		return this.getStatus() == StatusJogo.EmAndamento;
 	}
 
-	public boolean isFinalizado() {
+	public boolean finalizado() {
 		return this.getStatus() == StatusJogo.Finalizado;
 	}
 
-	public boolean isInterrompido() {
+	public boolean interrompido() {
 		return this.getStatus() == StatusJogo.Interrompido;
 	}
 
-	public boolean isCancelado() {
+	public boolean cancelado() {
 		return this.getStatus() == StatusJogo.Cancelado;
 	}
 	
@@ -252,7 +252,7 @@ public class Partida {
 		boolean temGameEmAndamento = false;
 		for (Iterator<Game> i = games.iterator(); i.hasNext();) {
 			Game game = (Game) i.next();
-			if (game.isEmAndamento()) {
+			if (game.emAndamento()) {
 				if (!temGameEmAndamento) {
 					temGameEmAndamento = true;
 				} else {

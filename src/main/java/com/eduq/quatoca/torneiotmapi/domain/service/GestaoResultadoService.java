@@ -31,7 +31,7 @@ public class GestaoResultadoService {
 		int gamesVencidosJogadorA = 0;
 		int gamesVencidosJogadorB = 0;
 		for (Game game : partida.getGames()) {
-			if (game.isFinalizado()) {
+			if (game.finalizado()) {
 				int pontosJogadorA = game.getPontosJogador(jogadorA);
 				int pontosJogadorB = game.getPontosJogador(jogadorB);
 				if (CalculosGlobais.pontuacaoParaFinalizarGame(pontosJogadorA, pontosJogadorB)) {
