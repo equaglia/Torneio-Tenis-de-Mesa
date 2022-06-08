@@ -23,11 +23,15 @@ import com.eduq.quatoca.torneiotmapi.api.model.JogadorPartidasModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.service.CatalogoJogadorService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/jogadores")
+@Tag(name = "JOGADORES", description = "Controle de informações de jogadores")
 public class JogadorController {
 	
 	private JogadorAssembler jogadorAssembler;
@@ -35,15 +39,19 @@ public class JogadorController {
 	private CatalogoJogadorService catalogoJogadorService;
 	
 	
+	@Operation(summary = "Criação de jogador",
+			description = "Adicionar novo jogador à base de dados")
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Jogador adicionar(@Valid @RequestBody Jogador jogador) {
 		return catalogoJogadorService.salvar(jogador);
 	}
 
+	@Operation(summary = "Atualização de jogador",
+			description = "Atualizar as informaçoes do jogador")
 	@PutMapping("/{jogadorId}")
 	public ResponseEntity<Jogador> atualizar(
-			@PathVariable Long jogadorId,
+			@Parameter(description = "Identificador único do jogador no BD") @PathVariable Long jogadorId,
 			@Valid @RequestBody Jogador jogador) {
 		return catalogoJogadorService.buscar(jogadorId)
 				.map(record -> {
@@ -55,20 +63,28 @@ public class JogadorController {
 				}).orElse(ResponseEntity.notFound().build());
 	}
 	
+	@Operation(summary = "Lista dos jogadores",
+			description = "Listar os jogadores da base de dados")
 	@GetMapping
 	public List<JogadorModel> listar() {
 		return jogadorAssembler.toCollectionModel(catalogoJogadorService.listar());
 	}
 	
+	@Operation(summary = "Informações do jogador",
+			description = "Carregar as informações do jogador")
 	@GetMapping("/{jogadorId}")
-	public ResponseEntity<JogadorPartidasModel> buscar(@PathVariable Long jogadorId) {
+	public ResponseEntity<JogadorPartidasModel> buscar(
+			@Parameter(description = "Identificador único do jogador no BD") @PathVariable Long jogadorId) {
 		return catalogoJogadorService.buscar(jogadorId)
 				.map(jogador -> ResponseEntity.ok(jogadorPartidasAssembler.toModel(jogador)))
 				.orElse(ResponseEntity.notFound().build());
 	}
 	
+	@Operation(summary = "Remoção de jogador",
+			description = "Remover jogador da base de dados. Para ser removido, o jogador não deve estar alocado a nenhuma partida, qualquer que seja o status da partida.")
 	@DeleteMapping("/{jogadorId}")
-	public ResponseEntity<Void> excluir(@PathVariable Long jogadorId) {
+	public ResponseEntity<Void> excluir(
+			@Parameter(description = "Identificador único do jogador no BD") @PathVariable Long jogadorId) {
 		catalogoJogadorService.excluir(jogadorId);
 		return ResponseEntity.noContent().build();
 	}
