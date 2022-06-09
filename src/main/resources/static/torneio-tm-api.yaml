@@ -13,8 +13,6 @@ info:
     url: TBD
   version: '0.1'
 servers:
-  - url: 'http://localhost:8080'
-    description: Generated server url
   - url: 'https://torneio-tm-api.herokuapp.com'
     description: Heroku server url
 tags:
