@@ -1,0 +1,781 @@
+openapi: 3.0.1
+x-stoplight:
+  id: 185lmis7s961d
+info:
+  title: Partida de Tênis de Mesa API
+  description: Informações da Partida
+  contact:
+    name: Eduardo Quaglia
+    url: QUATOCA
+    email: equaglia@gmail.com
+  license:
+    name: TBD
+    url: TBD
+  version: '0.1'
+servers:
+tags:
+  - name: GAME/SACADOR
+    description: Controle do primeiro sacador do game
+  - name: GAMES
+    description: Controle de informações de games
+  - name: JOGADORES
+    description: Controle de informações de jogadores
+  - name: PARTIDAS
+    description: Controle de informações de partidas
+  - name: PONTUAÇÃO
+    description: Informações de pontuação
+paths:
+  /games:
+    get:
+      tags:
+        - GAMES
+      summary: Lista de games
+      description: Listar os games da partida ???
+      operationId: listar_3
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GameModel'
+  '/games/finalizado/{gameId}/pontuar/{pontuacaoA}/{pontuacaoB}':
+    put:
+      tags:
+        - GAMES
+      summary: Força a finalização do game
+      description: 'Atualizar pontuação de ambos os jogadores, forçando a finalização do game'
+      operationId: atualizarPontuacaoGameFinalizado
+      parameters:
+        - name: gameId
+          in: path
+          description: Identificador único do game no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pontuacaoA
+          in: path
+          description: Identificador único da pontuacao do primeiro jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: pontuacaoB
+          in: path
+          description: Identificador único da pontuacao do segundo jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameModel'
+  '/games/{gameId}':
+    get:
+      tags:
+        - GAMES
+      summary: Informações do game
+      description: Carregar as informações do game
+      operationId: buscar_2
+      parameters:
+        - name: gameId
+          in: path
+          description: Identificador único do game no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameModel'
+  '/games/{gameId}/pontuar/{pontoId}/somar':
+    put:
+      tags:
+        - GAMES
+      summary: Soma de ponto a jogador
+      description: Somar um ponto à pontuação de um dos jogadores
+      operationId: somarUmPonto
+      parameters:
+        - name: gameId
+          in: path
+          description: Identificador único do game no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pontoId
+          in: path
+          description: Identificador único da pontuacao do jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameModel'
+  '/games/{gameId}/pontuar/{pontoId}/subtrair':
+    put:
+      tags:
+        - GAMES
+      summary: Subtração de ponto a jogador
+      description: Subtrair um ponto da pontuação de um dos jogadores
+      operationId: diminuirUmPonto
+      parameters:
+        - name: gameId
+          in: path
+          description: Identificador único do game no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pontoId
+          in: path
+          description: Identificador único da pontuacao do jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameModel'
+  '/games/{gameId}/pontuar/{pontuacaoA}/{pontuacaoB}':
+    put:
+      tags:
+        - GAMES
+      summary: Atualização dos pontos dos jogadores
+      description: Atualizar pontuação do game para ambos os jogadores
+      operationId: atualizarPontuacao
+      parameters:
+        - name: gameId
+          in: path
+          description: Identificador único do game no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: pontuacaoA
+          in: path
+          description: Identificador único da pontuacao do primeiro jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: pontuacaoB
+          in: path
+          description: Identificador único da pontuacao do segundo jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/GameModel'
+  /jogadores:
+    get:
+      tags:
+        - JOGADORES
+      summary: Lista dos jogadores
+      description: Listar os jogadores da base de dados
+      operationId: listar_2
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JogadorModel'
+    post:
+      tags:
+        - JOGADORES
+      summary: Criação de jogador
+      description: Adicionar novo jogador à base de dados
+      operationId: adicionar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Jogador'
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Jogador'
+  '/jogadores/{jogadorId}':
+    get:
+      tags:
+        - JOGADORES
+      summary: Informações do jogador
+      description: Carregar as informações do jogador
+      operationId: buscar_1
+      parameters:
+        - name: jogadorId
+          in: path
+          description: Identificador único do jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/JogadorPartidasModel'
+    put:
+      tags:
+        - JOGADORES
+      summary: Atualização de jogador
+      description: Atualizar as informaçoes do jogador
+      operationId: atualizar
+      parameters:
+        - name: jogadorId
+          in: path
+          description: Identificador único do jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Jogador'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Jogador'
+    delete:
+      tags:
+        - JOGADORES
+      summary: Remoção de jogador
+      description: 'Remover jogador da base de dados. Para ser removido, o jogador não deve estar alocado a nenhuma partida, qualquer que seja o status da partida.'
+      operationId: excluir
+      parameters:
+        - name: jogadorId
+          in: path
+          description: Identificador único do jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+  /partidas:
+    get:
+      tags:
+        - PARTIDAS
+      summary: Lista das partidas
+      description: Listar as partidas da base de dados
+      operationId: listar_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PartidaModel'
+  /partidas/resumo:
+    get:
+      tags:
+        - PARTIDAS
+      summary: Lista resumida das partidas
+      description: Listar as informações resumidas das partidas da base de dados
+      operationId: listarResumo
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PartidaResumoModel'
+  '/partidas/{jogadorAId}/{jogadorBId}':
+    post:
+      tags:
+        - PARTIDAS
+      summary: Preparação de partida
+      description: 'Preparar partida, definindo seus jogadores'
+      operationId: adicionar_2
+      parameters:
+        - name: jogadorAId
+          in: path
+          description: Identificador único do primeiro jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: jogadorBId
+          in: path
+          description: Identificador único do segundo jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PartidaModel'
+  '/partidas/{partidaId}':
+    get:
+      tags:
+        - PARTIDAS
+      summary: Remoção de partida
+      description: 'Remover a partida da base de dados. Para ser removida, a partida deve estar no status CANCELADO.'
+      operationId: buscar_3
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PartidaModel'
+    delete:
+      tags:
+        - PARTIDAS
+      summary: Remoção de partida
+      description: 'Remover a partida da base de dados. Para ser removida, a partida deve estar no status CANCELADO.'
+      operationId: excluir_1
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+  '/partidas/{partidaId}/cancelar':
+    put:
+      tags:
+        - PARTIDAS
+      summary: Cancelamento de partida
+      description: Cancelar a partida
+      operationId: cancelarPartida_6
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PartidaModel'
+  '/partidas/{partidaId}/completar':
+    put:
+      tags:
+        - PARTIDAS
+      summary: Partida completa
+      description: Completar todos os games e finalizar a partida
+      operationId: completarPartida_6
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Partida'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PartidaModel'
+  '/partidas/{partidaId}/continuar':
+    put:
+      tags:
+        - PARTIDAS
+      summary: Continuação da partida
+      description: 'Dar continuidade a partida, se tiver sido interrompida ou ao iniciar novo game'
+      operationId: continuarPartida_6
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PartidaModel'
+  '/partidas/{partidaId}/iniciar':
+    put:
+      tags:
+        - PARTIDAS
+      summary: Início da partida
+      description: Dar início a partida
+      operationId: iniciarPartida_6
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PartidaModel'
+  /pontos:
+    get:
+      tags:
+        - PONTUAÇÃO
+      summary: Lista das pontuações de jogador ???
+      description: Listar pontuações de jogador ???
+      operationId: listar
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pontuacao'
+  '/sacadores/{partidaId}/games/{gameId}/sacador':
+    get:
+      tags:
+        - GAME/SACADOR
+      summary: Sacador do game
+      description: Apresentar o jogador sacador do game
+      operationId: sacador_5
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: gameId
+          in: path
+          description: Identificador único do game no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/JogadorModel'
+  '/sacadores/{partidaId}/primeiro-sacador/{jogadorId}':
+    put:
+      tags:
+        - GAME/SACADOR
+      summary: Definição do sacador
+      description: 'Definir o sacador do primeiro game da partida. O sacador de cada game será de acordo com o primeiro sacador, de forma que haja intercalação do sacador a cada novo game.'
+      operationId: definirPrimeiroSacador_6
+      parameters:
+        - name: partidaId
+          in: path
+          description: Identificador único da partida no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: jogadorId
+          in: path
+          description: Identificador único do jogador no BD
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    Game:
+      type: object
+      properties:
+        fim:
+          type: string
+          format: date-time
+        id:
+          type: integer
+          format: int64
+        inicio:
+          type: string
+          format: date-time
+        pontos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pontuacao'
+        status:
+          type: string
+          enum:
+            - Preparado
+            - EmAndamento
+            - Finalizado
+            - Interrompido
+            - Cancelado
+      required:
+        - status
+    GameModel:
+      type: object
+      properties:
+        fimGame:
+          type: string
+          format: date-time
+        gameStatus:
+          type: string
+          enum:
+            - Preparado
+            - EmAndamento
+            - Finalizado
+            - Interrompido
+            - Cancelado
+        inicioGame:
+          type: string
+          format: date-time
+        pontos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PontuacaoModel'
+    Jogador:
+      type: object
+      properties:
+        categoria:
+          type: string
+          enum:
+            - A
+            - B
+            - C
+            - D
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        partidas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Partida'
+          uniqueItems: true
+        pontos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pontuacao'
+          uniqueItems: true
+        sobrenome:
+          type: string
+        status:
+          type: string
+          enum:
+            - Disponivel
+            - NaoDisponivel
+      required:
+        - categoria
+        - nome
+        - sobrenome
+        - status
+    JogadorModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        sobrenome:
+          type: string
+        status:
+          type: string
+          enum:
+            - Disponivel
+            - NaoDisponivel
+    JogadorPartidasModel:
+      type: object
+      properties:
+        categoria:
+          type: string
+          enum:
+            - A
+            - B
+            - C
+            - D
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+        partidas:
+          type: array
+          items:
+            $ref: '#/components/schemas/PartidaModel'
+        sobrenome:
+          type: string
+    JogadorResumoModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nome:
+          type: string
+    Partida:
+      type: object
+      properties:
+        fim:
+          type: string
+          format: date-time
+        games:
+          type: array
+          items:
+            $ref: '#/components/schemas/Game'
+        id:
+          type: integer
+          format: int64
+        inicio:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+            - Preparado
+            - EmAndamento
+            - Finalizado
+            - Interrompido
+            - Cancelado
+      required:
+        - status
+    PartidaModel:
+      type: object
+      properties:
+        fimPartida:
+          type: string
+          format: date-time
+        games:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameModel'
+        id:
+          type: integer
+          format: int64
+        inicioPartida:
+          type: string
+          format: date-time
+        jogadorPrimeiroSacador:
+          $ref: '#/components/schemas/JogadorResumoModel'
+        jogadores:
+          type: array
+          items:
+            $ref: '#/components/schemas/JogadorModel'
+          uniqueItems: true
+        partidaStatus:
+          type: string
+          enum:
+            - Preparado
+            - EmAndamento
+            - Finalizado
+            - Interrompido
+            - Cancelado
+    PartidaResumoModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        jogadores:
+          type: array
+          items:
+            $ref: '#/components/schemas/JogadorResumoModel'
+          uniqueItems: true
+        partidaStatus:
+          type: string
+          enum:
+            - Preparado
+            - EmAndamento
+            - Finalizado
+            - Interrompido
+            - Cancelado
+    Pontuacao:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pontos:
+          type: integer
+          format: int32
+    PontuacaoModel:
+      type: object
+      properties:
+        pontos:
+          type: integer
+          format: int32
