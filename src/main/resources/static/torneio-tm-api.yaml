@@ -13,10 +13,10 @@ info:
     url: TBD
   version: '0.1'
 servers:
-  - url: https://torneio-tm-api.herokuapp.com
-    description: Heroku server url
   - url: http://localhost:8080
     description: Generated server url
+  - url: https://torneio-tm-api.herokuapp.com
+    description: Heroku server url
 tags:
   - name: GAME/SACADOR
     description: Controle do primeiro sacador do game
