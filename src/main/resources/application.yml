@@ -1,0 +1,51 @@
+config:
+  numMaxGames: 5
+springdoc:
+  swagger-ui:
+    tagsSorter: alplha
+    url: /torneio-tm-api.yaml
+  writer-with-order-by-keys: true
+spring:
+  profiles:
+    active: "prod"
+---
+
+# com Postgres local
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/torneiotm-dev-local
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      open-in-view: true
+---
+
+# com Postgres no HEROKU
+springdoc:
+  swagger-ui:
+    url: /torneio-tm-heroku-api.yaml
+spring:
+  profiles: prod
+  datasource:
+    url: ${JDBC_DATASOURCE_URL}
+  jpa:
+    show-sql: true
+    generate-ddl: true
+---
+
+# com Postgres local
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:postgresql://localhost:5432/torneiotm-test-local
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      open-in-view: true
