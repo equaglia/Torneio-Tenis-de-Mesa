@@ -8,11 +8,14 @@ springdoc:
 spring:
   profiles:
     active: "prod"
+
 ---
 
 # com Postgres local
 spring:
-  profiles: dev
+  config:
+    activate:
+      on-profile: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/torneiotm-dev-local
     username: postgres
@@ -21,7 +24,8 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-      open-in-view: true
+    open-in-view: true
+
 ---
 
 # com Postgres no HEROKU
@@ -29,17 +33,23 @@ springdoc:
   swagger-ui:
     url: /torneio-tm-heroku-api.yaml
 spring:
-  profiles: prod
+  config:
+    activate:
+      on-profile: prod
   datasource:
     url: ${JDBC_DATASOURCE_URL}
   jpa:
     show-sql: true
     generate-ddl: true
+    open-in-view: true
+
 ---
 
 # com Postgres local
 spring:
-  profiles: test
+  config:
+    activate:
+      on-profile: test
   datasource:
     url: jdbc:postgresql://localhost:5432/torneiotm-test-local
     username: postgres
@@ -48,4 +58,4 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-      open-in-view: true
+    open-in-view: true
