@@ -20,19 +20,16 @@ public class PontuacaoAssembler {
 	public PontuacaoModel toModel(Pontuacao pontuacao) {
 		return modelMapper.map(pontuacao, PontuacaoModel.class);
 	}
-	
+
+	@SuppressWarnings("unused")
 	public List<PontuacaoModel> toCollectionModel(List<Pontuacao> pontos){
 		return pontos.stream()
 				.map(this::toModel)
 				.collect(Collectors.toList());
 	}
-	
+
+	@SuppressWarnings("unused")
 	public Pontuacao toEntity(PontuacaoModel pontuacaoModel) {
 		return modelMapper.map(pontuacaoModel, Pontuacao.class);
 	}
-
-//	public Pontuacao toEntity(PontuacaoInput pontuacaoInput) {
-//		return modelMapper.map(pontuacaoInput, Pontuacao.class);
-//	}
-
 }

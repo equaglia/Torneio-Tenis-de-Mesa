@@ -10,11 +10,13 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Data
+@Getter
+@Setter
 @Entity
 @Embeddable
 public class Pontuacao {
@@ -36,12 +38,10 @@ public class Pontuacao {
 	private int pontos = 0;
 	
 	public int maisUmPonto() {
-		int novaPontuacao = this.getPontos() + 1;
-		return novaPontuacao;
+		return this.getPontos() + 1;
 	}
 	
 	public int menosUmPonto() {
-		int novaPontuacao = this.getPontos() - 1;
-		return novaPontuacao;
+		return this.getPontos() - 1;
 	}
 }

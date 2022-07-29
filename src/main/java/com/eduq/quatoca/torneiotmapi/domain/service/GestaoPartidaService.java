@@ -1,7 +1,6 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
 import java.time.OffsetDateTime;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,8 +59,8 @@ public class GestaoPartidaService {
 
 		Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
 		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
-		partida.addJogador(jogadorA.get());
-		partida.addJogador(jogadorB.get());
+		partida.addJogador(jogadorA.orElse(null));
+		partida.addJogador(jogadorB.orElse(null));
 
 		checaSeJogadoresSelecionadosCorretamente(partida);
 
@@ -69,8 +68,8 @@ public class GestaoPartidaService {
 			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB));
 		}
 
-		catalogoJogadorService.salvar(jogadorA.get());
-		catalogoJogadorService.salvar(jogadorB.get());
+		catalogoJogadorService.salvar(jogadorA.orElse(null));
+		catalogoJogadorService.salvar(jogadorB.orElse(null));
 		this.salvar(partida);
 		return partida;
 	}
@@ -180,8 +179,8 @@ public class GestaoPartidaService {
 
 	public boolean temGameEmAndamento(Partida partida) {
 		Game game;
-		for (Iterator<Game> i = partida.getGames().iterator(); i.hasNext();) {
-			game = i.next();
+		for (Game value : partida.getGames()) {
+			game = value;
 			if (game.emAndamento())
 				return true;
 		}

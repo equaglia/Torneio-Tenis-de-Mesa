@@ -1,37 +1,20 @@
 package com.eduq.quatoca.torneiotmapi.domain.model;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
-
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.OffsetDateTime;
+import java.util.*;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Data
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter
+@Setter
+@ToString
+//@RequiredArgsConstructor
 @Entity
 public class Partida {
 
@@ -48,7 +31,8 @@ public class Partida {
 		joinColumns = @JoinColumn(name="jogador_id"),
 		inverseJoinColumns = @JoinColumn(name="partida_id"))
 	@JsonIgnore
-	private Set<Jogador> jogadores = new HashSet<Jogador>();
+	@ToString.Exclude
+	private Set<Jogador> jogadores = new HashSet<>();
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JsonIgnore
@@ -56,6 +40,7 @@ public class Partida {
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
 	@Embedded
+	@ToString.Exclude
 	private List<Game> games = new ArrayList<>();
 
 	private OffsetDateTime inicio;
@@ -83,7 +68,7 @@ public class Partida {
 	}
 	
 	public void liberarJogadores() {
-		this.jogadores.forEach(jogador -> jogador.liberar());
+		this.jogadores.forEach(Jogador::liberar);
 	}
 
 	public Partida() {
@@ -147,11 +132,11 @@ public class Partida {
 	public void iniciar() {
 		switch (this.getStatus()) {
 		case Preparado:
-			Boolean jogadoresDisponiveis = jogadoresDisponiveisParaIniciarPartida();
+			boolean jogadoresDisponiveis = jogadoresDisponiveisParaIniciarPartida();
 			if (jogadoresDisponiveis) {
 				this.setStatus(StatusJogo.EmAndamento);
 				this.setInicio(OffsetDateTime.now());
-				this.jogadores.stream().forEach(jogador -> jogador.convocar());
+				this.jogadores.forEach(Jogador::convocar);
 			} else {
 				throw new NegocioException("Ao menos um dos jogadores não está disponível para a partida");
 			}
@@ -172,8 +157,8 @@ public class Partida {
 
 	public void finalizar() {
 		this.setStatus(StatusJogo.Finalizado);
-		this.jogadores.stream().forEach(jogador -> jogador.liberar());
-		this.games.stream().forEach(game -> {
+		this.jogadores.forEach(Jogador::liberar);
+		this.games.forEach(game -> {
 			if (game.preparado())
 				game.cancelar();
 		});
@@ -203,7 +188,7 @@ public class Partida {
 		Optional<Jogador> naoSacador = this.jogadores.stream()
 				.filter(p -> !(this.getPrimeiroSacador() == p))
 				.findAny();
-		return naoSacador.get();
+		return naoSacador.orElse(null);
 	}
 
 	public boolean jaRegistrouPontuacao() {
@@ -214,8 +199,8 @@ public class Partida {
 	public void setEmAndamento() {
 		if (this.getStatus() == StatusJogo.Finalizado) {
 			this.setStatus(StatusJogo.EmAndamento);
-			this.jogadores.stream().forEach(jogador -> jogador.convocar());
-			this.games.stream().forEach(game -> {
+			this.jogadores.forEach(Jogador::convocar);
+			this.games.forEach(game -> {
 				if (game.cancelado())
 					game.setPreparado();
 			});
@@ -250,12 +235,10 @@ public class Partida {
 	
 	private void garantirNoMaximoUmGameEmAndamento() {
 		boolean temGameEmAndamento = false;
-		for (Iterator<Game> i = games.iterator(); i.hasNext();) {
-			Game game = (Game) i.next();
+		for (Game game : games) {
 			if (game.emAndamento()) {
-				if (!temGameEmAndamento) {
-					temGameEmAndamento = true;
-				} else {
+				if (!temGameEmAndamento) temGameEmAndamento = true;
+				else {
 					game.setStatus(StatusJogo.Preparado);
 				}
 			}
@@ -264,5 +247,18 @@ public class Partida {
 
 	private int getQuantidadeGamesDaPartida() {
 		return this.games.size();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		Partida partida = (Partida) o;
+		return id != null && Objects.equals(id, partida.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 }

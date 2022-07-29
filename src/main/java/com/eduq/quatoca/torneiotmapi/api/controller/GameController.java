@@ -49,13 +49,6 @@ public class GameController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 	
-	/* Parece que só faz sentido adicionar game em partida */
-//	@PostMapping
-//	@ResponseStatus(HttpStatus.CREATED)
-//	public Game adicionar() {
-//		return gestaoGameService.salvar(new Game());
-//	}
-	
 	@Operation(summary = "Atualização dos pontos dos jogadores",
 			description = "Atualizar pontuação do game para ambos os jogadores")
 	@PutMapping("/{gameId}/pontuar/{pontuacaoA}/{pontuacaoB}") 

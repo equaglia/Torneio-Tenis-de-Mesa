@@ -1,28 +1,20 @@
 package com.eduq.quatoca.torneiotmapi.domain.model;
 
-import java.util.HashSet;
-import java.util.Set;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Data
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Getter
+@Setter
+@ToString
+//@RequiredArgsConstructor
 @Entity
 public class Jogador {
 
@@ -37,6 +29,7 @@ public class Jogador {
 	@JoinTable(name = "jogadores_partidas",
 		joinColumns = @JoinColumn(name="partida_id"),
 		inverseJoinColumns = @JoinColumn(name="jogador_id"))
+	@ToString.Exclude
 	private Set<Partida> partidas = new HashSet<>();
 	
 	@NotBlank(message = "Nome é mandatório")
@@ -56,6 +49,7 @@ public class Jogador {
 	private StatusJogador status;
 	
 	@OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL)
+	@ToString.Exclude
 	private Set<Pontuacao> pontos;
 
 	public Jogador() {
@@ -75,4 +69,16 @@ public class Jogador {
 		this.setStatus(StatusJogador.Disponivel);
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+		Jogador jogador = (Jogador) o;
+		return id != null && Objects.equals(id, jogador.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }

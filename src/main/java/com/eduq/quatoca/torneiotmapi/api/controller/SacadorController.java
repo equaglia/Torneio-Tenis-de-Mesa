@@ -21,19 +21,15 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/sacadores")
-@Tag(name = "GAME/SACADOR", description = "Controle do primeiro sacador do game")
+@Tag(name = "GAME/SACADOR", description = "Controle do primeiro sacador do game TESTE CODIGO")
 public class SacadorController {
 
 	private JogadorAssembler jogadorAssembler;
 	private ControleSacadorService controleSacadorService;
 	
-	@Operation(summary = "Sacador do game",
-			description = "Apresentar o jogador sacador do game")
 	@GetMapping
 	@RequestMapping("/{partidaId}/games/{gameId}/sacador")//TODO partidaId parece não ser necessário - pode ser obtida através de gameId
-	public ResponseEntity<JogadorModel> sacador(
-			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId, 
-			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId) {
+	public ResponseEntity<JogadorModel> sacador(@PathVariable Long partidaId, @PathVariable Long gameId) {
 		return Optional.of(controleSacadorService.getSacador(partidaId, gameId))
 				.map(jogador -> ResponseEntity.ok(jogadorAssembler.toModel(jogador)))
 				.orElse(ResponseEntity.notFound().build());

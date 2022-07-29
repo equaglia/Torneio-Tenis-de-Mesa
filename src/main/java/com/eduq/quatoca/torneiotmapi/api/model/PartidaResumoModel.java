@@ -4,9 +4,11 @@ import java.util.Set;
 
 import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogo;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class PartidaResumoModel {
 
 	private Long id;

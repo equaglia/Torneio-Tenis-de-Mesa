@@ -23,8 +23,8 @@ public class GestaoPontuacaoService {
 	}
 
 	@Transactional
-	public Pontuacao salvar(Pontuacao pontuacao) {
-		return pontuacaoRepository.save(pontuacao);
+	public void salvar(Pontuacao pontuacao) {
+		pontuacaoRepository.save(pontuacao);
 	}
 
 	@Transactional

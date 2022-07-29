@@ -24,22 +24,15 @@ public class CalculosGlobais {
 
 		int gamesParaVencer = (maxGames / 2) + 1;
 
-		if ((gamesVencidosA == gamesParaVencer || gamesVencidosB == gamesParaVencer)
-				&& !(gamesVencidosA == gamesVencidosB))
-			return true;
-		else
-			return false;
+		return (gamesVencidosA == gamesParaVencer || gamesVencidosB == gamesParaVencer)
+				&& !(gamesVencidosA == gamesVencidosB);
 	}
 
 	public static boolean isPar(int numero) {
-		if (numero % 2 == 0)
-			return true;
-		return false;
+		return numero % 2 == 0;
 	}
 
 	public static boolean isImpar(int numero) {
-		if (!isPar(numero))
-			return true;
-		return false;
+		return !isPar(numero);
 	}
 }

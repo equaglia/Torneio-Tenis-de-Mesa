@@ -38,8 +38,8 @@ public class GestaoGameService {
 	@Transactional
 	public Game prepararGame(Optional<Jogador> jogadorA, Optional<Jogador> jogadorB) {
 		Game game = new Game();
-		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorA.get());
-		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorB.get());
+		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorA.orElse(null));
+		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorB.orElse(null));
 		this.salvar(game);
 		return game;
 	}
@@ -87,15 +87,11 @@ public class GestaoGameService {
 	
 	public boolean isGamePar(Game game) {
 		int gameIndice = game.getPartida().getGames().indexOf(game);
-		if (gameIndice%2 == 0)
-			return true;
-		return false;
+		return gameIndice % 2 == 0;
 	}
 	
 	public boolean isGameImpar(Game game) {
-		if (isGamePar(game))
-			return false;
-		return true;
+		return !isGamePar(game);
 	}
 	
 	public int getTotalPontos(Game game) {
@@ -107,9 +103,5 @@ public class GestaoGameService {
 		gameRepository.delete(game);
 		
 	}
-	
-//	public boolean isPreparado(Game game) {
-//		return game.getStatus() == StatusJogo.Preparado;
-//	}
 
 }

@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class GameModel {
 
+	private Long id;
 	private List<PontuacaoModel> pontos;
 	private OffsetDateTime inicioGame;
 	private OffsetDateTime fimGame;

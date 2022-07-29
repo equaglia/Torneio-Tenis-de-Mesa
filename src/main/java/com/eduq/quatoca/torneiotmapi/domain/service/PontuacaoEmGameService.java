@@ -32,7 +32,7 @@ public class PontuacaoEmGameService {
 	public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
 		CalculosGlobais.garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
 		Game game = gestaoGameService.buscar(gameId);
-		Boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
+		boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
 		if (gestaoPartidaService.temGameEmAndamento(game.getPartida()) && !gameAtivo) {
 			throw new NegocioException("Game " + gameId + " não é o próximo game da partida.");
 		}
@@ -58,7 +58,7 @@ public class PontuacaoEmGameService {
 	@Transactional
 	public Game somaUmPonto(Long gameId, Long pontoId) {
 		Game game = gestaoGameService.buscar(gameId);
-		Boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
+		boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
 			gestaoGameService.garantirGameAnteriorJaFinalizado(game);
 			gestaoGameService.iniciarGame(game);
@@ -67,9 +67,9 @@ public class PontuacaoEmGameService {
 		if (gameAtivo) {
 			Pontuacao pontuacaoJogadorA = buscarPontuacaoDeJogador(game, jogadorA);
 			Pontuacao pontuacaoJogadorB = buscarPontuacaoDeJogador(game, jogadorB);
-			if (pontuacaoJogadorA.getId() == pontoId) {
+			if (pontuacaoJogadorA.getId().equals(pontoId)) {
 				incrementar(pontuacaoJogadorA);
-			} else if (pontuacaoJogadorB.getId() == pontoId) {
+			} else if (pontuacaoJogadorB.getId().equals(pontoId)) {
 				incrementar(pontuacaoJogadorB);
 			} else
 				throw new EntidadeNaoEncontradaException("Game não encontrado");
@@ -89,7 +89,7 @@ public class PontuacaoEmGameService {
 	@Transactional
 	public Game diminueUmPonto(Long gameId, Long pontoId) {
 		Game game = gestaoGameService.buscar(gameId);
-		Boolean gameAtivo = game.emAndamento();
+		boolean gameAtivo = game.emAndamento();
 		Partida partida = game.getPartida();
 		int indiceGame = partida.getGames().indexOf(game);
 		Game gameSeguinte = partida.getGames().get(indiceGame + 1);
@@ -104,14 +104,10 @@ public class PontuacaoEmGameService {
 			if (gameAtivo) {
 				Pontuacao pontuacaoJogadorA = buscarPontuacaoDeJogador(game, jogadorA);
 				Pontuacao pontuacaoJogadorB = buscarPontuacaoDeJogador(game, jogadorB);
-				if (pontuacaoJogadorA.getId() == pontoId) {
-					if (pontuacaoJogadorA.getPontos() > 0) {
-						decrementar(pontuacaoJogadorA);
-					}
-				} else if (pontuacaoJogadorB.getId() == pontoId) {
-					if (pontuacaoJogadorB.getPontos() > 0) {
-						decrementar(pontuacaoJogadorB);
-					}
+				if (pontuacaoJogadorA.getId().equals(pontoId)) {
+					if (pontuacaoJogadorA.getPontos() > 0) decrementar(pontuacaoJogadorA);
+				} else if (pontuacaoJogadorB.getId().equals(pontoId)) {
+					if (pontuacaoJogadorB.getPontos() > 0) decrementar(pontuacaoJogadorB);
 				}
 			} else
 				throw new EntidadeNaoEncontradaException("Game não encontrado");

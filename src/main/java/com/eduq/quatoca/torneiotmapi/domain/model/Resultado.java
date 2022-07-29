@@ -6,9 +6,11 @@ import java.util.List;
 import com.eduq.quatoca.torneiotmapi.common.CalculosGlobais;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class Resultado {
 
 	int resultado = 0;
@@ -45,4 +47,5 @@ public class Resultado {
 		return resultados;
 
 	}
+
 }
