@@ -39,10 +39,10 @@ public class CatalogoJogadorService {
 	@Transactional
 	public void excluir(Long jogadorId) {
 		Jogador jogadorParaExcluir = this.buscar(jogadorId).orElse(null);
-//		Jogador jogadorParaExcluir = jogadorRepository.findById(jogadorId)
-//				.orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado"));
 
-		if (jogadorParaExcluir.getPartidas().isEmpty()) {
+		if (jogadorParaExcluir == null)
+			throw (new NegocioException("Jogador não existente"));
+		else if (jogadorParaExcluir.getPartidas().isEmpty()) {
 			jogadorRepository.deleteById(jogadorId);
 			new ResponseEntity<>("Jogador deletado do sistema", HttpStatus.NO_CONTENT);
 		} else {

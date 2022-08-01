@@ -2,7 +2,10 @@ package com.eduq.quatoca.torneiotmapi.domain.model;
 
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -13,7 +16,6 @@ import java.util.*;
 //@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @Setter
-@ToString
 //@RequiredArgsConstructor
 @Entity
 public class Partida {
@@ -93,7 +95,7 @@ public class Partida {
 	}
 
 	public Game primeiroGameDaPartida() {
-		return this.games.get(0);
+		return this.getGames().get(0);
 	}
 
 	public Game proximoGame() {
@@ -229,13 +231,14 @@ public class Partida {
 		return this.getStatus() == StatusJogo.Cancelado;
 	}
 	
-	public Game getGame(int i) {
-		return this.getGames().get(i);
+	public Game getGame(int game) {
+		return this.getGames().get(game);
 	}
-	
+
 	private void garantirNoMaximoUmGameEmAndamento() {
 		boolean temGameEmAndamento = false;
-		for (Game game : games) {
+		for (int i = 0; i < getQuantidadeGamesDaPartida(); i++) {
+			Game game = this.getGame(i);
 			if (game.emAndamento()) {
 				if (!temGameEmAndamento) temGameEmAndamento = true;
 				else {
@@ -260,5 +263,45 @@ public class Partida {
 	@Override
 	public int hashCode() {
 		return getClass().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		String partidaToString = "";
+		List<Integer> resultado = new ArrayList<>(calculaResultado());
+		Game game = this.getGame(0);
+		String jogadorA = game.getPontos().get(0).getJogador().getNome();
+		String jogadorB = game.getPontos().get(1).getJogador().getNome();
+		partidaToString = partidaToString + "ptd " + this.getId() + ", " + jogadorA + " x " + jogadorB;
+		for (int i = 0; i < this.getGames().size(); i++) {
+			game = this.getGame(i);
+			partidaToString = partidaToString + " g" + i + ": " + game.getPontos().get(0).getPontos()+" "+ game.getPontos().get(1).getPontos() + ", ";
+		}
+		partidaToString = partidaToString +
+				" " + jogadorA +" "+ resultado.get(0) + " X " + resultado.get(1) +" "+ jogadorB;
+
+		return partidaToString;
+	}
+
+	public List<Integer> calculaResultado() {
+		List<Integer> resultado = new ArrayList<>();
+		resultado.add(0);
+		resultado.add(0);
+		for (int i = 0; i < this.getGames().size(); i++) {
+			Game game = this.getGame(i);
+			if (game.finalizado()) {
+				int ptsJgdrA_noGame = game.getPontos().get(0).getPontos();
+				int ptsJgdrB_noGame = game.getPontos().get(1).getPontos();
+				if (ptsJgdrA_noGame > ptsJgdrB_noGame)
+					resultado.set(0, resultado.get(0) + 1);
+				else if (ptsJgdrB_noGame > ptsJgdrA_noGame) {
+					resultado.set(1, resultado.get(1) + 1);
+				} else {
+					throw new NegocioException("Pontuação deste game está incorreta");
+				}
+			}
+		}
+		return resultado;
+
 	}
 }

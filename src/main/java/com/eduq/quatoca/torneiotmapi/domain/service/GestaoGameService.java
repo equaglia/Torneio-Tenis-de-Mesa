@@ -31,8 +31,7 @@ public class GestaoGameService {
 	}
 
 	@Transactional
-	public Game salvar(Game game) {
-		return gameRepository.save(game);
+	public void salvar(Game game) {gameRepository.save(game);
 	}
 
 	@Transactional
@@ -66,12 +65,12 @@ public class GestaoGameService {
 	public void finalizarGame(Game game) {
 		game.finalizar();
 		this.salvar(game);
+		System.out.println(game.getPartida());
 	}
 
 	public boolean proximoGameProntoParaIniciar(Game game) {
 		return game.getPartida().gameAnterior().finalizado() 
 				&& game.preparado() 
-//				&& this.isPreparado(game) 
 				&& game.getPartida().emAndamento();
 	}
 
@@ -99,9 +98,6 @@ public class GestaoGameService {
 				+ game.getPontos().get(1).getPontos();
 	}
 
-	public void excluir(Game game) {
-		gameRepository.delete(game);
-		
+	public void excluir(Game game) {gameRepository.delete(game);
 	}
-
 }

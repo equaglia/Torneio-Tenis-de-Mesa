@@ -17,7 +17,6 @@ import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
-import com.eduq.quatoca.torneiotmapi.domain.model.Resultado;
 import com.eduq.quatoca.torneiotmapi.domain.repository.PartidaRepository;
 
 import lombok.AllArgsConstructor;
@@ -31,10 +30,9 @@ public class GestaoPartidaService {
 	private PartidaRepository partidaRepository;
 	private GestaoGameService gestaoGameService;
 	private GestaoPontuacaoService gestaoPontuacaoService;
-	private GestaoResultadoService gestaoResultadoService;
 
-	private static int jogadorA = 0;
-	private static int jogadorB = 1;
+	private static final int jogadorA = 0;
+	private static final int jogadorB = 1;
 
 	private TmapiConfig tmapiConfig;
 
@@ -49,6 +47,7 @@ public class GestaoPartidaService {
 
 	@Transactional
 	public Partida salvar(Partida partida) {
+		System.out.println(partida);
 		return partidaRepository.save(partida);
 	}
 
@@ -71,6 +70,7 @@ public class GestaoPartidaService {
 		catalogoJogadorService.salvar(jogadorA.orElse(null));
 		catalogoJogadorService.salvar(jogadorB.orElse(null));
 		this.salvar(partida);
+
 		return partida;
 	}
 
@@ -80,6 +80,7 @@ public class GestaoPartidaService {
 		partida.iniciar();
 		gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
 		this.salvar(partida);
+		System.out.println("partida: "+ partidaId+" iniciada");
 		return partida;
 	}
 
@@ -89,8 +90,7 @@ public class GestaoPartidaService {
 		if (partida.finalizado()) {
 			return partida;
 		} else {
-			List<Resultado> resultado = Resultado.resultadoCorrente(partida);
-			if (partidaJaTemVencedor(resultado)) {
+			if (partidaJaTemVencedor(partida.calculaResultado())) {
 				finalizarPartida(partida);
 			} else {
 				Game proximoGame = partida.proximoGame();
@@ -105,6 +105,7 @@ public class GestaoPartidaService {
 				}
 			}
 		}
+		System.out.println("partida "+partidaId+" continuando");
 		return this.salvar(partida);
 	}
 
@@ -112,6 +113,8 @@ public class GestaoPartidaService {
 	public void finalizarPartida(Partida partida) {
 		partida.finalizar();
 		this.salvar(partida);
+		System.out.println("partida "+partida.getId()+" finalizou");
+
 	}
 
 	@Transactional
@@ -123,6 +126,8 @@ public class GestaoPartidaService {
 			partida.liberarJogadores();
 		}
 		partida.cancelar();
+		System.out.println("partida "+partidaId+" cancelada");
+
 		return partida;
 	}
 
@@ -131,9 +136,7 @@ public class GestaoPartidaService {
 		Partida partida = this.buscar(partidaId);
 		if (partida.cancelado()) {
 			partida.getGames().forEach(game -> {
-				game.getPontos().forEach(pontuacao -> {
-					gestaoPontuacaoService.excluir(pontuacao);
-				});
+				game.getPontos().forEach(pontuacao -> gestaoPontuacaoService.excluir(pontuacao));
 				game.setPontos(null);
 				gestaoGameService.excluir(game);
 			});
@@ -141,6 +144,8 @@ public class GestaoPartidaService {
 			partida.setJogadores(null);
 			partida.setPrimeiroSacador(null);
 			partidaRepository.delete(partida);
+			System.out.println("partida "+partidaId+" deletada");
+
 		} else
 			throw new NegocioException("Somente partida CANCELADA pode ser excluída");
 	}
@@ -148,6 +153,8 @@ public class GestaoPartidaService {
 	@Transactional
 	public void setPartidaEmAndamento(Partida partida) {
 		partida.setEmAndamento();
+		System.out.println("partida "+partida.getId()+" entrou em andamento");
+
 		this.salvar(partida);
 	}
 
@@ -168,9 +175,9 @@ public class GestaoPartidaService {
 		}
 	}
 
-	public boolean partidaJaTemVencedor(List<Resultado> resultado) {
-		return resultado.get(0).getResultado() == gamesParaVencerPartida()
-				|| resultado.get(1).getResultado() == gamesParaVencerPartida();
+	public boolean partidaJaTemVencedor(List<Integer> resultado) {
+		return resultado.get(jogadorA) == gamesParaVencerPartida()
+				|| resultado.get(jogadorB) == gamesParaVencerPartida();
 	}
 
 	private int gamesParaVencerPartida() {
@@ -223,7 +230,7 @@ public class GestaoPartidaService {
 				break;
 		}
 
-		if (partidaJaTemVencedor(gestaoResultadoService.resultadoCorrente(partidaOut))) {
+		if (partidaJaTemVencedor(partidaOut.calculaResultado())) {
 			this.finalizarPartida(partidaOut);
 			this.salvar(partidaOut);
 		} else {

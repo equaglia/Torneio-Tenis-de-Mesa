@@ -1,7 +1,5 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +10,6 @@ import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
-import com.eduq.quatoca.torneiotmapi.domain.model.Resultado;
 
 import lombok.AllArgsConstructor;
 
@@ -23,10 +20,9 @@ public class PontuacaoEmGameService {
 	private GestaoPontuacaoService gestaoPontuacaoService;
 	private GestaoGameService gestaoGameService;
 	private GestaoPartidaService gestaoPartidaService;
-	private GestaoResultadoService gestaoResultadoService;
-	
-	private static int jogadorA = 0;
-	private static int jogadorB = 1;
+
+	private static final int jogadorA = 0;
+	private static final int jogadorB = 1;
 
 	@Transactional
 	public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
@@ -77,8 +73,7 @@ public class PontuacaoEmGameService {
 					pontuacaoJogadorB.getPontos())) {
 				gestaoGameService.finalizarGame(game);
 				Partida partida = game.getPartida();
-				List<Resultado> resultados = gestaoResultadoService.resultadoCorrente(partida);
-				if (gestaoPartidaService.partidaJaTemVencedor(resultados)) {
+				if (gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
 					gestaoPartidaService.finalizarPartida(partida);
 				}
 			}
@@ -116,8 +111,7 @@ public class PontuacaoEmGameService {
 	}
 
 	public Pontuacao buscarPontuacaoDeJogador(Game game, int indice) {
-		Pontuacao pontuacaoJogador = gestaoPontuacaoService.buscar(game.getPontos().get(indice).getId());
-		return pontuacaoJogador;
+		return gestaoPontuacaoService.buscar(game.getPontos().get(indice).getId());
 	}
 
 	@Transactional
@@ -139,7 +133,7 @@ public class PontuacaoEmGameService {
 			Partida partida = game.getPartida();
 			Game proximoGame = partida.proximoGame();// TODO proximoGame null se partida ja deu resultado
 			if (proximoGame == null
-					|| gestaoPartidaService.partidaJaTemVencedor(Resultado.resultadoCorrente(partida))) {
+					|| gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
 				gestaoPartidaService.finalizarPartida(partida);
 			}
 		} else {
@@ -168,5 +162,4 @@ public class PontuacaoEmGameService {
 		gestaoPontuacaoService.salvar(pontuacaoJogadorA);
 		gestaoPontuacaoService.salvar(pontuacaoJogadorB);
 	}
-
 }

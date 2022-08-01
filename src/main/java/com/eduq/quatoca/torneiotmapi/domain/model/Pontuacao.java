@@ -37,9 +37,7 @@ public class Pontuacao {
 
 	private int pontos = 0;
 	
-	public int maisUmPonto() {
-		return this.getPontos() + 1;
-	}
+	public int maisUmPonto() {return this.getPontos() + 1;}
 	
 	public int menosUmPonto() {
 		return this.getPontos() - 1;
