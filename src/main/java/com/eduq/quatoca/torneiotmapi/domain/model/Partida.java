@@ -12,6 +12,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.IntStream;
 
 //@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
@@ -44,6 +45,12 @@ public class Partida {
 	@Embedded
 	@ToString.Exclude
 	private List<Game> games = new ArrayList<>();
+
+//	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+//	@JsonIgnore
+//	private Game gameAtual;
+
+	private int gameAtualIndice;
 
 	private OffsetDateTime inicio;
 	private OffsetDateTime fim;
@@ -99,16 +106,39 @@ public class Partida {
 	}
 
 	public Game proximoGame() {
+
+//		int indiceGameAtual;
+//		if (this.getGameAtual() == null) {
+//			throw new NegocioException("Partida sem game atual. Não há game em andamento."); //TODO melhorar texto da exception
+//		} else {
+//			indiceGameAtual = this.getGames().indexOf(this.getGameAtual());
+//		}
+//		if (indiceGameAtual < getQuantidadeGamesDaPartida()) {
+//			return this.getGames().get(indiceGameAtual + 1);
+//		} else {
+//			throw (new NegocioException("Este é o último game da partida"));
+//		}
+
+
 		if (this.emAndamento()) {
-			int proximoGame = 0;
+//			int indiceGameAtual = this.getGames().indexOf(this.getGameAtual());
+			int indiceGameAtual = this.getGameAtualIndice();
+			int proximoGameAposAtual = indiceGameAtual + 1;
+//			System.out.println("indice gameAtual "+indiceGameAtual + "  proximo game "+proximoGameAposAtual);
+			int proximoGameIndice = 0;
 			int quantidadeGames = getQuantidadeGamesDaPartida();
-			while (proximoGame < quantidadeGames) {
-				Game thisGame = this.games.get(proximoGame);
+			while (proximoGameIndice < quantidadeGames) {
+				Game thisGame = this.games.get(proximoGameIndice);
+				System.out.println("proximoGame indice "+proximoGameIndice+ " id "+thisGame.getId()+" Partida.proximoGame()");
 				if (thisGame.finalizado()) {
-					if (proximoGame == getQuantidadeGamesDaPartida() - 1)
+					if (proximoGameIndice == getQuantidadeGamesDaPartida() - 1) {
 						this.finalizar();
-					proximoGame++;
+						System.out.println("Partida.proximoGame FINALIZOU GAME game = "+thisGame.getId());
+					}
+					proximoGameIndice++;
 				} else if (thisGame.preparado() || thisGame.emAndamento()) {
+					System.out.println("RETURN proximoGame indice "+proximoGameIndice+" id "+thisGame.getId() + " partida "+this.getId()+" Partida.proximoGame()");
+//					return this.getGameAtual();
 					return thisGame;
 				} else
 					throw new NegocioException("Partida impedida de continuar");
@@ -118,17 +148,33 @@ public class Partida {
 	}
 
 	public Game gameAnterior() {
-		int quantidadeGames = getQuantidadeGamesDaPartida();
-		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
+		int indiceGameAtual = this.getGameAtualIndice();
+//		if (indiceGameAtual == -1) {
+//			throw new NegocioException("Partida sem game atual. Não há game em andamento."); //TODO melhorar texto da exception
+//
+//			indiceGameAtual = this.getGames().indexOf(this.getGameAtual());
+//		} else {
+//			throw new NegocioException("Partida sem game atual. Não há game em andamento."); //TODO melhorar texto da exception
+//		}
+//		if (this.getGameAtual() != null) {
+//		}
+		if (indiceGameAtual > 0) {
+			return this.getGames().get(indiceGameAtual -1);
+		} else {
 			throw (new NegocioException("Este é o primeiro game da partida"));
 		}
-		int i = 1;
-		while (i <= quantidadeGames) {
-			if (this.games.get(i).emAndamento())
-				return this.games.get(i - 1);
-			i++;
-		}
-		throw (new NegocioException("Não há game em andamento"));
+
+//		int quantidadeGames = getQuantidadeGamesDaPartida();
+//		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
+//			throw (new NegocioException("Este é o primeiro game da partida"));
+//		}
+//		int i = 1;
+//		while (i <= quantidadeGames) {
+//			if (this.games.get(i).emAndamento())
+//				return this.games.get(i - 1);
+//			i++;
+//		}
+//		throw (new NegocioException("Não há game em andamento"));
 	}
 
 	public void iniciar() {
@@ -165,10 +211,17 @@ public class Partida {
 				game.cancelar();
 		});
 		this.setFim(OffsetDateTime.now());
+//		this.setGameAtual(null);
+		this.setGameAtualIndice(-1);
+		this.getGames().stream()
+				.filter(game -> game.getStatus() != StatusJogo.Finalizado)
+				.forEach(game -> game.setStatus(StatusJogo.Cancelado));
+		System.out.println(" finalizada "+this+" Partida.finalizar()");
 	}
 	
 	public void cancelar() {
 		this.setStatus(StatusJogo.Cancelado);
+//		System.out.println(" cancelada "+this);
 	}
 
 	public boolean jogadoresDisponiveisParaIniciarPartida() {
@@ -205,6 +258,10 @@ public class Partida {
 			this.games.forEach(game -> {
 				if (game.cancelado())
 					game.setPreparado();
+//				if (game.emAndamento()) {
+//					this.setGameAtual(game);
+//					this.setGameAtualIndice();
+//				}
 			});
 			this.garantirNoMaximoUmGameEmAndamento();
 			this.setFim(null);
@@ -236,14 +293,18 @@ public class Partida {
 	}
 
 	private void garantirNoMaximoUmGameEmAndamento() {
-		boolean temGameEmAndamento = false;
+//		boolean temGameEmAndamento = false;
 		for (int i = 0; i < getQuantidadeGamesDaPartida(); i++) {
 			Game game = this.getGame(i);
 			if (game.emAndamento()) {
-				if (!temGameEmAndamento) temGameEmAndamento = true;
-				else {
-					game.setStatus(StatusJogo.Preparado);
-				}
+//				this.setGameAtual(game);
+				this.setGameAtualIndice(i);
+				System.out.println("atualizou gameAtualIndice para "+i);
+				break;
+//				if (!temGameEmAndamento) temGameEmAndamento = true;
+//				else {
+//					game.setStatus(StatusJogo.Preparado);
+//				}
 			}
 		}
 	}
@@ -273,12 +334,12 @@ public class Partida {
 		String jogadorA = game.getPontos().get(0).getJogador().getNome();
 		String jogadorB = game.getPontos().get(1).getJogador().getNome();
 		partidaToString = partidaToString + "ptd " + this.getId() + ", " + jogadorA + " x " + jogadorB;
-		for (int i = 0; i < this.getGames().size(); i++) {
-			game = this.getGame(i);
-			partidaToString = partidaToString + " g" + i + ": " + game.getPontos().get(0).getPontos()+" "+ game.getPontos().get(1).getPontos() + ", ";
-		}
+
+		Collections.sort(this.getGames());
+		partidaToString = partidaToString + this.getGames();
 		partidaToString = partidaToString +
-				" " + jogadorA +" "+ resultado.get(0) + " X " + resultado.get(1) +" "+ jogadorB;
+				"\n " + jogadorA +" "+ resultado.get(0) + " X " + resultado.get(1) +" "+ jogadorB;
+		if (this.getGameAtualIndice() != -1) partidaToString = partidaToString + "\n gAtual id " + this.getGameAtualIndice() +"\n";
 
 		return partidaToString;
 	}
@@ -287,21 +348,29 @@ public class Partida {
 		List<Integer> resultado = new ArrayList<>();
 		resultado.add(0);
 		resultado.add(0);
-		for (int i = 0; i < this.getGames().size(); i++) {
-			Game game = this.getGame(i);
-			if (game.finalizado()) {
-				int ptsJgdrA_noGame = game.getPontos().get(0).getPontos();
-				int ptsJgdrB_noGame = game.getPontos().get(1).getPontos();
-				if (ptsJgdrA_noGame > ptsJgdrB_noGame)
-					resultado.set(0, resultado.get(0) + 1);
-				else if (ptsJgdrB_noGame > ptsJgdrA_noGame) {
-					resultado.set(1, resultado.get(1) + 1);
-				} else {
-					throw new NegocioException("Pontuação deste game está incorreta");
-				}
-			}
-		}
+		IntStream.range(0, this.getGames().size())
+				.mapToObj(this::getGame)
+				.filter(Game::finalizado)
+				.forEach(game -> {
+					int ptsJgdrA_noGame = game.getPontos().get(0).getPontos();
+					int ptsJgdrB_noGame = game.getPontos().get(1).getPontos();
+					if (ptsJgdrA_noGame > ptsJgdrB_noGame)
+						resultado.set(0, resultado.get(0) + 1);
+					else if (ptsJgdrB_noGame > ptsJgdrA_noGame) {
+						resultado.set(1, resultado.get(1) + 1);
+					} else {
+						throw new NegocioException("Pontuação deste game está incorreta");
+					}
+		});
 		return resultado;
 
+	}
+
+	public void moverParaProximoGame() {
+		//System.out.println("ANTES Partida.moverParaProximoGame gameAtualIndice = "+this.getGameAtualIndice()+"   getGames.size() = "+this.getGames().size());
+		if (this.getGameAtualIndice() < this.getGames().size() - 1) {
+			this.setGameAtualIndice(this.getGameAtualIndice() + 1);
+		}
+		//System.out.println("DEPOIS Partida.moverParaProximoGame gameAtualIndice = "+this.getGameAtualIndice()+"   getGames.size() = "+this.getGames().size());
 	}
 }

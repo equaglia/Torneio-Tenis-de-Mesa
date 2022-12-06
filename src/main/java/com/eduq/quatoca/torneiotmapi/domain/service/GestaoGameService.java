@@ -20,7 +20,7 @@ public class GestaoGameService {
 
 	private GameRepository gameRepository;
 	private GestaoPontuacaoService gestaoPontuacaoService;
-	
+
 	public Game buscar(Long gameId) {
 		return gameRepository.findById(gameId)
 				.orElseThrow(() -> new EntidadeNaoEncontradaException("Game não encontrado GestaoGameService"));
@@ -35,10 +35,11 @@ public class GestaoGameService {
 	}
 
 	@Transactional
-	public Game prepararGame(Optional<Jogador> jogadorA, Optional<Jogador> jogadorB) {
+	public Game prepararGame(Optional<Jogador> jogadorA, Optional<Jogador> jogadorB, int numero) {
 		Game game = new Game();
 		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorA.orElse(null));
 		game.addPontuacao(gestaoPontuacaoService.preparaPontuacao(), jogadorB.orElse(null));
+		game.setNumero(numero);
 		this.salvar(game);
 		return game;
 	}
@@ -65,12 +66,14 @@ public class GestaoGameService {
 	public void finalizarGame(Game game) {
 		game.finalizar();
 		this.salvar(game);
-		System.out.println(game.getPartida());
 	}
 
 	public boolean proximoGameProntoParaIniciar(Game game) {
-		return game.getPartida().gameAnterior().finalizado() 
-				&& game.preparado() 
+//		return game.getPartida().gameAnterior().finalizado()
+		if (game.getPartida().getGameAtualIndice() == 0)
+			return game.preparado() && game.getPartida().emAndamento();
+		return game.getPartida().getGame(game.getPartida().getGameAtualIndice()-1).finalizado()
+				&& game.preparado()
 				&& game.getPartida().emAndamento();
 	}
 

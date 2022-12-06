@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,7 +30,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Embeddable
-public class Game {
+public class Game implements Comparable<Game>{
 
 	@EqualsAndHashCode.Include
 	@Id
@@ -43,7 +44,9 @@ public class Game {
 	@OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
 	@Embedded
 	private List<Pontuacao> pontos = new ArrayList<>();
-	
+
+//	@Setter(value = AccessLevel.NONE)
+	private Integer numero; // TODO Atualizar Swagger
 	private OffsetDateTime inicio;
 	private OffsetDateTime fim;
 
@@ -63,25 +66,27 @@ public class Game {
 	}
 
 	public void iniciar() {
+		System.out.println("Game.iniciar() entrada "+this);
 		if (!this.getPartida().emAndamento()){
 			throw(new NegocioException("Game não pode iniciar, pois partida não está em andamento"));
 		} else {
 			switch (this.getStatus()) {
-			case Preparado:
-				this.setStatus(StatusJogo.EmAndamento);
-				this.setInicio(OffsetDateTime.now());
-				break;
-			case EmAndamento:
-				break;
-			case Cancelado:
-				throw(new NegocioException("Game Cancelado não pode ser iniciado"));
-			case Finalizado:
-				throw(new NegocioException("Game já Finalizado não pode ser iniciado"));
-			case Interrompido:
-				throw(new NegocioException("Game Interrompido precisa voltar para o status Preparado para ser reiniciado"));
-			default:
-				throw(new NegocioException("Ops, algo deu errado..."));
+				case Preparado:
+					this.setStatus(StatusJogo.EmAndamento);
+					this.setInicio(OffsetDateTime.now());
+					break;
+				case EmAndamento:
+					break;
+				case Cancelado:
+					throw(new NegocioException("Game Cancelado não pode ser iniciado"));
+				case Finalizado:
+					throw(new NegocioException("Game já Finalizado não pode ser iniciado"));
+				case Interrompido:
+					throw(new NegocioException("Game Interrompido precisa voltar para o status Preparado para ser reiniciado"));
+				default:
+					throw(new NegocioException("Ops, algo deu errado..."));
 			}
+			System.out.println("Game.iniciar() saida "+this);
 		}
 	}
 	
@@ -134,5 +139,21 @@ public class Game {
 	
 	public void setPontosJogador(int i, int pontuacao) {
 		this.getPontos().get(i).setPontos(pontuacao);
+	}
+
+	@Override
+	public String toString() {
+		String gameToString = "";
+		gameToString = gameToString +"\n g"+"id" + this.getId()+ ": ";
+		gameToString = gameToString + this.getPontos();
+		gameToString = gameToString + " " + this.getStatus();
+		return gameToString;
+	}
+
+	@Override
+	public int compareTo(Game g) {
+		return this.getNumero().compareTo(g.getNumero());
+//		return this.getId().compareTo(g.getId());
+//		return this.getNumero().compareTo(g.getNumero());
 	}
 }

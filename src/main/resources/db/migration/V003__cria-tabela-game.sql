@@ -4,6 +4,7 @@ CREATE TABLE game (
   fim datetime(6) DEFAULT NULL,
   inicio datetime(6) DEFAULT NULL, no mysql */
   id SERIAL,
+  numero smallint,
   fim timestamp DEFAULT NULL,
   inicio timestamp DEFAULT NULL,
   status varchar(20) DEFAULT NULL,

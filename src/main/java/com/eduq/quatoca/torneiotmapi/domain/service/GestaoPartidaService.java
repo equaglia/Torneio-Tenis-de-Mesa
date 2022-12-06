@@ -47,7 +47,6 @@ public class GestaoPartidaService {
 
 	@Transactional
 	public Partida salvar(Partida partida) {
-		System.out.println(partida);
 		return partidaRepository.save(partida);
 	}
 
@@ -64,8 +63,13 @@ public class GestaoPartidaService {
 		checaSeJogadoresSelecionadosCorretamente(partida);
 
 		for (int i = 0; i < tmapiConfig.getNumMaxGames(); i++) {
-			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB));
+			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB, i));
+//			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB, i+1));
 		}
+		System.out.println(partida);
+
+//		partida.setGameAtual(partida.getGame(0));
+		partida.setGameAtualIndice(0);
 
 		catalogoJogadorService.salvar(jogadorA.orElse(null));
 		catalogoJogadorService.salvar(jogadorB.orElse(null));
@@ -78,9 +82,12 @@ public class GestaoPartidaService {
 	public Partida iniciarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
 		partida.iniciar();
-		gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
+		gestaoGameService.iniciarGame(partida.primeiroGameDaPartida());
+		partida.setGameAtualIndice(0);
+//		gestaoGameService.iniciarGame(partida.getGames().get(partida.getGameAtualIndice()));
+//		gestaoGameService.iniciarGame(partida.getGameAtual());
+		//gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
 		this.salvar(partida);
-		System.out.println("partida: "+ partidaId+" iniciada");
 		return partida;
 	}
 
@@ -93,19 +100,23 @@ public class GestaoPartidaService {
 			if (partidaJaTemVencedor(partida.calculaResultado())) {
 				finalizarPartida(partida);
 			} else {
-				Game proximoGame = partida.proximoGame();
+				Game gameEmJogo = null;
+				if (partida.getGame(partida.getGameAtualIndice()) != null) {
+					gameEmJogo = partida.getGame(partida.getGameAtualIndice());
+				}
 				if (partida.emAndamento()) {
 
-					if (proximoGame == null) {
+					if (gameEmJogo == null) {
 						finalizarPartida(partida);
-					} else
-						gestaoGameService.iniciarGame(proximoGame);
+					} else {
+						gestaoGameService.iniciarGame(gameEmJogo);
+					}
+
 				} else {
 					throw new NegocioException("Partida ainda precisa ser iniciada");
 				}
 			}
 		}
-		System.out.println("partida "+partidaId+" continuando");
 		return this.salvar(partida);
 	}
 
@@ -113,8 +124,6 @@ public class GestaoPartidaService {
 	public void finalizarPartida(Partida partida) {
 		partida.finalizar();
 		this.salvar(partida);
-		System.out.println("partida "+partida.getId()+" finalizou");
-
 	}
 
 	@Transactional
@@ -126,8 +135,6 @@ public class GestaoPartidaService {
 			partida.liberarJogadores();
 		}
 		partida.cancelar();
-		System.out.println("partida "+partidaId+" cancelada");
-
 		return partida;
 	}
 
@@ -143,6 +150,8 @@ public class GestaoPartidaService {
 			partida.setGames(null);
 			partida.setJogadores(null);
 			partida.setPrimeiroSacador(null);
+//			partida.setGameAtual(null);
+			partida.setGameAtualIndice(-1);
 			partidaRepository.delete(partida);
 			System.out.println("partida "+partidaId+" deletada");
 
@@ -249,5 +258,15 @@ public class GestaoPartidaService {
 		if (!(gameIn.getInicio() == null))
 			inicioIn = gameIn.getInicio();
 		return inicioIn;
+	}
+
+	public void moverParaProximoGame(Partida partida) {
+		partida.moverParaProximoGame();
+		this.salvar(partida);
+		//if (partida.getGameAtualIndice() == partida.getGames().size() -1
+		//		|| this.partidaJaTemVencedor(partida.calculaResultado())) {
+		if (this.partidaJaTemVencedor(partida.calculaResultado())) {
+			this.finalizarPartida(partida);
+		}
 	}
 }

@@ -42,4 +42,9 @@ public class Pontuacao {
 	public int menosUmPonto() {
 		return this.getPontos() - 1;
 	}
+
+	@Override
+	public String toString() {
+		return "" + this.getPontos();
+	}
 }

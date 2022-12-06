@@ -35,6 +35,7 @@ public class PontuacaoEmGameService {
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
 			gestaoGameService.garantirGameAnteriorJaFinalizado(game);
 			gestaoGameService.iniciarGame(game);
+			System.out.println("game iniciando "+game.getId()+" PontuacaoEmGameService.atualizarPontuacao()");
 			gameAtivo = true;
 		}
 		if (gameAtivo) {
@@ -58,6 +59,7 @@ public class PontuacaoEmGameService {
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
 			gestaoGameService.garantirGameAnteriorJaFinalizado(game);
 			gestaoGameService.iniciarGame(game);
+			System.out.println("game iniciando "+game.getId()+" PontuacaoEmGameService.somaUmPonto()");
 			gameAtivo = true;
 		}
 		if (gameAtivo) {
@@ -72,10 +74,11 @@ public class PontuacaoEmGameService {
 			if (CalculosGlobais.pontuacaoParaFinalizarGame(pontuacaoJogadorA.getPontos(),
 					pontuacaoJogadorB.getPontos())) {
 				gestaoGameService.finalizarGame(game);
-				Partida partida = game.getPartida();
-				if (gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
-					gestaoPartidaService.finalizarPartida(partida);
-				}
+//				Partida partida = game.getPartida();
+//				partida.setGameAtualIndice(partida.getGameAtualIndice() + 1);
+//				if (gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
+//					gestaoPartidaService.finalizarPartida(partida);
+//				}
 			}
 		}
 		return game;
@@ -131,11 +134,16 @@ public class PontuacaoEmGameService {
 			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
 			gestaoGameService.finalizarGame(game);
 			Partida partida = game.getPartida();
-			Game proximoGame = partida.proximoGame();// TODO proximoGame null se partida ja deu resultado
-			if (proximoGame == null
-					|| gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
-				gestaoPartidaService.finalizarPartida(partida);
-			}
+			gestaoPartidaService.moverParaProximoGame(partida);
+//			gestaoPartidaService.salvar(partida);
+//			partida.setGameAtualIndice(partida.getGameAtualIndice() + 1);
+//			Game proximoGame = partida.proximoGame();// TODO proximoGame null se partida ja deu resultado
+//			if (proximoGame == null
+//					|| gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
+//			if (partida.getGameAtualIndice() < partida.getGames().size() -1
+//					|| gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
+//				gestaoPartidaService.finalizarPartida(partida);
+//			}
 		} else {
 			throw (new NegocioException(
 					"Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
