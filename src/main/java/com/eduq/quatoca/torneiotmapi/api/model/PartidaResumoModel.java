@@ -2,8 +2,7 @@ package com.eduq.quatoca.torneiotmapi.api.model;
 
 import java.util.Set;
 
-import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogo;
-
+import com.eduq.quatoca.torneiotmapi.domain.model.StatusPartida;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +17,6 @@ public class PartidaResumoModel {
 //	private List<GameModel> games;
 //	private OffsetDateTime inicioPartida;
 //	private OffsetDateTime fimPartida;
-	private StatusJogo partidaStatus;
+	private StatusPartida partidaStatus;
 
 }

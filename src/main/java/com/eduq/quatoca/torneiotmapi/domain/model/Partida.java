@@ -57,7 +57,7 @@ public class Partida {
 
 	@NotNull(message = "Status da partida é mandatório")
 	@Enumerated(EnumType.STRING)
-	private StatusJogo status;
+	private StatusPartida status;
 
 	public void addGame(Game game) {
 		games.add(game);
@@ -82,7 +82,7 @@ public class Partida {
 
 	public Partida() {
 		super();
-		this.setStatus(StatusJogo.Preparado);
+		this.setStatus(StatusPartida.Preparada);
 	}
 
 	public Game buscarGameEmAndamento() {
@@ -179,10 +179,10 @@ public class Partida {
 
 	public void iniciar() {
 		switch (this.getStatus()) {
-		case Preparado:
+		case Preparada:
 			boolean jogadoresDisponiveis = jogadoresDisponiveisParaIniciarPartida();
 			if (jogadoresDisponiveis) {
-				this.setStatus(StatusJogo.EmAndamento);
+				this.setStatus(StatusPartida.EmAndamento);
 				this.setInicio(OffsetDateTime.now());
 				this.jogadores.forEach(Jogador::convocar);
 			} else {
@@ -191,11 +191,11 @@ public class Partida {
 			break;
 		case EmAndamento:
 			break;
-		case Cancelado:
+		case Cancelada:
 			throw (new NegocioException("Partida Cancelada não pode ser iniciada"));
-		case Finalizado:
+		case Finalizada:
 			throw (new NegocioException("Partida já foi Finalizada então não pode ser iniciada"));
-		case Interrompido:
+		case Interrompida:
 			throw (new NegocioException(
 					"Partida Interrompida precisa voltar para o status Preparado para ser reiniciada"));
 		default:
@@ -204,7 +204,7 @@ public class Partida {
 	}
 
 	public void finalizar() {
-		this.setStatus(StatusJogo.Finalizado);
+		this.setStatus(StatusPartida.Finalizada);
 		this.jogadores.forEach(Jogador::liberar);
 		this.games.forEach(game -> {
 			if (game.preparado())
@@ -214,13 +214,13 @@ public class Partida {
 //		this.setGameAtual(null);
 		this.setGameAtualIndice(-1);
 		this.getGames().stream()
-				.filter(game -> game.getStatus() != StatusJogo.Finalizado)
-				.forEach(game -> game.setStatus(StatusJogo.Cancelado));
+				.filter(game -> game.getStatus() != StatusGame.Finalizado)
+				.forEach(game -> game.setStatus(StatusGame.Cancelado));
 		System.out.println(" finalizada "+this+" Partida.finalizar()");
 	}
 	
 	public void cancelar() {
-		this.setStatus(StatusJogo.Cancelado);
+		this.setStatus(StatusPartida.Cancelada);
 //		System.out.println(" cancelada "+this);
 	}
 
@@ -252,8 +252,8 @@ public class Partida {
 	}
 
 	public void setEmAndamento() {
-		if (this.getStatus() == StatusJogo.Finalizado) {
-			this.setStatus(StatusJogo.EmAndamento);
+		if (this.getStatus() == StatusPartida.Finalizada) {
+			this.setStatus(StatusPartida.EmAndamento);
 			this.jogadores.forEach(Jogador::convocar);
 			this.games.forEach(game -> {
 				if (game.cancelado())
@@ -269,23 +269,23 @@ public class Partida {
 	}
 
 	public boolean preparado() {
-		return this.getStatus() == StatusJogo.Preparado;
+		return this.getStatus() == StatusPartida.Preparada;
 	}
 
 	public boolean emAndamento() {
-		return this.getStatus() == StatusJogo.EmAndamento;
+		return this.getStatus() == StatusPartida.EmAndamento;
 	}
 
 	public boolean finalizado() {
-		return this.getStatus() == StatusJogo.Finalizado;
+		return this.getStatus() == StatusPartida.Finalizada;
 	}
 
 	public boolean interrompido() {
-		return this.getStatus() == StatusJogo.Interrompido;
+		return this.getStatus() == StatusPartida.Interrompida;
 	}
 
 	public boolean cancelado() {
-		return this.getStatus() == StatusJogo.Cancelado;
+		return this.getStatus() == StatusPartida.Cancelada;
 	}
 	
 	public Game getGame(int game) {

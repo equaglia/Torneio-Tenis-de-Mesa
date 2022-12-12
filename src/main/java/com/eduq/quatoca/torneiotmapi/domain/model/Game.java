@@ -20,7 +20,6 @@ import javax.validation.constraints.NotNull;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -52,7 +51,7 @@ public class Game implements Comparable<Game>{
 
 	@NotNull(message = "Status do game é mandatório")
 	@Enumerated(EnumType.STRING)
-	private StatusJogo status;
+	private StatusGame status;
 	
 	public void addPontuacao(Pontuacao pontuacao, Jogador jogador) {
 		pontos.add(pontuacao);
@@ -62,7 +61,7 @@ public class Game implements Comparable<Game>{
 
 	public Game() {
 		super();
-		this.setStatus(StatusJogo.Preparado);
+		this.setStatus(StatusGame.Preparado);
 	}
 
 	public void iniciar() {
@@ -72,7 +71,7 @@ public class Game implements Comparable<Game>{
 		} else {
 			switch (this.getStatus()) {
 				case Preparado:
-					this.setStatus(StatusJogo.EmAndamento);
+					this.setStatus(StatusGame.EmAndamento);
 					this.setInicio(OffsetDateTime.now());
 					break;
 				case EmAndamento:
@@ -91,33 +90,33 @@ public class Game implements Comparable<Game>{
 	}
 	
 	public void finalizar() {
-		this.setStatus(StatusJogo.Finalizado);
+		this.setStatus(StatusGame.Finalizado);
 		this.setFim(OffsetDateTime.now());
 	}
 	
 	public void setPreparado() {
-		this.setStatus(StatusJogo.Preparado);
+		this.setStatus(StatusGame.Preparado);
 		this.setFim(null);		
 	}
 
 	public boolean preparado() {
-		return this.getStatus() == StatusJogo.Preparado;
+		return this.getStatus() == StatusGame.Preparado;
 	}
 
 	public boolean emAndamento() {
-		return this.getStatus() == StatusJogo.EmAndamento;
+		return this.getStatus() == StatusGame.EmAndamento;
 	}
 
 	public boolean finalizado() {
-		return this.getStatus() == StatusJogo.Finalizado;
+		return this.getStatus() == StatusGame.Finalizado;
 	}
 
 	public boolean interrompido() {
-		return this.getStatus() == StatusJogo.Interrompido;
+		return this.getStatus() == StatusGame.Interrompido;
 	}
 
 	public boolean cancelado() {
-		return this.getStatus() == StatusJogo.Cancelado;
+		return this.getStatus() == StatusGame.Cancelado;
 	}
 	
 	public boolean emCurso() {
@@ -125,11 +124,11 @@ public class Game implements Comparable<Game>{
 	}
 
 	public void cancelar() {
-		this.setStatus(StatusJogo.Cancelado);
+		this.setStatus(StatusGame.Cancelado);
 	}
 
 	public void setEmAndamento() {
-		this.setStatus(StatusJogo.EmAndamento);
+		this.setStatus(StatusGame.EmAndamento);
 		this.setFim(null);		
 	}
 	
