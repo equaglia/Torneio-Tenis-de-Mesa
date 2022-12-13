@@ -8,7 +8,9 @@ CREATE TABLE partida (
   inicio timestamp DEFAULT NULL,
   status varchar(20) DEFAULT NULL,
   primeiro_sacador_id bigint DEFAULT NULL,
-  
+  games_vencidosa int DEFAULT NULL,
+  games_vencidosb int DEFAULT NULL,
+
   PRIMARY KEY (id)
 );
 

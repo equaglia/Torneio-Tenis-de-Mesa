@@ -91,6 +91,9 @@ public class Game implements Comparable<Game>{
 	
 	public void finalizar() {
 		this.setStatus(StatusGame.Finalizado);
+		var resultado = this.getPartida().calculaResultado();
+		this.getPartida().setGamesVencidosA(resultado.get(0));
+		this.getPartida().setGamesVencidosB(resultado.get(1));
 		this.setFim(OffsetDateTime.now());
 	}
 	

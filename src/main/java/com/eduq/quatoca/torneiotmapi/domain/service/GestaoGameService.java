@@ -78,6 +78,7 @@ public class GestaoGameService {
 	}
 
 	public boolean isGameEmAndamento(Game game) {
+
 		return game.getPartida().buscarGameEmAndamento() == game;
 	}
 

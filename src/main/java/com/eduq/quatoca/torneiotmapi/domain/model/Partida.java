@@ -1,5 +1,6 @@
 package com.eduq.quatoca.torneiotmapi.domain.model;
 
+import com.eduq.quatoca.torneiotmapi.common.CalculosGlobais;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
@@ -58,6 +59,9 @@ public class Partida {
 	@NotNull(message = "Status da partida é mandatório")
 	@Enumerated(EnumType.STRING)
 	private StatusPartida status;
+
+	private int gamesVencidosA;
+	private int gamesVencidosB;
 
 	public void addGame(Game game) {
 		games.add(game);
@@ -335,7 +339,7 @@ public class Partida {
 		String jogadorB = game.getPontos().get(1).getJogador().getNome();
 		partidaToString = partidaToString + "ptd " + this.getId() + ", " + jogadorA + " x " + jogadorB;
 
-		Collections.sort(this.getGames());
+		//Collections.sort(this.getGames());
 		partidaToString = partidaToString + this.getGames();
 		partidaToString = partidaToString +
 				"\n " + jogadorA +" "+ resultado.get(0) + " X " + resultado.get(1) +" "+ jogadorB;
@@ -354,16 +358,21 @@ public class Partida {
 				.forEach(game -> {
 					int ptsJgdrA_noGame = game.getPontos().get(0).getPontos();
 					int ptsJgdrB_noGame = game.getPontos().get(1).getPontos();
-					if (ptsJgdrA_noGame > ptsJgdrB_noGame)
+					int vencedorGame = CalculosGlobais.vencedorGame(ptsJgdrA_noGame, ptsJgdrB_noGame);
+					if (vencedorGame == 0)
+//					if (ptsJgdrA_noGame > ptsJgdrB_noGame)
 						resultado.set(0, resultado.get(0) + 1);
-					else if (ptsJgdrB_noGame > ptsJgdrA_noGame) {
+					else if (vencedorGame == 1)
+//					else if (ptsJgdrB_noGame > ptsJgdrA_noGame) {
 						resultado.set(1, resultado.get(1) + 1);
-					} else {
-						throw new NegocioException("Pontuação deste game está incorreta");
+					else {
+						throw new NegocioException("Game não finalizado");
+//						throw new NegocioException("Pontuação deste game está incorreta");
 					}
 		});
+//		this.setGamesVencidosA(resultado.get(0));
+//		this.setGamesVencidosB(resultado.get(1));
 		return resultado;
-
 	}
 
 	public void moverParaProximoGame() {

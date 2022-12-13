@@ -19,5 +19,7 @@ public class PartidaModel {
 	private JogadorResumoModel jogadorPrimeiroSacador;
 	private List<GameModel> games;
 //	private Game gameAtual;
+	private int gamesVencidosA;
+	private int gamesVencidosB;
 
 }
