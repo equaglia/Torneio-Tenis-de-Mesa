@@ -1,5 +1,5 @@
-config:
-  numMaxGames: 5
+# config:
+  # numMaxGames: 5
 springdoc:
   swagger-ui:
     tagsSorter: alplha

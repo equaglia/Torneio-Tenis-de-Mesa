@@ -77,11 +77,12 @@ public class PartidaController {
 			description = "Preparar partida, definindo seus jogadores")
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	@RequestMapping("/{jogadorAId}/{jogadorBId}")
+	@RequestMapping("/{jogadorAId}/{jogadorBId}/{quantidadeGames}")
 	public ResponseEntity<PartidaModel> adicionar(
 			@Parameter(description = "Identificador único do primeiro jogador no BD") @PathVariable Long jogadorAId, 
-			@Parameter(description = "Identificador único do segundo jogador no BD") @PathVariable Long jogadorBId) {
-		return Optional.of(gestaoPartidaService.prepararPartida(jogadorAId, jogadorBId))
+			@Parameter(description = "Identificador único do segundo jogador no BD") @PathVariable Long jogadorBId,
+			@Parameter(description = "Quantidade de games da partida") @PathVariable int quantidadeGames) {
+		return Optional.of(gestaoPartidaService.prepararPartida(jogadorAId, jogadorBId, quantidadeGames))
 				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
 				.orElse(ResponseEntity.notFound().build());
 	}

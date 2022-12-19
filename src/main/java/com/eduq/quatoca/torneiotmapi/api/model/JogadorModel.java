@@ -1,5 +1,6 @@
 package com.eduq.quatoca.torneiotmapi.api.model;
 
+import com.eduq.quatoca.torneiotmapi.domain.model.CategoriaJogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogador;
 
 import lombok.Data;
@@ -11,6 +12,6 @@ public class JogadorModel {
 	private String nome;
 	private String sobrenome;
 	private StatusJogador status;
-//	private CategoriaJogador categoria;
+	private CategoriaJogador categoria;
 
 }

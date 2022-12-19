@@ -63,6 +63,8 @@ public class Partida {
 	private int gamesVencidosA;
 	private int gamesVencidosB;
 
+	private int quantidadeGames;
+
 	public void addGame(Game game) {
 		games.add(game);
 		game.setPartida(this);

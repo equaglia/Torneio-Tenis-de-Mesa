@@ -34,8 +34,6 @@ public class GestaoPartidaService {
 	private static final int jogadorA = 0;
 	private static final int jogadorB = 1;
 
-	private TmapiConfig tmapiConfig;
-
 	public Partida buscar(Long partidaId) {
 		return partidaRepository.findById(partidaId)
 				.orElseThrow(() -> new EntidadeNaoEncontradaException("Partida não encontrada GestaoPartidaService"));
@@ -51,9 +49,11 @@ public class GestaoPartidaService {
 	}
 
 	@Transactional
-	public Partida prepararPartida(Long jogadorAId, Long jogadorBId) {
+	public Partida prepararPartida(Long jogadorAId, Long jogadorBId, int quantidadeGames) {
 
 		Partida partida = new Partida();
+
+		partida.setQuantidadeGames(quantidadeGames);
 
 		Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
 		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
@@ -62,13 +62,11 @@ public class GestaoPartidaService {
 
 		checaSeJogadoresSelecionadosCorretamente(partida);
 
-		for (int i = 0; i < tmapiConfig.getNumMaxGames(); i++) {
+		for (int i = 0; i < quantidadeGames; i++) {
 			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB, i));
-//			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB, i+1));
 		}
 		System.out.println(partida);
 
-//		partida.setGameAtual(partida.getGame(0));
 		partida.setGameAtualIndice(0);
 
 		catalogoJogadorService.salvar(jogadorA.orElse(null));
@@ -84,9 +82,6 @@ public class GestaoPartidaService {
 		partida.iniciar();
 		gestaoGameService.iniciarGame(partida.primeiroGameDaPartida());
 		partida.setGameAtualIndice(0);
-//		gestaoGameService.iniciarGame(partida.getGames().get(partida.getGameAtualIndice()));
-//		gestaoGameService.iniciarGame(partida.getGameAtual());
-		//gestaoGameService.iniciarGame(partida.buscarGameEmAndamento().getId());
 		this.salvar(partida);
 		return partida;
 	}
@@ -97,7 +92,7 @@ public class GestaoPartidaService {
 		if (partida.finalizado()) {
 			return partida;
 		} else {
-			if (partidaJaTemVencedor(partida.calculaResultado())) {
+			if (partidaJaTemVencedor(partida)) {
 				finalizarPartida(partida);
 			} else {
 				Game gameEmJogo = null;
@@ -184,13 +179,14 @@ public class GestaoPartidaService {
 		}
 	}
 
-	public boolean partidaJaTemVencedor(List<Integer> resultado) {
-		return resultado.get(jogadorA) == gamesParaVencerPartida()
-				|| resultado.get(jogadorB) == gamesParaVencerPartida();
+	public boolean partidaJaTemVencedor(Partida partida) {
+		List<Integer> resultado = partida.calculaResultado();
+		return resultado.get(jogadorA) == gamesParaVencerPartida(partida)
+				|| resultado.get(jogadorB) == gamesParaVencerPartida(partida);
 	}
 
-	private int gamesParaVencerPartida() {
-		return tmapiConfig.getNumMaxGames() / 2 + 1;
+	private int gamesParaVencerPartida(Partida partida) {
+		return partida.getQuantidadeGames() / 2 + 1;
 	}
 
 	public boolean temGameEmAndamento(Partida partida) {
@@ -239,7 +235,7 @@ public class GestaoPartidaService {
 				break;
 		}
 
-		if (partidaJaTemVencedor(partidaOut.calculaResultado())) {
+		if (partidaJaTemVencedor(partidaOut)) {
 			this.finalizarPartida(partidaOut);
 			this.salvar(partidaOut);
 		} else {
@@ -263,9 +259,7 @@ public class GestaoPartidaService {
 	public void moverParaProximoGame(Partida partida) {
 		partida.moverParaProximoGame();
 		this.salvar(partida);
-		//if (partida.getGameAtualIndice() == partida.getGames().size() -1
-		//		|| this.partidaJaTemVencedor(partida.calculaResultado())) {
-		if (this.partidaJaTemVencedor(partida.calculaResultado())) {
+		if (this.partidaJaTemVencedor(partida)) {
 			this.finalizarPartida(partida);
 		}
 	}

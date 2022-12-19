@@ -10,6 +10,7 @@ CREATE TABLE partida (
   primeiro_sacador_id bigint DEFAULT NULL,
   games_vencidosa int DEFAULT NULL,
   games_vencidosb int DEFAULT NULL,
+  quantidade_games int DEFAULT NULL,
 
   PRIMARY KEY (id)
 );
