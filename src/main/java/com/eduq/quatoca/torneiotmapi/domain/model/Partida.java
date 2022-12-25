@@ -184,6 +184,7 @@ public class Partida {
 	}
 
 	public void iniciar() {
+		System.out.println("Partida.iniciar entrada + game[0].id = "+this.games.get(0).getId());
 		switch (this.getStatus()) {
 		case Preparada:
 			boolean jogadoresDisponiveis = jogadoresDisponiveisParaIniciarPartida();
@@ -207,6 +208,8 @@ public class Partida {
 		default:
 			throw (new NegocioException("Ops, algo deu errado..."));
 		}
+		System.out.println("Partida.iniciar saida + game[0].id = "+this.games.get(0).getId());
+
 	}
 
 	public void finalizar() {
@@ -219,7 +222,7 @@ public class Partida {
 		this.setFim(OffsetDateTime.now());
 //		this.setGameAtual(null);
 		this.setGameAtualIndice(-1);
-		this.getGames().stream()
+		this.getGames().stream() //TODO filter altera a ordem de games???
 				.filter(game -> game.getStatus() != StatusGame.Finalizado)
 				.forEach(game -> game.setStatus(StatusGame.Cancelado));
 		System.out.println(" finalizada "+this+" Partida.finalizar()");
@@ -304,8 +307,8 @@ public class Partida {
 			Game game = this.getGame(i);
 			if (game.emAndamento()) {
 //				this.setGameAtual(game);
-				this.setGameAtualIndice(i);
-				System.out.println("atualizou gameAtualIndice para "+i);
+				this.setGameAtualIndice(i); //TODO Checar alteração de gameAtualIndice
+				System.out.println("Partida.garantirNoMaximoUmGameEmAndamento"+" atualizou gameAtualIndice para "+i);
 				break;
 //				if (!temGameEmAndamento) temGameEmAndamento = true;
 //				else {
@@ -377,7 +380,7 @@ public class Partida {
 		return resultado;
 	}
 
-	public void moverParaProximoGame() {
+	public void moverParaProximoGame() { //TODO Checar controle de gameAtualIndice. Talvez esteja pulando um game
 		//System.out.println("ANTES Partida.moverParaProximoGame gameAtualIndice = "+this.getGameAtualIndice()+"   getGames.size() = "+this.getGames().size());
 		if (this.getGameAtualIndice() < this.getGames().size() - 1) {
 			this.setGameAtualIndice(this.getGameAtualIndice() + 1);

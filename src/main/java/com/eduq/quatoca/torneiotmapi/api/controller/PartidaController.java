@@ -42,7 +42,8 @@ public class PartidaController {
 	@Operation(summary = "Lista das partidas",
 			description = "Listar as partidas da base de dados")
 	@GetMapping
-	public List<PartidaModel> listar() {
+	public List<PartidaModel> listar()
+	{
 		return partidaAssembler.toCollectionModel(gestaoPartidaService.listar());
 	}
 
@@ -58,6 +59,7 @@ public class PartidaController {
 	@GetMapping("/{partidaId}")
 	public ResponseEntity<PartidaModel> buscar(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
+		System.out.println("PartidaController.buscar");
 		return Optional.of(gestaoPartidaService.buscar(partidaId))
 			.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
 			.orElse(ResponseEntity.notFound().build());

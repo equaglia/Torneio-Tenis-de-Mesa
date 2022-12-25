@@ -79,10 +79,15 @@ public class GestaoPartidaService {
 	@Transactional
 	public Partida iniciarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
+		//System.out.println("GestaoPartidaService.iniciarPartida antes de partida.iniciar(): game[0].id = "+partida.getGames().get(0).getId());
 		partida.iniciar();
+		//System.out.println("GestaoPartidaService.iniciarPartida antes de gestaoGameService.iniciarGame(partida.primeiroGameDaPartida()): game[0].id = "+partida.getGames().get(0).getId());
 		gestaoGameService.iniciarGame(partida.primeiroGameDaPartida());
+		//System.out.println("GestaoPartidaService.iniciarPartida antes de partida.setGameAtualIndice(0): game[0].id = "+partida.getGames().get(0).getId());
 		partida.setGameAtualIndice(0);
+		//System.out.println("GestaoPartidaService.iniciarPartida antes de this.salvar(partida): game[0].id = "+partida.getGames().get(0).getId());
 		this.salvar(partida);
+		//System.out.println("GestaoPartidaService.iniciarPartida DEPOIS de this.salvar(partida): game[0].id = "+partida.getGames().get(0).getId());
 		return partida;
 	}
 

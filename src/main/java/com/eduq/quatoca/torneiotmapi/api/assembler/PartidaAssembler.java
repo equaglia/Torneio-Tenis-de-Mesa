@@ -27,8 +27,8 @@ public class PartidaAssembler {
 				.collect(Collectors.toList());
 	}
 	
-	public Partida toEntity(PartidaModel partidaModel) {
+	public Partida toEntity(PartidaModel partidaModel)
+	{
 		return modelMapper.map(partidaModel, Partida.class);
 	}
-
 }

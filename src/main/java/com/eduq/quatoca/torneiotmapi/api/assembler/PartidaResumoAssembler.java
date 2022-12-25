@@ -16,7 +16,8 @@ import lombok.AllArgsConstructor;
 public class PartidaResumoAssembler {
 	private ModelMapper modelMapper;
 
-	public PartidaResumoModel toResumoModel(Partida partida) {
+	public PartidaResumoModel toResumoModel(Partida partida)
+	{
 		return modelMapper.map(partida, PartidaResumoModel.class);
 	}
 	
@@ -29,6 +30,4 @@ public class PartidaResumoAssembler {
 	public Partida toEntity(PartidaResumoModel partidaResumoModel) {
 		return modelMapper.map(partidaResumoModel, Partida.class);
 	}
-
-
 }

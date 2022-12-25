@@ -11,8 +11,8 @@ import lombok.Data;
 public class GameModel {
 
 	private Long id;
+	private StatusGame gameStatus;
 	private List<PontuacaoModel> pontos;
 	private OffsetDateTime inicioGame;
 	private OffsetDateTime fimGame;
-	private StatusGame gameStatus;
 }
