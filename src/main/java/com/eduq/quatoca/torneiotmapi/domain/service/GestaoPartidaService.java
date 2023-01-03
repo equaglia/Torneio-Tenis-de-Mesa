@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.eduq.quatoca.torneiotmapi.TmapiConfig;
@@ -40,7 +41,7 @@ public class GestaoPartidaService {
 	}
 
 	public List<Partida> listar() {
-		return partidaRepository.findAll();
+		return partidaRepository.findAll(Sort.by("id"));
 	}
 
 	@Transactional

@@ -1,7 +1,9 @@
 package com.eduq.quatoca.torneiotmapi.api.controller;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +38,9 @@ public class GameController {
 			description = "Listar os games da partida ???") //TODO partida ou todos???
 	@GetMapping
 	public List<GameModel> listar() {
-		return gameAssembler.toCollectionModel(gestaoGameService.listar());
+		return gameAssembler.toCollectionModel(gestaoGameService.listar())
+				.stream().sorted(Comparator.comparing(GameModel::getId))
+				.collect(Collectors.toList());
 	}
 	
 	@Operation(summary = "Informações do game",

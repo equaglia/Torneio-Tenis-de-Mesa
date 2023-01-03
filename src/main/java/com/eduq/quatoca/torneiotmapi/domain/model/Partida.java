@@ -36,6 +36,7 @@ public class Partida {
 		inverseJoinColumns = @JoinColumn(name="partida_id"))
 	@JsonIgnore
 	@ToString.Exclude
+	//private Map<Integer, Jogador> jogadores = new HashMap<>();
 	private Set<Jogador> jogadores = new HashSet<>();
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -127,10 +128,6 @@ public class Partida {
 
 
 		if (this.emAndamento()) {
-//			int indiceGameAtual = this.getGames().indexOf(this.getGameAtual());
-			int indiceGameAtual = this.getGameAtualIndice();
-			int proximoGameAposAtual = indiceGameAtual + 1;
-//			System.out.println("indice gameAtual "+indiceGameAtual + "  proximo game "+proximoGameAposAtual);
 			int proximoGameIndice = 0;
 			int quantidadeGames = getQuantidadeGamesDaPartida();
 			while (proximoGameIndice < quantidadeGames) {
@@ -144,7 +141,6 @@ public class Partida {
 					proximoGameIndice++;
 				} else if (thisGame.preparado() || thisGame.emAndamento()) {
 					System.out.println("RETURN proximoGame indice "+proximoGameIndice+" id "+thisGame.getId() + " partida "+this.getId()+" Partida.proximoGame()");
-//					return this.getGameAtual();
 					return thisGame;
 				} else
 					throw new NegocioException("Partida impedida de continuar");
@@ -169,22 +165,10 @@ public class Partida {
 		} else {
 			throw (new NegocioException("Este é o primeiro game da partida"));
 		}
-
-//		int quantidadeGames = getQuantidadeGamesDaPartida();
-//		if (primeiroGameDaPartida() == buscarGameEmAndamento()) {
-//			throw (new NegocioException("Este é o primeiro game da partida"));
-//		}
-//		int i = 1;
-//		while (i <= quantidadeGames) {
-//			if (this.games.get(i).emAndamento())
-//				return this.games.get(i - 1);
-//			i++;
-//		}
-//		throw (new NegocioException("Não há game em andamento"));
 	}
 
 	public void iniciar() {
-		System.out.println("Partida.iniciar entrada + game[0].id = "+this.games.get(0).getId());
+//		System.out.println("Partida.iniciar entrada + game[0].id = "+this.games.get(0).getId());
 		switch (this.getStatus()) {
 		case Preparada:
 			boolean jogadoresDisponiveis = jogadoresDisponiveisParaIniciarPartida();
@@ -208,8 +192,6 @@ public class Partida {
 		default:
 			throw (new NegocioException("Ops, algo deu errado..."));
 		}
-		System.out.println("Partida.iniciar saida + game[0].id = "+this.games.get(0).getId());
-
 	}
 
 	public void finalizar() {

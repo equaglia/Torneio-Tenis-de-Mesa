@@ -1,10 +1,13 @@
 package com.eduq.quatoca.torneiotmapi.api.controller;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,12 +62,16 @@ public class PartidaController {
 	@GetMapping("/{partidaId}")
 	public ResponseEntity<PartidaModel> buscar(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
-		System.out.println("PartidaController.buscar");
-		return Optional.of(gestaoPartidaService.buscar(partidaId))
+		Partida partidas = gestaoPartidaService.buscar(partidaId);
+		List<Game> games = partidas.getGames()
+				.stream().sorted(Comparator.comparing(Game::getId))
+				.collect(Collectors.toList());
+		partidas.setGames(games);
+		return Optional.of(partidas)
 			.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
 			.orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@Operation(summary = "Remoção de partida",
 			description = "Remover a partida da base de dados. Para ser removida, a partida deve estar no status CANCELADO.")
 	@DeleteMapping
