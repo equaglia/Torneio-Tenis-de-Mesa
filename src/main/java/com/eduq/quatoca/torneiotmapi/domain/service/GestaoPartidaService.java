@@ -58,8 +58,7 @@ public class GestaoPartidaService {
 
 		Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
 		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
-		partida.addJogador(jogadorA.orElse(null));
-		partida.addJogador(jogadorB.orElse(null));
+		partida.setAdversarios(jogadorA.orElse(null), jogadorB.orElse(null));
 
 		checaSeJogadoresSelecionadosCorretamente(partida);
 
@@ -80,15 +79,10 @@ public class GestaoPartidaService {
 	@Transactional
 	public Partida iniciarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
-		//System.out.println("GestaoPartidaService.iniciarPartida antes de partida.iniciar(): game[0].id = "+partida.getGames().get(0).getId());
 		partida.iniciar();
-		//System.out.println("GestaoPartidaService.iniciarPartida antes de gestaoGameService.iniciarGame(partida.primeiroGameDaPartida()): game[0].id = "+partida.getGames().get(0).getId());
 		gestaoGameService.iniciarGame(partida.primeiroGameDaPartida());
-		//System.out.println("GestaoPartidaService.iniciarPartida antes de partida.setGameAtualIndice(0): game[0].id = "+partida.getGames().get(0).getId());
 		partida.setGameAtualIndice(0);
-		//System.out.println("GestaoPartidaService.iniciarPartida antes de this.salvar(partida): game[0].id = "+partida.getGames().get(0).getId());
 		this.salvar(partida);
-		//System.out.println("GestaoPartidaService.iniciarPartida DEPOIS de this.salvar(partida): game[0].id = "+partida.getGames().get(0).getId());
 		return partida;
 	}
 
@@ -106,13 +100,11 @@ public class GestaoPartidaService {
 					gameEmJogo = partida.getGame(partida.getGameAtualIndice());
 				}
 				if (partida.emAndamento()) {
-
 					if (gameEmJogo == null) {
 						finalizarPartida(partida);
 					} else {
 						gestaoGameService.iniciarGame(gameEmJogo);
 					}
-
 				} else {
 					throw new NegocioException("Partida ainda precisa ser iniciada");
 				}
@@ -149,13 +141,12 @@ public class GestaoPartidaService {
 				gestaoGameService.excluir(game);
 			});
 			partida.setGames(null);
-			partida.setJogadores(null);
+			partida.setJogadorA(null);
+			partida.setJogadorB(null);
 			partida.setPrimeiroSacador(null);
-//			partida.setGameAtual(null);
 			partida.setGameAtualIndice(-1);
 			partidaRepository.delete(partida);
 			System.out.println("partida "+partidaId+" deletada");
-
 		} else
 			throw new NegocioException("Somente partida CANCELADA pode ser excluída");
 	}
@@ -164,24 +155,19 @@ public class GestaoPartidaService {
 	public void setPartidaEmAndamento(Partida partida) {
 		partida.setEmAndamento();
 		System.out.println("partida "+partida.getId()+" entrou em andamento");
-
 		this.salvar(partida);
 	}
 
 	public void checaSeJogadoresSelecionadosCorretamente(Partida partida) {
-		switch (partida.getJogadores().size()) {
-		case 0:
+
+		if (partida.getJogadorA() == null && partida.getJogadorB() == null)
 			throw new NegocioException("Nenhum jogador foi selecionado para a partida");
-		case 1:
-			Jogador jogadorSelecionado = new Jogador();
-			for (Jogador jogador : partida.getJogadores())
-				jogadorSelecionado = jogador;
+		if (partida.getJogadorA() != null && partida.getJogadorB() == null)
 			throw new NegocioException(
-					"Somente o jogador " + jogadorSelecionado.getNome() + " foi selecionado para a partida");
-		case 2: // Jogadores selecionados corretamente
-			break;
-		default:
-			throw new NegocioException("Mais de 2 jogadores foram selecionados para a partida");
+					"Somente o jogador " + partida.getJogadorA().getNome() + " foi selecionado para a partida");
+		if (partida.getJogadorA() == null && partida.getJogadorB() != null) {
+			throw new NegocioException(
+					"Somente o jogador " + partida.getJogadorB().getNome() + " foi selecionado para a partida");
 		}
 	}
 

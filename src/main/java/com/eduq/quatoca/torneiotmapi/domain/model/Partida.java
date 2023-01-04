@@ -28,7 +28,7 @@ public class Partida {
 	private Long id;
 
 //	@ManyToMany(mappedBy = "partidas")
-	@ManyToMany(cascade = 
+	@ManyToMany(cascade =
 		{CascadeType.PERSIST,
 		CascadeType.MERGE})
 	@JoinTable(name = "jogadores_partidas",
@@ -41,16 +41,20 @@ public class Partida {
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JsonIgnore
+	private Jogador jogadorA;
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JsonIgnore
+	private Jogador jogadorB;
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JsonIgnore
 	private Jogador primeiroSacador;
 
 	@OneToMany(mappedBy = "partida", cascade = CascadeType.ALL)
 	@Embedded
 	@ToString.Exclude
 	private List<Game> games = new ArrayList<>();
-
-//	@ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-//	@JsonIgnore
-//	private Game gameAtual;
 
 	private int gameAtualIndice;
 
@@ -71,20 +75,29 @@ public class Partida {
 		game.setPartida(this);
 	}
 
-	public void addJogador(Jogador jogador) {
-		if (this.jogadores.size() < 2) {
-			jogadores.add(jogador);
+	public void setAdversarios(Jogador jogA, Jogador jogB) {
+		if (jogA != null && jogB != null)
+ 		{
+			 setJogadorA(jogA);
+			 setJogadorB(jogB);
+
 			if (this.primeiroSacador == null) {
-				this.setPrimeiroSacador(jogador);
+				this.setPrimeiroSacador(jogA);
 			}
-			jogador.getPartidas().add(this);
+			jogA.getPartidas().add(this);
 		} else {
 			throw new NegocioException("Os dois jogadores da partida já haviam sido selecionados");
 		}
 	}
 	
 	public void liberarJogadores() {
-		this.jogadores.forEach(Jogador::liberar);
+		getJogadorA().liberar();
+		getJogadorB().liberar();
+	}
+
+	public void convocarJogadores() {
+		getJogadorA().convocar();
+		getJogadorB().convocar();
 	}
 
 	public Partida() {
@@ -114,33 +127,17 @@ public class Partida {
 
 	public Game proximoGame() {
 
-//		int indiceGameAtual;
-//		if (this.getGameAtual() == null) {
-//			throw new NegocioException("Partida sem game atual. Não há game em andamento."); //TODO melhorar texto da exception
-//		} else {
-//			indiceGameAtual = this.getGames().indexOf(this.getGameAtual());
-//		}
-//		if (indiceGameAtual < getQuantidadeGamesDaPartida()) {
-//			return this.getGames().get(indiceGameAtual + 1);
-//		} else {
-//			throw (new NegocioException("Este é o último game da partida"));
-//		}
-
-
 		if (this.emAndamento()) {
 			int proximoGameIndice = 0;
 			int quantidadeGames = getQuantidadeGamesDaPartida();
 			while (proximoGameIndice < quantidadeGames) {
 				Game thisGame = this.games.get(proximoGameIndice);
-				System.out.println("proximoGame indice "+proximoGameIndice+ " id "+thisGame.getId()+" Partida.proximoGame()");
 				if (thisGame.finalizado()) {
 					if (proximoGameIndice == getQuantidadeGamesDaPartida() - 1) {
 						this.finalizar();
-						System.out.println("Partida.proximoGame FINALIZOU GAME game = "+thisGame.getId());
 					}
 					proximoGameIndice++;
 				} else if (thisGame.preparado() || thisGame.emAndamento()) {
-					System.out.println("RETURN proximoGame indice "+proximoGameIndice+" id "+thisGame.getId() + " partida "+this.getId()+" Partida.proximoGame()");
 					return thisGame;
 				} else
 					throw new NegocioException("Partida impedida de continuar");
@@ -151,15 +148,6 @@ public class Partida {
 
 	public Game gameAnterior() {
 		int indiceGameAtual = this.getGameAtualIndice();
-//		if (indiceGameAtual == -1) {
-//			throw new NegocioException("Partida sem game atual. Não há game em andamento."); //TODO melhorar texto da exception
-//
-//			indiceGameAtual = this.getGames().indexOf(this.getGameAtual());
-//		} else {
-//			throw new NegocioException("Partida sem game atual. Não há game em andamento."); //TODO melhorar texto da exception
-//		}
-//		if (this.getGameAtual() != null) {
-//		}
 		if (indiceGameAtual > 0) {
 			return this.getGames().get(indiceGameAtual -1);
 		} else {
@@ -168,14 +156,13 @@ public class Partida {
 	}
 
 	public void iniciar() {
-//		System.out.println("Partida.iniciar entrada + game[0].id = "+this.games.get(0).getId());
 		switch (this.getStatus()) {
 		case Preparada:
 			boolean jogadoresDisponiveis = jogadoresDisponiveisParaIniciarPartida();
 			if (jogadoresDisponiveis) {
 				this.setStatus(StatusPartida.EmAndamento);
 				this.setInicio(OffsetDateTime.now());
-				this.jogadores.forEach(Jogador::convocar);
+				convocarJogadores();
 			} else {
 				throw new NegocioException("Ao menos um dos jogadores não está disponível para a partida");
 			}
@@ -196,15 +183,14 @@ public class Partida {
 
 	public void finalizar() {
 		this.setStatus(StatusPartida.Finalizada);
-		this.jogadores.forEach(Jogador::liberar);
+		liberarJogadores();
 		this.games.forEach(game -> {
 			if (game.preparado())
 				game.cancelar();
 		});
 		this.setFim(OffsetDateTime.now());
-//		this.setGameAtual(null);
 		this.setGameAtualIndice(-1);
-		this.getGames().stream() //TODO filter altera a ordem de games???
+		this.getGames().stream()
 				.filter(game -> game.getStatus() != StatusGame.Finalizado)
 				.forEach(game -> game.setStatus(StatusGame.Cancelado));
 		System.out.println(" finalizada "+this+" Partida.finalizar()");
@@ -212,18 +198,15 @@ public class Partida {
 	
 	public void cancelar() {
 		this.setStatus(StatusPartida.Cancelada);
-//		System.out.println(" cancelada "+this);
+		System.out.println(" cancelada "+this);
 	}
 
 	public boolean jogadoresDisponiveisParaIniciarPartida() {
-		boolean disponibilidade = true;
-		for (Jogador jog : this.jogadores)
-			disponibilidade = jog.disponivel() && disponibilidade;
-		return disponibilidade;
+		return (getJogadorA().disponivel() && getJogadorB().disponivel());
 	}
 
 	public boolean isJogadorDaPartida(Jogador jogador) {
-		return this.jogadores.contains(jogador);
+		return  (getJogadorA() == jogador || getJogadorB() == jogador);
 	}
 
 	public boolean isGameDaPartida(Game game) {
@@ -231,10 +214,7 @@ public class Partida {
 	}
 
 	public Jogador buscarNaoPrimeiroSacador() {
-		Optional<Jogador> naoSacador = this.jogadores.stream()
-				.filter(p -> !(this.getPrimeiroSacador() == p))
-				.findAny();
-		return naoSacador.orElse(null);
+		return jogadorB;
 	}
 
 	public boolean jaRegistrouPontuacao() {
@@ -245,14 +225,10 @@ public class Partida {
 	public void setEmAndamento() {
 		if (this.getStatus() == StatusPartida.Finalizada) {
 			this.setStatus(StatusPartida.EmAndamento);
-			this.jogadores.forEach(Jogador::convocar);
+			convocarJogadores();
 			this.games.forEach(game -> {
 				if (game.cancelado())
 					game.setPreparado();
-//				if (game.emAndamento()) {
-//					this.setGameAtual(game);
-//					this.setGameAtualIndice();
-//				}
 			});
 			this.garantirNoMaximoUmGameEmAndamento();
 			this.setFim(null);
@@ -326,7 +302,6 @@ public class Partida {
 		String jogadorB = game.getPontos().get(1).getJogador().getNome();
 		partidaToString = partidaToString + "ptd " + this.getId() + ", " + jogadorA + " x " + jogadorB;
 
-		//Collections.sort(this.getGames());
 		partidaToString = partidaToString + this.getGames();
 		partidaToString = partidaToString +
 				"\n " + jogadorA +" "+ resultado.get(0) + " X " + resultado.get(1) +" "+ jogadorB;
@@ -354,19 +329,14 @@ public class Partida {
 						resultado.set(1, resultado.get(1) + 1);
 					else {
 						throw new NegocioException("Game não finalizado");
-//						throw new NegocioException("Pontuação deste game está incorreta");
 					}
 		});
-//		this.setGamesVencidosA(resultado.get(0));
-//		this.setGamesVencidosB(resultado.get(1));
 		return resultado;
 	}
 
 	public void moverParaProximoGame() { //TODO Checar controle de gameAtualIndice. Talvez esteja pulando um game
-		//System.out.println("ANTES Partida.moverParaProximoGame gameAtualIndice = "+this.getGameAtualIndice()+"   getGames.size() = "+this.getGames().size());
 		if (this.getGameAtualIndice() < this.getGames().size() - 1) {
 			this.setGameAtualIndice(this.getGameAtualIndice() + 1);
 		}
-		//System.out.println("DEPOIS Partida.moverParaProximoGame gameAtualIndice = "+this.getGameAtualIndice()+"   getGames.size() = "+this.getGames().size());
 	}
 }

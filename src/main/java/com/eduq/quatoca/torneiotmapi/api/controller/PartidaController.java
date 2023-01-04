@@ -45,8 +45,7 @@ public class PartidaController {
 	@Operation(summary = "Lista das partidas",
 			description = "Listar as partidas da base de dados")
 	@GetMapping
-	public List<PartidaModel> listar()
-	{
+	public List<PartidaModel> listar() {
 		return partidaAssembler.toCollectionModel(gestaoPartidaService.listar());
 	}
 

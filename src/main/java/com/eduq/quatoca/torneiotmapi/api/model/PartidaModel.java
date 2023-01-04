@@ -16,10 +16,9 @@ public class PartidaModel {
 	private OffsetDateTime inicioPartida;
 	private OffsetDateTime fimPartida;
 	private JogadorResumoModel jogadorPrimeiroSacador;
-//	private Set<JogadorModel> jogadores;
-	private List<JogadorModel> jogadores;
+	private JogadorModel jogadorA;
+	private JogadorModel jogadorB;
 	private int quantidadeGames;
 	private List<GameModel> games;
 	private int gameAtualIndice;
-
 }

@@ -44,7 +44,6 @@ public class Game implements Comparable<Game>{
 	@Embedded
 	private List<Pontuacao> pontos = new ArrayList<>();
 
-//	@Setter(value = AccessLevel.NONE)
 	private Integer numero; // TODO Atualizar Swagger
 	private OffsetDateTime inicio;
 	private OffsetDateTime fim;
@@ -65,7 +64,6 @@ public class Game implements Comparable<Game>{
 	}
 
 	public void iniciar() {
-		System.out.println("Game.iniciar() entrada "+this);
 		if (!this.getPartida().emAndamento()){
 			throw(new NegocioException("Game não pode iniciar, pois partida não está em andamento"));
 		} else {
@@ -85,7 +83,6 @@ public class Game implements Comparable<Game>{
 				default:
 					throw(new NegocioException("Ops, algo deu errado..."));
 			}
-			System.out.println("Game.iniciar() saida "+this);
 		}
 	}
 	
@@ -155,7 +152,5 @@ public class Game implements Comparable<Game>{
 	@Override
 	public int compareTo(Game g) {
 		return this.getNumero().compareTo(g.getNumero());
-//		return this.getId().compareTo(g.getId());
-//		return this.getNumero().compareTo(g.getNumero());
 	}
 }
