@@ -1,52 +1,19 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
+import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+public interface CatalogoJogadorService {
+    Optional<Jogador> buscar(Long jogadorId);
 
-import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
-import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
-import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
-import com.eduq.quatoca.torneiotmapi.domain.repository.JogadorRepository;
+    List<Jogador> listar();
 
-import lombok.AllArgsConstructor;
+    @Transactional
+    Jogador salvar(Jogador jogador);
 
-@AllArgsConstructor
-@Service
-public class CatalogoJogadorService {
-
-	private JogadorRepository jogadorRepository;
-	
-	public Optional<Jogador> buscar(Long jogadorId) {
-		return Optional.of(jogadorRepository.findById(jogadorId)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado CatalogoJogadorService")));
-	}
-	
-	public List<Jogador> listar() {
-		return jogadorRepository.findAll();
-	}
-
-	@Transactional
-	public Jogador salvar(Jogador jogador) {
-		// TODO TBD controles, tipo: email, fone
-		return jogadorRepository.save(jogador);
-	}
-
-	@Transactional
-	public void excluir(Long jogadorId) {
-		Jogador jogadorParaExcluir = this.buscar(jogadorId).orElse(null);
-
-		if (jogadorParaExcluir == null)
-			throw (new NegocioException("Jogador não existente"));
-		else if (jogadorParaExcluir.getPartidas().isEmpty()) {
-			jogadorRepository.deleteById(jogadorId);
-			new ResponseEntity<>("Jogador deletado do sistema", HttpStatus.NO_CONTENT);
-		} else {
-			throw(new NegocioException("Jogador com partida registrada não pode ser deletado."));
-		}
-	}
+    @Transactional
+    void excluir(Long jogadorId);
 }

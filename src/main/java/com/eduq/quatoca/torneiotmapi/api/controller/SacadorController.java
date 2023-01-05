@@ -42,6 +42,6 @@ public class SacadorController {
 	public void definirPrimeiroSacador(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId, 
 			@Parameter(description = "Identificador único do jogador no BD") @PathVariable Long jogadorId) {
-		controleSacadorService.definirPrimeiroSacador(partidaId, jogadorId);
+		controleSacadorService.setPrimeiroSacador(partidaId, jogadorId);
 	}
 }

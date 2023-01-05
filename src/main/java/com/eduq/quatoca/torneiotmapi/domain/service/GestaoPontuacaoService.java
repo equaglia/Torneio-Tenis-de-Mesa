@@ -1,42 +1,18 @@
 package com.eduq.quatoca.torneiotmapi.domain.service;
 
+import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
+
 import javax.transaction.Transactional;
 
-import org.springframework.stereotype.Service;
+public interface GestaoPontuacaoService {
+    //	public Optional<Pontuacao> buscar(Long pontuacaoId) {
+    Pontuacao buscar(Long pontuacaoId);
 
-import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
-import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
-import com.eduq.quatoca.torneiotmapi.domain.repository.PontuacaoRepository;
+    @Transactional
+    void salvar(Pontuacao pontuacao);
 
-import lombok.AllArgsConstructor;
+    @Transactional
+    Pontuacao preparaPontuacao();
 
-@AllArgsConstructor
-@Service
-public class GestaoPontuacaoService {
-	
-	private PontuacaoRepository pontuacaoRepository;
-
-//	public Optional<Pontuacao> buscar(Long pontuacaoId) { 
-	public Pontuacao buscar(Long pontuacaoId) { 
-		return pontuacaoRepository.findById(pontuacaoId)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException("Pontuacao não encontrada GestaoPontuacaoService"));
-	}
-
-	@Transactional
-	public void salvar(Pontuacao pontuacao) {
-		pontuacaoRepository.save(pontuacao);
-	}
-
-	@Transactional
-	public Pontuacao preparaPontuacao() {
-		Pontuacao pontuacao = new Pontuacao();
-		pontuacao.setPontos(0);
-		this.salvar(pontuacao);
-		return pontuacao;
-	}
-
-	public void excluir(Pontuacao pontuacao) {
-		pontuacaoRepository.delete(pontuacao);
-		
-	}
+    void excluir(Pontuacao pontuacao);
 }
