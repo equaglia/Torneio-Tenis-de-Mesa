@@ -2,6 +2,7 @@ package com.eduq.quatoca.torneiotmapi.domain.service.impl;
 
 import javax.transaction.Transactional;
 
+import com.eduq.quatoca.torneiotmapi.domain.repository.PontuacaoRepository;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoGameService;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPartidaService;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPontuacaoService;
@@ -21,12 +22,19 @@ import lombok.AllArgsConstructor;
 @Service
 public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 
+	private PontuacaoRepository pontuacaoRepository;
 	private GestaoPontuacaoService gestaoPontuacaoService;
 	private GestaoGameService gestaoGameService;
 	private GestaoPartidaService gestaoPartidaService;
 
 	private static final int JOGADOR_A = 0;
 	private static final int JOGADOR_B = 1;
+
+	@Override public Pontuacao buscar(Long pontuacaoId) {
+		return pontuacaoRepository.findById(pontuacaoId)
+				.orElseThrow(() -> new EntidadeNaoEncontradaException("Pontuaçao não encontrada"));
+	}
+
 
 	@Override@Transactional
 	public Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB) {
@@ -78,11 +86,6 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 			if (CalculosGlobais.pontuacaoParaFinalizarGame(pontuacaoJogadorA.getPontos(),
 					pontuacaoJogadorB.getPontos())) {
 				gestaoGameService.finalizarGame(game);
-//				Partida partida = game.getPartida();
-//				partida.setGameAtualIndice(partida.getGameAtualIndice() + 1);
-//				if (gestaoPartidaService.partidaJaTemVencedor(partida.calculaResultado())) {
-//					gestaoPartidaService.finalizarPartida(partida);
-//				}
 			}
 		}
 		return game;

@@ -31,14 +31,14 @@ import lombok.AllArgsConstructor;
 public class GameController {
 
 	private GameAssembler gameAssembler;
-	private GestaoGameService gestaoGameServiceImpl;
+	private GestaoGameService gestaoGameService;
 	private PontuacaoEmGameService pontuacaoEmGameService;
 
 	@Operation(summary = "Lista de games",
 			description = "Listar os games da partida ???") //TODO partida ou todos???
 	@GetMapping
 	public List<GameModel> listar() {
-		return gameAssembler.toCollectionModel(gestaoGameServiceImpl.listar())
+		return gameAssembler.toCollectionModel(gestaoGameService.listar())
 				.stream().sorted(Comparator.comparing(GameModel::getId))
 				.collect(Collectors.toList());
 	}
@@ -48,7 +48,7 @@ public class GameController {
 	@GetMapping("/{gameId}")
 	public ResponseEntity<GameModel> buscar(
 			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId) {
-		return Optional.of(gestaoGameServiceImpl.buscar(gameId))
+		return Optional.of(gestaoGameService.buscar(gameId))
 				.map(game -> ResponseEntity.ok(gameAssembler.toModel(game)))
 				.orElse(ResponseEntity.notFound().build());
 	}

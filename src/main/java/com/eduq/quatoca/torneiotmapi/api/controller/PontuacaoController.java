@@ -1,8 +1,16 @@
 package com.eduq.quatoca.torneiotmapi.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.eduq.quatoca.torneiotmapi.api.assembler.PontuacaoAssembler;
+import com.eduq.quatoca.torneiotmapi.api.model.GameModel;
+import com.eduq.quatoca.torneiotmapi.api.model.PontuacaoModel;
+import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPontuacaoService;
+import io.swagger.v3.oas.annotations.Parameter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,13 +27,18 @@ import lombok.AllArgsConstructor;
 @Tag(name = "PONTUAÇÃO", description = "Informações de pontuação")
 public class PontuacaoController {
 
-	private PontuacaoRepository pontuacaoRepository; 
+	private GestaoPontuacaoService gestaoPontuacaoService;
+
+	private PontuacaoAssembler pontuacaoAssembler;
 	
-	@Operation(summary = "Lista das pontuações de jogador ???",
-			description = "Listar pontuações de jogador ???")//TODO pontuaçao de quem???
-	@GetMapping
-	public List<Pontuacao> listar() {
-		return pontuacaoRepository.findAll();	
+	@Operation(summary = "Informações da pontuação",
+			description = "Carregar as informações da pontuação de um jogador")
+	@GetMapping("/{pontuacaoId}")
+	public ResponseEntity<PontuacaoModel> buscar(
+			@Parameter(description = "Identificador único da pontuação no BD") @PathVariable Long gameId) {
+		return Optional.of(gestaoPontuacaoService.buscar(gameId))
+				.map(game -> ResponseEntity.ok(pontuacaoAssembler.toModel(game)))
+				.orElse(ResponseEntity.notFound().build());
 	}
 
 

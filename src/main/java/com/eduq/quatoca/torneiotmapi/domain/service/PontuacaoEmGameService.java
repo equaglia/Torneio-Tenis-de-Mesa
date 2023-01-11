@@ -6,6 +6,9 @@ import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
 import javax.transaction.Transactional;
 
 public interface PontuacaoEmGameService {
+
+    Pontuacao buscar(Long pontuacaoId);
+
     @Transactional
     Game atualizarPontuacao(Long gameId, int pontuacaoA, int pontuacaoB);
 

@@ -492,22 +492,21 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/PartidaModel'
-  /pontos:
+  /pontos/{pontuacaoId}:
     get:
       tags:
         - PONTUAÇÃO
-      summary: Lista das pontuações de jogador ???
-      description: Listar pontuações de jogador ???
-      operationId: listar
+      summary: Informações da pontuação
+      description: Carregar as informações da pontuação de um jogador
+      operationId: buscar
       responses:
         '200':
           description: OK
           content:
             '*/*':
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pontuacao'
+                type: integer
+                format: int64
   '/sacadores/{partidaId}/games/{gameId}/sacador':
     get:
       tags:
