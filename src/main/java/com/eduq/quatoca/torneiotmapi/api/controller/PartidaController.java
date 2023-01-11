@@ -106,6 +106,17 @@ public class PartidaController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
+	@Operation(summary = "Interrupição da partida",
+			description = "Interromper a partida, se estiver em andamento")
+	@PutMapping
+	@RequestMapping("/{partidaId}/interromper")
+	public ResponseEntity<PartidaModel> interromperPartida(
+			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
+		return Optional.of(gestaoPartidaService.interromperPartida(partidaId))
+				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
+				.orElse(ResponseEntity.notFound().build());
+	}
+
 	@Operation(summary = "Continuação da partida",
 			description = "Dar continuidade a partida, se tiver sido interrompida ou ao iniciar novo game")
 	@PutMapping
@@ -116,7 +127,7 @@ public class PartidaController {
 				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
 				.orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@Operation(summary = "Partida completa",
 			description = "Completar todos os games e finalizar a partida")
 	@PutMapping

@@ -195,6 +195,23 @@ public class Partida {
 				.forEach(game -> game.setStatus(StatusGame.Cancelado));
 		System.out.println(" finalizada "+this+" Partida.finalizar()");
 	}
+
+	public void interromper() {
+		switch (this.getStatus()) {
+			case Interrompida:
+				break;
+			case EmAndamento:
+				this.setStatus(StatusPartida.Interrompida);
+				System.out.println(" interrompida "+this);
+				break;
+			case Cancelada:
+			case Preparada:
+			case Finalizada:
+				throw (new NegocioException("Somente partida Em Andamento pode ser interrompida"));
+			default:
+				throw (new NegocioException("Ops, algo deu errado..."));
+		}
+	}
 	
 	public void cancelar() {
 		this.setStatus(StatusPartida.Cancelada);

@@ -96,9 +96,17 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 	}
 
 	@Override
+	public Partida interromperPartida(Long partidaId) {
+		Partida partida = this.buscar(partidaId);
+		partida.interromper();
+		return this.salvar(partida);
+	}
+
+	@Override
 	@Transactional
 	public Partida continuarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
+		//TODO corrigir método, continuando partida que foi interrompida (status interrompida)
 		if (partida.finalizado()) {
 			return partida;
 		} else {

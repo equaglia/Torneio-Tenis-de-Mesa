@@ -23,6 +23,9 @@ public interface GestaoPartidaService {
     Partida iniciarPartida(Long partidaId);
 
     @Transactional
+    Partida interromperPartida(Long partidaId);
+
+    @Transactional
     Partida continuarPartida(Long partidaId);
 
     @Transactional
