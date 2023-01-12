@@ -1,4 +1,4 @@
-package com.eduq.quatoca.torneiotmapi.domain.model;
+package com.eduq.quatoca.torneiotmapi.domain.model.enums;
 
 public enum StatusJogador {
 	

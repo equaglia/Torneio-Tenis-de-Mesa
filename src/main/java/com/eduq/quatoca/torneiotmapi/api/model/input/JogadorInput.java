@@ -2,7 +2,7 @@ package com.eduq.quatoca.torneiotmapi.api.model.input;
 
 import javax.validation.constraints.NotBlank;
 
-import com.eduq.quatoca.torneiotmapi.domain.model.CategoriaJogador;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.CategoriaJogador;
 
 import lombok.Data;
 

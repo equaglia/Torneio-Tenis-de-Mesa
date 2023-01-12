@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusPartida;
 import com.eduq.quatoca.torneiotmapi.domain.service.CatalogoJogadorService;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoGameService;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPartidaService;
@@ -96,13 +97,6 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 	}
 
 	@Override
-	public Partida interromperPartida(Long partidaId) {
-		Partida partida = this.buscar(partidaId);
-		partida.interromper();
-		return this.salvar(partida);
-	}
-
-	@Override
 	@Transactional
 	public Partida continuarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
@@ -127,6 +121,38 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 					throw new NegocioException("Partida ainda precisa ser iniciada");
 				}
 			}
+		}
+		return this.salvar(partida);
+	}
+
+	@Override
+	@Transactional
+	public Partida interromperPartida(Long partidaId) {
+		Partida partida = this.buscar(partidaId);
+		switch (partida.getStatus()) {
+			case EmAndamento -> {
+				partida.liberarJogadores();
+				partida.interromper();
+			}
+			case Interrompida, Cancelada, Preparada, Finalizada ->
+					throw (new NegocioException("Somente partida Em Andamento pode ser interrompida"));
+			default -> throw (new NegocioException("Ops, algo deu errado..."));
+		}
+		return this.salvar(partida);
+	}
+
+	@Override
+	@Transactional
+	public Partida retornarPartidaInterrompida(Long partidaId) {
+		Partida partida = this.buscar(partidaId);
+		switch (partida.getStatus()) {
+			case Interrompida -> {
+				partida.convocarJogadores();
+				partida.setEmAndamento();
+			}
+			case EmAndamento, Cancelada, Preparada, Finalizada ->
+					throw (new NegocioException("Somente partida Interrompida pode retornar"));
+			default -> throw (new NegocioException("Ops, algo deu errado..."));
 		}
 		return this.salvar(partida);
 	}
@@ -175,9 +201,35 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 	@Override
 	@Transactional
 	public void setPartidaEmAndamento(Partida partida) {
-		partida.setEmAndamento();
-		System.out.println("partida "+partida.getId()+" entrou em andamento");
+		if (partida.getStatus() == StatusPartida.Finalizada) {
+			partida.setEmAndamento();
+			partida.convocarJogadores();
+			partida.getGames().forEach(game -> {
+				if (game.cancelado()) {
+					game.setPreparado();
+				}
+			});
+			this.garantirNoMaximoUmGameEmAndamento(partida);
+			partida.setFim(null);
+		}
 		this.salvar(partida);
+	}
+
+	private void garantirNoMaximoUmGameEmAndamento(Partida partida) {
+//		boolean temGameEmAndamento = false;
+		for (int i = 0; i < partida.getQuantidadeGames(); i++) {
+			Game game = partida.getGame(i);
+			if (game.emAndamento()) {
+//				this.setGameAtual(game);
+				partida.setGameAtualIndice(i); //TODO Checar alteração de gameAtualIndice
+				System.out.println("Partida.garantirNoMaximoUmGameEmAndamento"+" atualizou gameAtualIndice para "+i);
+				break;
+//				if (!temGameEmAndamento) temGameEmAndamento = true;
+//				else {
+//					game.setStatus(StatusJogo.Preparado);
+//				}
+			}
+		}
 	}
 
 	@Override

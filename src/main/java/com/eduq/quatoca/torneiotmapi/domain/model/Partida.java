@@ -2,6 +2,8 @@ package com.eduq.quatoca.torneiotmapi.domain.model;
 
 import com.eduq.quatoca.torneiotmapi.common.CalculosGlobais;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusGame;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusPartida;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -106,10 +108,8 @@ public class Partida {
 	}
 
 	public Game buscarGameEmAndamento() {
-		int quantidadeGames = getQuantidadeGamesDaPartida();
-
 		int i = 0;
-		while (i < quantidadeGames) {
+		while (i < this.getQuantidadeGames()) {
 			if (this.games.get(i).emAndamento())
 				return this.games.get(i);
 			i++;
@@ -129,11 +129,10 @@ public class Partida {
 
 		if (this.emAndamento()) {
 			int proximoGameIndice = 0;
-			int quantidadeGames = getQuantidadeGamesDaPartida();
-			while (proximoGameIndice < quantidadeGames) {
+			while (proximoGameIndice < this.getQuantidadeGames()) {
 				Game thisGame = this.games.get(proximoGameIndice);
 				if (thisGame.finalizado()) {
-					if (proximoGameIndice == getQuantidadeGamesDaPartida() - 1) {
+					if (proximoGameIndice == this.getQuantidadeGames() - 1) {
 						this.finalizar();
 					}
 					proximoGameIndice++;
@@ -197,20 +196,8 @@ public class Partida {
 	}
 
 	public void interromper() {
-		switch (this.getStatus()) {
-			case Interrompida:
-				break;
-			case EmAndamento:
-				this.setStatus(StatusPartida.Interrompida);
-				System.out.println(" interrompida "+this);
-				break;
-			case Cancelada:
-			case Preparada:
-			case Finalizada:
-				throw (new NegocioException("Somente partida Em Andamento pode ser interrompida"));
-			default:
-				throw (new NegocioException("Ops, algo deu errado..."));
-		}
+		this.setStatus(StatusPartida.Interrompida);
+		System.out.println(" interrompida "+this);
 	}
 	
 	public void cancelar() {
@@ -240,16 +227,8 @@ public class Partida {
 	}
 
 	public void setEmAndamento() {
-		if (this.getStatus() == StatusPartida.Finalizada) {
-			this.setStatus(StatusPartida.EmAndamento);
-			convocarJogadores();
-			this.games.forEach(game -> {
-				if (game.cancelado())
-					game.setPreparado();
-			});
-			this.garantirNoMaximoUmGameEmAndamento();
-			this.setFim(null);
-		}
+		this.setStatus(StatusPartida.EmAndamento);
+		System.out.println(" em andamento "+this);
 	}
 
 	public boolean preparado() {
@@ -277,24 +256,14 @@ public class Partida {
 	}
 
 	private void garantirNoMaximoUmGameEmAndamento() {
-//		boolean temGameEmAndamento = false;
-		for (int i = 0; i < getQuantidadeGamesDaPartida(); i++) {
+		for (int i = 0; i < this.getQuantidadeGames(); i++) {
 			Game game = this.getGame(i);
 			if (game.emAndamento()) {
-//				this.setGameAtual(game);
 				this.setGameAtualIndice(i); //TODO Checar alteração de gameAtualIndice
 				System.out.println("Partida.garantirNoMaximoUmGameEmAndamento"+" atualizou gameAtualIndice para "+i);
 				break;
-//				if (!temGameEmAndamento) temGameEmAndamento = true;
-//				else {
-//					game.setStatus(StatusJogo.Preparado);
-//				}
 			}
 		}
-	}
-
-	private int getQuantidadeGamesDaPartida() {
-		return this.games.size();
 	}
 
 	@Override
@@ -339,10 +308,8 @@ public class Partida {
 					int ptsJgdrB_noGame = game.getPontos().get(1).getPontos();
 					int vencedorGame = CalculosGlobais.vencedorGame(ptsJgdrA_noGame, ptsJgdrB_noGame);
 					if (vencedorGame == 0)
-//					if (ptsJgdrA_noGame > ptsJgdrB_noGame)
 						resultado.set(0, resultado.get(0) + 1);
 					else if (vencedorGame == 1)
-//					else if (ptsJgdrB_noGame > ptsJgdrA_noGame) {
 						resultado.set(1, resultado.get(1) + 1);
 					else {
 						throw new NegocioException("Game não finalizado");

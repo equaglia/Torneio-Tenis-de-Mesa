@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusGame;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.EqualsAndHashCode;

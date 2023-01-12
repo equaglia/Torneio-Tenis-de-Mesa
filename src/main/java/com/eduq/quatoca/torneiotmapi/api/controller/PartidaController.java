@@ -117,6 +117,17 @@ public class PartidaController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
+	@Operation(summary = "Retornar partida interrompida",
+			description = "Retornar andamento de partida, caso tenha sido interrompida e jogadores estejam disponíveis")
+	@PutMapping
+	@RequestMapping("/{partidaId}/retornar")
+	public ResponseEntity<PartidaModel> retornarPartidaInterrompida(
+			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
+		return Optional.of(gestaoPartidaService.retornarPartidaInterrompida(partidaId))
+				.map(partida -> ResponseEntity.ok(partidaAssembler.toModel(partida)))
+				.orElse(ResponseEntity.notFound().build());
+	}
+
 	@Operation(summary = "Continuação da partida",
 			description = "Dar continuidade a partida, se tiver sido interrompida ou ao iniciar novo game")
 	@PutMapping

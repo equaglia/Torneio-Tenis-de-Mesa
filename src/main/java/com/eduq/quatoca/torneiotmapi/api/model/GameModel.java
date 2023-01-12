@@ -3,7 +3,7 @@ package com.eduq.quatoca.torneiotmapi.api.model;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import com.eduq.quatoca.torneiotmapi.domain.model.StatusGame;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusGame;
 
 import lombok.Data;
 

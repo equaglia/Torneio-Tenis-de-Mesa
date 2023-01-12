@@ -2,7 +2,7 @@ package com.eduq.quatoca.torneiotmapi.api.model;
 
 import java.util.List;
 
-import com.eduq.quatoca.torneiotmapi.domain.model.StatusPartida;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusPartida;
 import lombok.Getter;
 import lombok.Setter;
 

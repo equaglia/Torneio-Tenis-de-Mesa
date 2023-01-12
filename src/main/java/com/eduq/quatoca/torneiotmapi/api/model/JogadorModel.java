@@ -1,7 +1,7 @@
 package com.eduq.quatoca.torneiotmapi.api.model;
 
-import com.eduq.quatoca.torneiotmapi.domain.model.CategoriaJogador;
-import com.eduq.quatoca.torneiotmapi.domain.model.StatusJogador;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.CategoriaJogador;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusJogador;
 
 import lombok.Data;
 

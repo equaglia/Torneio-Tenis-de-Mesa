@@ -23,10 +23,12 @@ public interface GestaoPartidaService {
     Partida iniciarPartida(Long partidaId);
 
     @Transactional
-    Partida interromperPartida(Long partidaId);
+    Partida continuarPartida(Long partidaId);
 
     @Transactional
-    Partida continuarPartida(Long partidaId);
+    Partida interromperPartida(Long partidaId);
+
+    Partida retornarPartidaInterrompida(Long partidaId);
 
     @Transactional
     void finalizarPartida(Partida partida);
