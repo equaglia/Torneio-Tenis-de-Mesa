@@ -18,6 +18,8 @@ import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
 
 import lombok.AllArgsConstructor;
 
+import java.text.MessageFormat;
+
 @AllArgsConstructor
 @Service
 public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
@@ -42,16 +44,16 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 		Game game = gestaoGameService.buscar(gameId);
 		boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
 		if (gestaoPartidaService.temGameEmAndamento(game.getPartida()) && !gameAtivo) {
-			throw new NegocioException("Game " + gameId + " não é o próximo game da partida.");
+			throw new NegocioException(MessageFormat.format("Game {1} não é o próximo game da partida.",gameId));
 		}
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
 			gestaoGameService.garantirGameAnteriorJaFinalizado(game);
 			gestaoGameService.iniciarGame(game);
-			System.out.println("game iniciando "+game.getId()+" PontuacaoEmGameService.atualizarPontuacao()");
+			System.out.println(MessageFormat.format("game iniciando {1}",game.getId()));
 			gameAtivo = true;
 		}
 		if (gameAtivo) {
-			efetivarAtualizacaoDePontuacao(pontuacaoA, pontuacaoB, game);
+			efetivarPontuacao(pontuacaoA, pontuacaoB, game);
 		}
 		return game;
 	}
@@ -71,7 +73,6 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 		if (!gameAtivo && gestaoGameService.proximoGameProntoParaIniciar(game)) {
 			gestaoGameService.garantirGameAnteriorJaFinalizado(game);
 			gestaoGameService.iniciarGame(game);
-			System.out.println("game iniciando "+game.getId()+" PontuacaoEmGameService.somaUmPonto()");
 			gameAtivo = true;
 		}
 		if (gameAtivo) {
@@ -99,7 +100,7 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 		int indiceGame = partida.getGames().indexOf(game);
 		Game gameSeguinte = partida.getGames().get(indiceGame + 1);
 		if (partida.emAndamento() || partida.interrompido()) {
-			if (partida.proximoGame() == gameSeguinte) {
+			if (gestaoPartidaService.proximoGame(partida) == gameSeguinte) {
 				if (!gameAtivo && game.finalizado()) {
 					gameSeguinte.setPreparado();
 					game.setEmAndamento();
@@ -126,14 +127,17 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 
 	@Transactional
 	private void efetivarAtualizacaoDePontuacao(int pontuacaoA, int pontuacaoB, Game game) {
-		Pontuacao pontuacaoJogadorA = buscarPontuacaoDeJogador(game, JOGADOR_A);
-		Pontuacao pontuacaoJogadorB = buscarPontuacaoDeJogador(game, JOGADOR_B);
-
-		// TODO Corrigir pontuacao de game em partida já finalizada, tipo, errou ultimo
-		// ponto da partida
 		if (game.getPartida().finalizado()) {
 			gestaoPartidaService.setPartidaEmAndamento(game.getPartida());
 		}
+		efetivarPontuacao(pontuacaoA, pontuacaoB, game);
+	}
+
+	@Transactional
+	private void efetivarPontuacao(int pontuacaoA, int pontuacaoB, Game game) {
+		Pontuacao pontuacaoJogadorA = buscarPontuacaoDeJogador(game, JOGADOR_A);
+		Pontuacao pontuacaoJogadorB = buscarPontuacaoDeJogador(game, JOGADOR_B);
+
 		if (CalculosGlobais.pontuacaoParaContinuarGame(pontuacaoA, pontuacaoB)) {
 			atualizarPontosAmbosJogadores(pontuacaoA, pontuacaoB, pontuacaoJogadorA, pontuacaoJogadorB);
 			gestaoGameService.setEmAndamento(game);
@@ -147,6 +151,8 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 					"Pontuacao maior que ONZE, não pode ter diferença maior que DOIS entre os 2 jogadores"));
 		}
 	}
+
+
 
 	@Transactional
 	private void incrementar(Pontuacao pontuacao) {

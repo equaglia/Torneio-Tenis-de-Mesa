@@ -337,4 +337,13 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 			this.finalizarPartida(partida);
 		}
 	}
+
+	public Game proximoGame(Partida partida) {
+		Collections.sort(partida.getGames());
+
+		Game gameEmAndamento = partida.buscarGameEmAndamento();
+		if (partida.emAndamento() && gameEmAndamento == null) partida.finalizar();
+		return gameEmAndamento;
+	}
+
 }

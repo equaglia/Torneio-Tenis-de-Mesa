@@ -102,33 +102,13 @@ public class Partida {
 				g.iniciar();
 				return g;
 			}
+		else return null;
 		throw (new NegocioException("Não há game em andamento na partida"));
 	}
 
 	public Game primeiroGameDaPartida() {
 		Collections.sort(this.games);
 		return this.getGames().get(0);
-	}
-
-	public Game proximoGame() {
-		Collections.sort(this.games);
-
-		if (this.emAndamento()) {
-			int proximoGameIndice = 0;
-			while (proximoGameIndice < this.getQuantidadeGames()) {
-				Game thisGame = this.games.get(proximoGameIndice);
-				if (thisGame.finalizado()) {
-					if (proximoGameIndice == this.getQuantidadeGames() - 1) {
-						this.finalizar();
-					}
-					proximoGameIndice++;
-				} else if (thisGame.preparado() || thisGame.emAndamento()) {
-					return thisGame;
-				} else
-					throw new NegocioException("Partida impedida de continuar");
-			}
-		}
-		return null;
 	}
 
 	public Game gameAnterior() {
@@ -219,6 +199,7 @@ public class Partida {
 
 	public void setEmAndamento() {
 		this.setStatus(StatusPartida.EmAndamento);
+		Collections.sort(this.games);
 		System.out.println(" em andamento "+this);
 	}
 
@@ -264,15 +245,12 @@ public class Partida {
 		String partidaToString = "";
 		List<Integer> resultado = new ArrayList<>(calculaResultado());
 		Game game = this.getGame(0);
-		String jogadorA = game.getPontos().get(0).getJogador().getNome();
-		String jogadorB = game.getPontos().get(1).getJogador().getNome();
-		partidaToString = partidaToString + "ptd " + this.getId() + ", " + jogadorA + " x " + jogadorB;
-
-		partidaToString = partidaToString + this.getGames();
-		partidaToString = partidaToString +
-				"\n " + jogadorA +" "+ resultado.get(0) + " X " + resultado.get(1) +" "+ jogadorB;
-		if (this.getGameAtualIndice() != -1) partidaToString = partidaToString + "\n gAtual id " + this.getGameAtualIndice() +"\n";
-
+		String jogA = game.getPontos().get(0).getJogador().getNome();
+		String jogB = game.getPontos().get(1).getJogador().getNome();
+		partidaToString = partidaToString + "ptd " + this.getId() + " " + this.getStatus()+", "
+				+ jogA +" "+ resultado.get(0) + " X " + resultado.get(1) +" "+ jogB;
+		if (this.getGameAtualIndice() != -1) partidaToString = partidaToString + "\n gAtual # " + this.getGameAtualIndice();
+		partidaToString = partidaToString + this.getGames() + "\n";
 		return partidaToString;
 	}
 
@@ -301,6 +279,7 @@ public class Partida {
 	public void moverParaProximoGame() { //TODO Checar controle de gameAtualIndice. Talvez esteja pulando um game
 		if (this.getGameAtualIndice() < this.getGames().size() - 1) {
 			this.setGameAtualIndice(this.getGameAtualIndice() + 1);
+			this.getGames().get(getGameAtualIndice()).setEmAndamento();
 		}
 	}
 }

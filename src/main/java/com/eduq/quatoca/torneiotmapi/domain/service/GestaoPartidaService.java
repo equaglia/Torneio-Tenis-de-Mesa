@@ -68,4 +68,6 @@ public interface GestaoPartidaService {
     }
 
     void moverParaProximoGame(Partida partida);
+
+    Game  proximoGame(Partida partida);
 }
