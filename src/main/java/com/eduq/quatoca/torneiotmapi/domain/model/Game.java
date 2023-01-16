@@ -119,10 +119,6 @@ public class Game implements Comparable<Game>{
 	public boolean cancelado() {
 		return this.getStatus() == StatusGame.Cancelado;
 	}
-	
-	public boolean emCurso() {
-		return this.getPartida().buscarGameEmAndamento() == this;
-	}
 
 	public void cancelar() {
 		this.setStatus(StatusGame.Cancelado);
@@ -147,6 +143,7 @@ public class Game implements Comparable<Game>{
 		gameToString = gameToString +"\n g"+"id" + this.getId()+ ": ";
 		gameToString = gameToString + this.getPontos();
 		gameToString = gameToString + " " + this.getStatus();
+		if (this.emAndamento()) gameToString = gameToString + " " + this.status;
 		return gameToString;
 	}
 

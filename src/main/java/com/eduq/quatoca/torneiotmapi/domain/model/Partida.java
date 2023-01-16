@@ -77,21 +77,6 @@ public class Partida {
 		game.setPartida(this);
 	}
 
-	public void setAdversarios(Jogador jogA, Jogador jogB) {
-		if (jogA != null && jogB != null)
- 		{
-			 setJogadorA(jogA);
-			 setJogadorB(jogB);
-
-			if (this.primeiroSacador == null) {
-				this.setPrimeiroSacador(jogA);
-			}
-			jogA.getPartidas().add(this);
-		} else {
-			throw new NegocioException("Os dois jogadores da partida já haviam sido selecionados");
-		}
-	}
-	
 	public void liberarJogadores() {
 		getJogadorA().liberar();
 		getJogadorB().liberar();
@@ -108,24 +93,25 @@ public class Partida {
 	}
 
 	public Game buscarGameEmAndamento() {
-		int i = 0;
-		while (i < this.getQuantidadeGames()) {
-			if (this.games.get(i).emAndamento())
-				return this.games.get(i);
-			i++;
-		}
-		if (primeiroGameDaPartida().preparado()) {
-			primeiroGameDaPartida().iniciar();
-			return primeiroGameDaPartida();
-		}
+		Collections.sort(this.games);
+
+		for (Game g : this.getGames())
+			if (g.emAndamento()) return g;
+		for (Game g : this.getGames())
+			if (g.preparado()) {
+				g.iniciar();
+				return g;
+			}
 		throw (new NegocioException("Não há game em andamento na partida"));
 	}
 
 	public Game primeiroGameDaPartida() {
+		Collections.sort(this.games);
 		return this.getGames().get(0);
 	}
 
 	public Game proximoGame() {
+		Collections.sort(this.games);
 
 		if (this.emAndamento()) {
 			int proximoGameIndice = 0;
@@ -146,6 +132,8 @@ public class Partida {
 	}
 
 	public Game gameAnterior() {
+		Collections.sort(this.games);
+
 		int indiceGameAtual = this.getGameAtualIndice();
 		if (indiceGameAtual > 0) {
 			return this.getGames().get(indiceGameAtual -1);
@@ -192,16 +180,19 @@ public class Partida {
 		this.getGames().stream()
 				.filter(game -> game.getStatus() != StatusGame.Finalizado)
 				.forEach(game -> game.setStatus(StatusGame.Cancelado));
-		System.out.println(" finalizada "+this+" Partida.finalizar()");
+		Collections.sort(this.games);
+//		System.out.println(" finalizada "+this+" Partida.finalizar()");
 	}
 
 	public void interromper() {
 		this.setStatus(StatusPartida.Interrompida);
+		Collections.sort(this.games);
 		System.out.println(" interrompida "+this);
 	}
 	
 	public void cancelar() {
 		this.setStatus(StatusPartida.Cancelada);
+		Collections.sort(this.games);
 		System.out.println(" cancelada "+this);
 	}
 
@@ -253,17 +244,6 @@ public class Partida {
 	
 	public Game getGame(int game) {
 		return this.getGames().get(game);
-	}
-
-	private void garantirNoMaximoUmGameEmAndamento() {
-		for (int i = 0; i < this.getQuantidadeGames(); i++) {
-			Game game = this.getGame(i);
-			if (game.emAndamento()) {
-				this.setGameAtualIndice(i); //TODO Checar alteração de gameAtualIndice
-				System.out.println("Partida.garantirNoMaximoUmGameEmAndamento"+" atualizou gameAtualIndice para "+i);
-				break;
-			}
-		}
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package com.eduq.quatoca.torneiotmapi.domain.service.impl;
 
+import java.text.MessageFormat;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +36,7 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 
 	private CatalogoJogadorService catalogoJogadorService;
 	private PartidaRepository partidaRepository;
-	private GestaoGameService gestaoGameServiceImpl;
+	private GestaoGameService gestaoGameService;
 	private GestaoPontuacaoService gestaoPontuacaoService;
 
 	private static final int JOGADOR_A = 0;
@@ -54,6 +56,8 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 	@Override
 	@Transactional
 	public Partida salvar(Partida partida) {
+		Collections.sort(partida.getGames());
+		System.out.println(partida);
 		return partidaRepository.save(partida);
 	}
 
@@ -67,12 +71,11 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 
 		Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
 		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
-		partida.setAdversarios(jogadorA.orElse(null), jogadorB.orElse(null));
+		this.setAdversarios(partida, jogadorA.orElse(null), jogadorB.orElse(null));
 
-		checaSeJogadoresSelecionadosCorretamente(partida);
-
+		//		for (int i = 1; i <= quantidadeGames; i++) {
 		for (int i = 0; i < quantidadeGames; i++) {
-			partida.addGame(gestaoGameServiceImpl.prepararGame(jogadorA, jogadorB, i));
+			partida.addGame(gestaoGameService.prepararGame(jogadorA, jogadorB, i));
 		}
 		System.out.println(partida);
 
@@ -90,7 +93,7 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 	public Partida iniciarPartida(Long partidaId) {
 		Partida partida = this.buscar(partidaId);
 		partida.iniciar();
-		gestaoGameServiceImpl.iniciarGame(partida.primeiroGameDaPartida());
+		gestaoGameService.iniciarGame(partida.primeiroGameDaPartida());
 		partida.setGameAtualIndice(0);
 		this.salvar(partida);
 		return partida;
@@ -115,7 +118,7 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 					if (gameEmJogo == null) {
 						finalizarPartida(partida);
 					} else {
-						gestaoGameServiceImpl.iniciarGame(gameEmJogo);
+						gestaoGameService.iniciarGame(gameEmJogo);
 					}
 				} else {
 					throw new NegocioException("Partida ainda precisa ser iniciada");
@@ -185,7 +188,7 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 			partida.getGames().forEach(game -> {
 				game.getPontos().forEach(pontuacao -> gestaoPontuacaoService.excluir(pontuacao));
 				game.setPontos(null);
-				gestaoGameServiceImpl.excluir(game);
+				gestaoGameService.excluir(game);
 			});
 			partida.setGames(null);
 			partida.setJogadorA(null);
@@ -215,6 +218,24 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 		this.salvar(partida);
 	}
 
+	private void setAdversarios(Partida partida, Jogador jogA, Jogador jogB) {
+
+//		if (jogA != null && jogB != null)
+//		{
+/*			if (partida.getPrimeiroSacador() == null) {
+				partida.setPrimeiroSacador(jogA);
+			} else throw new NegocioException("Inconsistência na seleção do primeiro sacador");*/
+			partida.setPrimeiroSacador(jogA);
+			partida.setJogadorA(jogA);
+			partida.setJogadorB(jogB);
+			jogA.getPartidas().add(partida);
+			jogB.getPartidas().add(partida);
+			checaSeJogadoresSelecionadosCorretamente(partida);
+//		} else {
+//			throw new NegocioException("Os dois jogadores da partida já haviam sido selecionados");
+//		}
+	}
+
 	private void garantirNoMaximoUmGameEmAndamento(Partida partida) {
 //		boolean temGameEmAndamento = false;
 		for (int i = 0; i < partida.getQuantidadeGames(); i++) {
@@ -238,11 +259,9 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 		if (partida.getJogadorA() == null && partida.getJogadorB() == null)
 			throw new NegocioException("Nenhum jogador foi selecionado para a partida");
 		if (partida.getJogadorA() != null && partida.getJogadorB() == null)
-			throw new NegocioException(
-					"Somente o jogador " + partida.getJogadorA().getNome() + " foi selecionado para a partida");
+			throw new NegocioException(MessageFormat.format("Somente o jogador {0} foi selecionado para a partida", partida.getJogadorA().getNome()));
 		if (partida.getJogadorA() == null && partida.getJogadorB() != null) {
-			throw new NegocioException(
-					"Somente o jogador " + partida.getJogadorB().getNome() + " foi selecionado para a partida");
+			throw new NegocioException(MessageFormat.format("Somente o jogador {0} foi selecionado para a partida", partida.getJogadorB().getNome()));
 		}
 	}
 
@@ -278,7 +297,7 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 				partidaOut.iniciar();
 				partidaOut.setInicio(getInicioValido(gamesIn.get(0), inicioIn));
 			}
-			gameOut = gestaoGameServiceImpl.buscar(partidaOut.getGame(i).getId());
+			gameOut = gestaoGameService.buscar(partidaOut.getGame(i).getId());
 			if (gamesIn.size() > i) {
 				gameIn = gamesIn.get(i);
 				int pontosJogadorA = gameIn.getPontosJogador(JOGADOR_A);
@@ -294,7 +313,7 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 						gameOut.setFim(fimIn);
 					} else
 						throw new NegocioException("Data início após data final");
-					gestaoGameServiceImpl.salvar(gameOut);
+					gestaoGameService.salvar(gameOut);
 				} else
 					throw new NegocioException("Pontuacao não finaliza o game");
 			} else
