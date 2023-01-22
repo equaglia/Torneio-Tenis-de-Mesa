@@ -68,10 +68,10 @@ public class GameController {
 
 	@Operation(summary = "Força a finalização do game",
 			description = "Atualizar pontuação de ambos os jogadores, forçando a finalização do game")
-	@PutMapping("/finalizado/{gameId}/pontuar/{pontuacaoA}/{pontuacaoB}") 
+	@PutMapping("/finalizado/{gameId}/pontuar/{pontuacaoA}/{pontuacaoB}")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<GameModel> atualizarPontuacaoGameFinalizado(
-			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId, 
+			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId,
 			@Parameter(description = "Identificador único da pontuacao do primeiro jogador no BD") @PathVariable int pontuacaoA,
 			@Parameter(description = "Identificador único da pontuacao do segundo jogador no BD") @PathVariable int pontuacaoB) {
 		return Optional.of(pontuacaoEmGameService.atualizarPontuacaoGameFinalizado(gameId, pontuacaoA, pontuacaoB))
@@ -79,27 +79,53 @@ public class GameController {
 				.orElse(ResponseEntity.notFound().build());
 	}
 
+	@Operation(summary = "Corrige pontuação de game finalizado",
+			description = "Atualizar pontuação de ambos os jogadores, garantindo que o game permaneça finalizado")
+	@PutMapping("/finalizado/{gameId}/corrigir/{pontuacaoA}/{pontuacaoB}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<GameModel> corrigirGameFinalizado(
+			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId,
+			@Parameter(description = "Identificador único da pontuacao do primeiro jogador no BD") @PathVariable int pontuacaoA,
+			@Parameter(description = "Identificador único da pontuacao do segundo jogador no BD") @PathVariable int pontuacaoB) {
+		return Optional.of(pontuacaoEmGameService.corrigirGameFinalizado(gameId, pontuacaoA, pontuacaoB))
+				.map(game -> ResponseEntity.ok(gameAssembler.toModel(game)))
+				.orElse(ResponseEntity.notFound().build());
+	}
+
 	@Operation(summary = "Soma de ponto a jogador",
 			description = "Somar um ponto à pontuação de um dos jogadores")
-	@PutMapping("/{gameId}/pontuar/{pontoId}/somar") 
+	@PutMapping("/{gameId}/pontuar/{pontoId}/somar")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<GameModel> somarUmPonto(
-			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId, 
+			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId,
 			@Parameter(description = "Identificador único da pontuacao do jogador no BD") @PathVariable Long pontoId) {
 		return Optional.of(pontuacaoEmGameService.somaUmPonto(gameId, pontoId))
 				.map(game -> ResponseEntity.ok(gameAssembler.toModel(game)))
 				.orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@Operation(summary = "Subtração de ponto a jogador",
 			description = "Subtrair um ponto da pontuação de um dos jogadores")
-	@PutMapping("/{gameId}/pontuar/{pontoId}/subtrair") 
+	@PutMapping("/{gameId}/pontuar/{pontoId}/subtrair")
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity<GameModel> diminuirUmPonto(
-			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId, 
+			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId,
 			@Parameter(description = "Identificador único da pontuacao do jogador no BD") @PathVariable Long pontoId) {
 		return Optional.of(pontuacaoEmGameService.diminueUmPonto(gameId, pontoId))
 				.map(game -> ResponseEntity.ok(gameAssembler.toModel(game)))
 				.orElse(ResponseEntity.notFound().build());
 	}
+
+	@Operation(summary = "Zerar pontuação dos jogadores do game",
+			description = "Zerar a pontuação de ambos os jogadores de game finalizado, a fim de permitir a correção da pontuação.")
+	@PutMapping("/{gameId}/zerar")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<GameModel> zerar(
+			@Parameter(description = "Identificador único do game no BD") @PathVariable Long gameId,
+			@Parameter(description = "Identificador único da pontuacao do jogador no BD") @PathVariable Long pontoId) {
+		return Optional.of(pontuacaoEmGameService.zerar(gameId))
+				.map(game -> ResponseEntity.ok(gameAssembler.toModel(game)))
+				.orElse(ResponseEntity.notFound().build());
+	}
+
 }

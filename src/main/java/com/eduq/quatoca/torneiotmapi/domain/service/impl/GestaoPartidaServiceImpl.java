@@ -260,7 +260,7 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 			throw new NegocioException("Nenhum jogador foi selecionado para a partida");
 		if (partida.getJogadorA() != null && partida.getJogadorB() == null)
 			throw new NegocioException(MessageFormat.format("Somente o jogador {0} foi selecionado para a partida", partida.getJogadorA().getNome()));
-		if (partida.getJogadorA() == null && partida.getJogadorB() != null) {
+		if ((partida.getJogadorA() == null) && (partida.getJogadorB() != null)) {
 			throw new NegocioException(MessageFormat.format("Somente o jogador {0} foi selecionado para a partida", partida.getJogadorB().getNome()));
 		}
 	}
@@ -345,5 +345,15 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 		if (partida.emAndamento() && gameEmAndamento == null) partida.finalizar();
 		return gameEmAndamento;
 	}
+
+	@Override
+	public boolean isUltimoGameDaPartida(Game game) {
+		Partida partida = buscar(game.getPartida().getId());
+		int indiceGame = game.getNumero();
+		if (indiceGame == partida.getQuantidadeGames()-1) {
+			return true;
+		} else return partida.getGames().get(indiceGame + 1).cancelado();
+	}
+
 
 }

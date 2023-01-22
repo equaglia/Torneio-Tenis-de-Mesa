@@ -28,6 +28,19 @@ public class CalculosGlobais {
 				&& !(gamesVencidosA == gamesVencidosB);
 	}
 
+	public static boolean isResultadoValido(int gamesVencidosA, int gamesVencidosB, int maxGames) {
+		int gamesParaVencer = (maxGames / 2) + 1;
+		if (gamesVencidosA >= 0 && gamesVencidosB >= 0) {
+			if (gamesVencidosA < gamesParaVencer && gamesVencidosB < gamesParaVencer) {
+				return true;
+			} else {
+				return gamesVencidosA != gamesVencidosB;
+			}
+		}
+		return false;
+	}
+
+
 	/*	return
 		 0 - vitoria no game para o jogadorA
 		 1 - vitoria no game para o jogadorB

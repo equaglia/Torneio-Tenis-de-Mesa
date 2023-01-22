@@ -40,4 +40,5 @@ public interface GestaoGameService {
     int getTotalPontos(Game game);
 
     void excluir(Game game);
+
 }

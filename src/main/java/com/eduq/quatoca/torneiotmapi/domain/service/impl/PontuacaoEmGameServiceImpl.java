@@ -19,6 +19,7 @@ import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
 import lombok.AllArgsConstructor;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -66,7 +67,24 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 		return game;
 	}
 
-	@Override@Transactional
+	@Override
+	@Transactional
+	public Game corrigirGameFinalizado(Long gameId, int pontuacaoA, int pontuacaoB){
+		Game game = gestaoGameService.buscar(gameId);
+		CalculosGlobais.garantirPontuacaoPositiva(pontuacaoA, pontuacaoB);
+		if (game.finalizado()
+				&& CalculosGlobais.pontuacaoParaFinalizarGame(pontuacaoA, pontuacaoB)){
+			game.setPontosJogador(0, pontuacaoA);
+			game.setPontosJogador(1, pontuacaoB);
+			Partida partida = game.getPartida();
+			List<Integer> result = partida.calculaResultado();
+			return CalculosGlobais.isResultadoValido(result.get(0), result.get(1), partida.getQuantidadeGames()) ? game : null;
+		}
+		return null;
+	}
+
+	@Override
+	@Transactional
 	public Game somaUmPonto(Long gameId, Long pontoId) {
 		Game game = gestaoGameService.buscar(gameId);
 		boolean gameAtivo = gestaoGameService.isGameEmAndamento(game);
@@ -92,7 +110,8 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 		return game;
 	}
 
-	@Override@Transactional
+	@Override
+	@Transactional
 	public Game diminueUmPonto(Long gameId, Long pontoId) {
 		Game game = gestaoGameService.buscar(gameId);
 		boolean gameAtivo = game.emAndamento();
@@ -123,6 +142,25 @@ public class PontuacaoEmGameServiceImpl implements PontuacaoEmGameService {
 
 	@Override public Pontuacao buscarPontuacaoDeJogador(Game game, int indice) {
 		return gestaoPontuacaoService.buscar(game.getPontos().get(indice).getId());
+	}
+
+	@Override
+	@Transactional
+	public Game zerar(Long gameId) {
+		Game game = gestaoGameService.buscar(gameId);
+		Partida partida = gestaoPartidaService.buscar(game.getPartida().getId());
+		if (game.finalizado()) {
+			if (gestaoPartidaService.isUltimoGameDaPartida(game)) {
+				partida.interromper();
+				game.setPontosJogador(0, 0);
+				game.setPontosJogador(1, 0);
+				game.setPreparado();
+				gestaoGameService.salvar(game);
+				gestaoPartidaService.salvar(partida);
+			}
+		} else throw (new NegocioException("Somente game finalizado pode ser zerado"));
+
+		return game;
 	}
 
 	@Transactional

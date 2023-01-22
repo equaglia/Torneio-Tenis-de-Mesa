@@ -16,10 +16,15 @@ public interface PontuacaoEmGameService {
     Game atualizarPontuacaoGameFinalizado(Long gameId, int pontuacaoA, int pontuacaoB);
 
     @Transactional
+    Game corrigirGameFinalizado(Long gameId, int pontuacaoA, int pontuacaoB);
+
+    @Transactional
     Game somaUmPonto(Long gameId, Long pontoId);
 
     @Transactional
     Game diminueUmPonto(Long gameId, Long pontoId);
 
     Pontuacao buscarPontuacaoDeJogador(Game game, int indice);
+
+    Game zerar(Long gameId);
 }
