@@ -3,7 +3,7 @@ package com.eduq.quatoca.torneiotmapi.domain.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoGameService;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPontuacaoService;

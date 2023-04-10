@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-import javax.validation.Valid;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusPartida;
 import com.eduq.quatoca.torneiotmapi.domain.service.CatalogoJogadorService;

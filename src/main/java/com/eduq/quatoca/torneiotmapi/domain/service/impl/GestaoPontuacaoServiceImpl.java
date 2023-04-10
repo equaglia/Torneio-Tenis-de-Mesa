@@ -1,6 +1,6 @@
 package com.eduq.quatoca.torneiotmapi.domain.service.impl;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPontuacaoService;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import org.springframework.http.HttpStatus;
@@ -73,8 +73,7 @@ public class PartidaController {
 
 	@Operation(summary = "Remoção de partida",
 			description = "Remover a partida da base de dados. Para ser removida, a partida deve estar no status CANCELADO.")
-	@DeleteMapping
-	@RequestMapping("/{partidaId}")
+	@DeleteMapping("/{partidaId}")
 	public ResponseEntity<Void> excluir(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
 		gestaoPartidaService.excluirPartida(partidaId);
@@ -83,9 +82,8 @@ public class PartidaController {
 
 	@Operation(summary = "Preparação de partida",
 			description = "Preparar partida, definindo seus jogadores")
-	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	@RequestMapping("/{jogadorAId}/{jogadorBId}/{quantidadeGames}")
+	@PostMapping("/{jogadorAId}/{jogadorBId}/{quantidadeGames}")
 	public ResponseEntity<PartidaModel> adicionar(
 			@Parameter(description = "Identificador único do primeiro jogador no BD") @PathVariable Long jogadorAId, 
 			@Parameter(description = "Identificador único do segundo jogador no BD") @PathVariable Long jogadorBId,
@@ -97,8 +95,7 @@ public class PartidaController {
 	
 	@Operation(summary = "Início da partida",
 			description = "Dar início a partida")
-	@PutMapping
-	@RequestMapping("/{partidaId}/iniciar")
+	@PutMapping("/{partidaId}/iniciar")
 	public ResponseEntity<PartidaModel> iniciarPartida(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
 		return Optional.of(gestaoPartidaService.iniciarPartida(partidaId))
@@ -108,8 +105,7 @@ public class PartidaController {
 
 	@Operation(summary = "Interrupição da partida",
 			description = "Interromper a partida, se estiver em andamento")
-	@PutMapping
-	@RequestMapping("/{partidaId}/interromper")
+	@PutMapping("/{partidaId}/interromper")
 	public ResponseEntity<PartidaModel> interromperPartida(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
 		return Optional.of(gestaoPartidaService.interromperPartida(partidaId))
@@ -119,8 +115,7 @@ public class PartidaController {
 
 	@Operation(summary = "Retornar partida interrompida",
 			description = "Retornar andamento de partida, caso tenha sido interrompida e jogadores estejam disponíveis")
-	@PutMapping
-	@RequestMapping("/{partidaId}/retornar")
+	@PutMapping("/{partidaId}/retornar")
 	public ResponseEntity<PartidaModel> retornarPartidaInterrompida(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
 		return Optional.of(gestaoPartidaService.retornarPartidaInterrompida(partidaId))
@@ -130,8 +125,7 @@ public class PartidaController {
 
 	@Operation(summary = "Continuação da partida",
 			description = "Dar continuidade a partida, se tiver sido interrompida ou ao iniciar novo game")
-	@PutMapping
-	@RequestMapping("/{partidaId}/continuar")
+	@PutMapping("/{partidaId}/continuar")
 	public ResponseEntity<PartidaModel> continuarPartida(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
 		return Optional.of(gestaoPartidaService.continuarPartida(partidaId))
@@ -141,8 +135,7 @@ public class PartidaController {
 
 	@Operation(summary = "Partida completa",
 			description = "Completar todos os games e finalizar a partida")
-	@PutMapping
-	@RequestMapping("/{partidaId}/completar")
+	@PutMapping("/{partidaId}/completar")
 	public ResponseEntity<PartidaModel> completarPartida(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId,
 			@Valid @RequestBody Partida partida) {//		@Valid @RequestBody List<Game> games) {
@@ -153,8 +146,7 @@ public class PartidaController {
 	
 	@Operation(summary = "Cancelamento de partida",
 			description = "Cancelar a partida")
-	@PutMapping
-	@RequestMapping("/{partidaId}/cancelar")
+	@PutMapping("/{partidaId}/cancelar")
 	public ResponseEntity<PartidaModel> cancelarPartida(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId) {
 		return Optional.of(gestaoPartidaService.cancelarPartida(partidaId))

@@ -2,7 +2,7 @@ package com.eduq.quatoca.torneiotmapi.domain.service;
 
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 public interface ControleSacadorService {
     @Transactional

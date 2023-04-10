@@ -1,10 +1,8 @@
 package com.eduq.quatoca.torneiotmapi.api.controller;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.eduq.quatoca.torneiotmapi.api.assembler.PontuacaoAssembler;
-import com.eduq.quatoca.torneiotmapi.api.model.GameModel;
 import com.eduq.quatoca.torneiotmapi.api.model.PontuacaoModel;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPontuacaoService;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,9 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.eduq.quatoca.torneiotmapi.domain.model.Pontuacao;
-import com.eduq.quatoca.torneiotmapi.domain.repository.PontuacaoRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

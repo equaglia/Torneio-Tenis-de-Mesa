@@ -3,8 +3,8 @@ package com.eduq.quatoca.torneiotmapi.domain.service;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
 
-import javax.transaction.Transactional;
-import javax.validation.Valid;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.List;
 

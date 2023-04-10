@@ -27,8 +27,7 @@ public class SacadorController {
 	private JogadorAssembler jogadorAssembler;
 	private ControleSacadorService controleSacadorService;
 	
-	@GetMapping
-	@RequestMapping("/{partidaId}/games/{gameId}/sacador")//TODO partidaId parece não ser necessário - pode ser obtida através de gameId
+	@GetMapping("/{partidaId}/games/{gameId}/sacador")//TODO partidaId parece não ser necessário - pode ser obtida através de gameId
 	public ResponseEntity<JogadorModel> sacador(@PathVariable Long partidaId, @PathVariable Long gameId) {
 		return Optional.of(controleSacadorService.getSacador(partidaId, gameId))
 				.map(jogador -> ResponseEntity.ok(jogadorAssembler.toModel(jogador)))
@@ -37,8 +36,7 @@ public class SacadorController {
 
 	@Operation(summary = "Definição do sacador",
 			description = "Definir o sacador do primeiro game da partida. O sacador de cada game será de acordo com o primeiro sacador, de forma que haja intercalação do sacador a cada novo game.")
-	@PutMapping
-	@RequestMapping("/{partidaId}/primeiro-sacador/{jogadorId}")
+	@PutMapping("/{partidaId}/primeiro-sacador/{jogadorId}")
 	public void definirPrimeiroSacador(
 			@Parameter(description = "Identificador único da partida no BD") @PathVariable Long partidaId, 
 			@Parameter(description = "Identificador único do jogador no BD") @PathVariable Long jogadorId) {

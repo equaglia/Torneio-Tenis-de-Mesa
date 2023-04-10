@@ -2,7 +2,7 @@ package com.eduq.quatoca.torneiotmapi.domain.service.impl;
 
 import java.util.Optional;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import com.eduq.quatoca.torneiotmapi.domain.service.CatalogoJogadorService;
 import com.eduq.quatoca.torneiotmapi.domain.service.ControleSacadorService;
