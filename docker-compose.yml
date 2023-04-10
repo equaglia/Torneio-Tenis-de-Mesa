@@ -1,0 +1,31 @@
+version: '0.1'
+
+services:
+  #new service (torneio-tm)
+  torneio-tm:
+    container_name: torneio-tm
+    image: eduq/torneio-tm:1.0.0
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      - DATABASE_URL=jdbc:postgresql://tm_db:5432/postgres
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+    depends_on:
+      - tm_db
+
+  #old service (postgres)
+  tm_db:
+    container_name: tm_db
+    image: postgres:12
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata: {}
