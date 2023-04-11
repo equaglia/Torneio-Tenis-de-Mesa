@@ -1,4 +1,4 @@
-version: '0.1'
+version: '3.9'
 
 services:
   #new service (torneio-tm)
@@ -18,7 +18,7 @@ services:
   #old service (postgres)
   tm_db:
     container_name: tm_db
-    image: postgres:12
+    image: postgres:15.2-alpine
     ports:
       - 5432:5432
     environment:
