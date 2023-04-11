@@ -1,3 +1,7 @@
+# Criar este container:
+# no terminal, no local deste arquivo, digite 
+# 'docker compose up -d torneio-tm'
+
 version: '3.9'
 
 services:
