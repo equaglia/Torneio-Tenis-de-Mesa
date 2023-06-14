@@ -2,6 +2,8 @@ package com.eduq.quatoca.torneiotmapi.domain.model;
 
 import com.eduq.quatoca.torneiotmapi.domain.model.enums.CategoriaJogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusJogador;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.converters.CategoriaJogadorConverter;
+
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -43,7 +45,7 @@ public class Jogador {
 	private String sobrenome;
 	
 	@NotNull(message = "Categoria é mandatório")
-	@Enumerated(EnumType.STRING)
+	@Convert(converter = CategoriaJogadorConverter.class)
 	private CategoriaJogador categoria;
 	
 	@NotNull(message = "Status é mandatório")

@@ -1,6 +1,14 @@
 # Criar este container:
-# no terminal, no local deste arquivo, digite 
-# 'docker compose up -d torneio-tm'
+# no terminal, no local deste arquivo, faça
+# - regerar o jar do projeto: 
+# mvn clean package -DskipTests
+# - executar o docker-compose.yml
+# docker compose up -d torneio-tm
+#
+# obs. se quiser limpar o BD, execute:
+# apagar o volume torneio-tm-api_pgdata, ou 
+# docker exec -it torneio-tm bash -c "dropdb torneio_tm"
+# docker exec -it torneio-tm bash -c "createdb torneio_tm"
 
 version: '3.9'
 
