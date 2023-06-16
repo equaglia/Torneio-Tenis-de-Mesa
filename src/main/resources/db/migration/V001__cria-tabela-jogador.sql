@@ -6,7 +6,8 @@ CREATE TABLE jogador (
   nome varchar(30) NOT NULL,
   sobrenome varchar(30) NOT NULL,
   categoria varchar(2) DEFAULT 'D' NOT NULL,
-  status varchar(20) DEFAULT 'Disponivel' NOT NULL,
+  statusJogador varchar(20) DEFAULT 'Disponivel' NOT NULL,
+  status varchar(10) DEFAULT 'Ativo' NOT NULL,
   
   PRIMARY KEY (id)
 );

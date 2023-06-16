@@ -6,10 +6,15 @@ import com.eduq.quatoca.torneiotmapi.domain.model.enums.converters.CategoriaJoga
 
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.hibernate.validator.constraints.Length;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +25,8 @@ import java.util.Set;
 @ToString
 //@RequiredArgsConstructor
 @Entity
+@SQLDelete(sql = "UPDATE Jogador SET status = 'Inativo' WHERE id = ?")
+@Where(clause = "status = 'Ativo'")
 public class Jogador {
 
 	@EqualsAndHashCode.Include
@@ -50,27 +57,33 @@ public class Jogador {
 	
 	@NotNull(message = "Status é mandatório")
 	@Enumerated(EnumType.STRING)
-	private StatusJogador status;
+	private StatusJogador statusJogador;
 	
 	@OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL)
 	@ToString.Exclude
 	private Set<Pontuacao> pontos;
 
+	@NotNull
+	@Length(max = 10)
+	@Pattern(regexp = "Ativo|Inativo")
+	@Column(nullable = false, length = 10)
+	private String status = "Ativo";
+
 	public Jogador() {
 		super();
-		this.setStatus(StatusJogador.Disponivel);
+		this.setStatusJogador(StatusJogador.Disponivel);
 	}
 	
 	public boolean disponivel() {
-		return this.getStatus() == StatusJogador.Disponivel;
+		return this.getStatusJogador() == StatusJogador.Disponivel;
 	}
 	
 	public void convocar() {
-		this.setStatus(StatusJogador.NaoDisponivel);
+		this.setStatusJogador(StatusJogador.NaoDisponivel);
 	}
 	
 	public void liberar() {
-		this.setStatus(StatusJogador.Disponivel);
+		this.setStatusJogador(StatusJogador.Disponivel);
 	}
 
 	@Override
