@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eduq.quatoca.torneiotmapi.api.assembler.GameAssembler;
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.GameAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.GameModel;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoGameService;
 import com.eduq.quatoca.torneiotmapi.domain.service.PontuacaoEmGameService;

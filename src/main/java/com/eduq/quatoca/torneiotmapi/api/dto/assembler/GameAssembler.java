@@ -1,4 +1,4 @@
-package com.eduq.quatoca.torneiotmapi.api.assembler;
+package com.eduq.quatoca.torneiotmapi.api.dto.assembler;
 
 import java.util.List;
 import java.util.stream.Collectors;

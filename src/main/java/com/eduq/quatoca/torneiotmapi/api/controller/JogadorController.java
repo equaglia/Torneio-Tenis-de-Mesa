@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eduq.quatoca.torneiotmapi.api.assembler.JogadorAssembler;
-import com.eduq.quatoca.torneiotmapi.api.assembler.JogadorPartidasAssembler;
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.JogadorAssembler;
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.JogadorPartidasAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.JogadorModel;
 import com.eduq.quatoca.torneiotmapi.api.model.JogadorPartidasModel;
+import com.eduq.quatoca.torneiotmapi.api.model.input.JogadorInput;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.service.CatalogoJogadorService;
 
@@ -34,7 +35,7 @@ import lombok.AllArgsConstructor;
 @Tag(name = "JOGADORES", description = "Controle de informações de jogadores")
 public class JogadorController {
 	
-	private JogadorAssembler jogadorAssembler;
+	// private JogadorAssembler jogadorAssembler;
 	private JogadorPartidasAssembler jogadorPartidasAssembler;
 	private CatalogoJogadorService catalogoJogadorService;
 	
@@ -43,8 +44,11 @@ public class JogadorController {
 			description = "Adicionar novo jogador à base de dados")
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Jogador adicionar(@Valid @RequestBody Jogador jogador) {
+	public Jogador adicionar(@Valid @RequestBody JogadorInput jogador) {
+	// public Jogador adicionar(@Valid @RequestBody Jogador jogador) {
+		System.out.println("JogadorController.adicionar: "+jogador.toString());
 		return catalogoJogadorService.salvar(jogador);
+		// return jogadorAssembler.toEntity(jogador);
 	}
 
 	@Operation(summary = "Atualização de jogador",
@@ -52,7 +56,7 @@ public class JogadorController {
 	@PutMapping("/{jogadorId}")
 	public ResponseEntity<Jogador> atualizar(
 			@Parameter(description = "Identificador único do jogador no BD") @PathVariable Long jogadorId,
-			@Valid @RequestBody Jogador jogador) {
+			@Valid @RequestBody JogadorInput jogador) {
 		return catalogoJogadorService.buscar(jogadorId)
 				.map(record -> {
 					record.setCategoria(jogador.getCategoria());

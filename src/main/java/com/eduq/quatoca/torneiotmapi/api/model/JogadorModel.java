@@ -11,7 +11,7 @@ public class JogadorModel {
 	private Long id; // TODO Remover no futuro
 	private String nome;
 	private String sobrenome;
-	private StatusJogador status;
+	private StatusJogador statusJogador;
 	private CategoriaJogador categoria;
 
 }

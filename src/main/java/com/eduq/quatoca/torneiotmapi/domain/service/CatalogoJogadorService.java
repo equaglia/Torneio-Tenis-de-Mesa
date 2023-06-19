@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.JogadorAssembler;
+import com.eduq.quatoca.torneiotmapi.api.model.JogadorModel;
+import com.eduq.quatoca.torneiotmapi.api.model.input.JogadorInput;
 import com.eduq.quatoca.torneiotmapi.domain.exception.EntidadeNaoEncontradaException;
 import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
@@ -21,26 +24,28 @@ import lombok.AllArgsConstructor;
 public class CatalogoJogadorService {
 
 	private JogadorRepository jogadorRepository;
+	private JogadorAssembler jogadorAssembler;
 	
-	// @Override
-	public Optional<Jogador> buscar(Long jogadorId) {
-		return Optional.of(jogadorRepository.findById(jogadorId)
-				.orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado CatalogoJogadorService")));
+	public Optional<JogadorModel> buscar(Long jogadorId) {
+		// return Optional.of(jogadorRepository.findById(jogadorId)
+		Jogador jogador = jogadorRepository.findById(jogadorId).orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado CatalogoJogadorService"));
+		return Optional.of(jogadorAssembler.toModel(jogador));
+				// .orElseThrow(() -> new EntidadeNaoEncontradaException("Jogador não encontrado CatalogoJogadorService")));
 	}
 	
-	// @Override
 	public List<Jogador> listar() {
 		return jogadorRepository.findAll();
 	}
 
-	// @Override
 	@Transactional
-	public Jogador salvar(Jogador jogador) {
+	public Jogador salvar(JogadorInput jogador) {
+	// public Jogador salvar(Jogador jogador) {
+		System.out.println("JogadorService.salvar: "+jogador.toString());
 		// TODO TBD controles, tipo: email, fone
-		return jogadorRepository.save(jogador);
+		// return jogadorRepository.save(jogador);
+		return jogadorAssembler.toEntity(jogador);
 	}
 
-	// @Override
 	@Transactional
 	public void excluir(Long jogadorId) {
 		Jogador jogadorParaExcluir = this.buscar(jogadorId).orElse(null);

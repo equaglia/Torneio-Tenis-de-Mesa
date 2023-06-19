@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaAssembler;
-import com.eduq.quatoca.torneiotmapi.api.assembler.PartidaResumoAssembler;
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.PartidaAssembler;
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.PartidaResumoAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaModel;
 import com.eduq.quatoca.torneiotmapi.api.model.PartidaResumoModel;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;

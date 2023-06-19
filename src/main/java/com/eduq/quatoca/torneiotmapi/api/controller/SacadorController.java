@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eduq.quatoca.torneiotmapi.api.assembler.JogadorAssembler;
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.JogadorAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.JogadorModel;
 import com.eduq.quatoca.torneiotmapi.domain.service.ControleSacadorService;
 

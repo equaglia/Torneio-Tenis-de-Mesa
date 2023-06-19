@@ -1,19 +1,19 @@
 package com.eduq.quatoca.torneiotmapi.domain.model;
 
 import com.eduq.quatoca.torneiotmapi.domain.model.enums.CategoriaJogador;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.Status;
 import com.eduq.quatoca.torneiotmapi.domain.model.enums.StatusJogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.enums.converters.CategoriaJogadorConverter;
+import com.eduq.quatoca.torneiotmapi.domain.model.enums.converters.StatusConverter;
 
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.hibernate.validator.constraints.Length;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -64,10 +64,9 @@ public class Jogador {
 	private Set<Pontuacao> pontos;
 
 	@NotNull
-	@Length(max = 10)
-	@Pattern(regexp = "Ativo|Inativo")
 	@Column(nullable = false, length = 10)
-	private String status = "Ativo";
+	@Convert(converter = StatusConverter.class)
+	private Status status = Status.ACTIVE;
 
 	public Jogador() {
 		super();

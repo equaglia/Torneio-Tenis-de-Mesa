@@ -2,7 +2,7 @@ package com.eduq.quatoca.torneiotmapi.api.controller;
 
 import java.util.Optional;
 
-import com.eduq.quatoca.torneiotmapi.api.assembler.PontuacaoAssembler;
+import com.eduq.quatoca.torneiotmapi.api.dto.assembler.PontuacaoAssembler;
 import com.eduq.quatoca.torneiotmapi.api.model.PontuacaoModel;
 import com.eduq.quatoca.torneiotmapi.domain.service.GestaoPontuacaoService;
 import io.swagger.v3.oas.annotations.Parameter;
