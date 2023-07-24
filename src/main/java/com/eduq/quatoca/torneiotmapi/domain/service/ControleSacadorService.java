@@ -11,6 +11,7 @@ import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
+import com.eduq.quatoca.torneiotmapi.domain.repository.JogadorRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -21,6 +22,8 @@ public class ControleSacadorService {
 	private GestaoPartidaService gestaoPartidaService;
 	private GestaoGameService gestaoGameService;
 	private CatalogoJogadorService catalogoJogadorService;
+	private JogadorRepository jogadorRepository;
+
 
 	@Transactional
 	public void setPrimeiroSacador(Long partidaId, Long jogadorId) {
@@ -28,7 +31,8 @@ public class ControleSacadorService {
 		if (partida.jaRegistrouPontuacao()) {
 			throw new NegocioException("Partida já registrou pontuacao e não pode alterar o 'primeiro sacador'");
 		} else {
-			Optional<Jogador> jogador = catalogoJogadorService.buscar(jogadorId);
+			// Optional<Jogador> jogador = catalogoJogadorService.buscar(jogadorId);
+			Optional<Jogador> jogador = jogadorRepository.findById(jogadorId);
 			if (partida.isJogadorDaPartida(jogador.orElse(null))) {
 				partida.setPrimeiroSacador(jogador.orElse(null));
 			} else {

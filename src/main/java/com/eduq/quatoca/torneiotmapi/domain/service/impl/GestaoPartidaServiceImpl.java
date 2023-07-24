@@ -25,6 +25,7 @@ import com.eduq.quatoca.torneiotmapi.domain.exception.NegocioException;
 import com.eduq.quatoca.torneiotmapi.domain.model.Game;
 import com.eduq.quatoca.torneiotmapi.domain.model.Jogador;
 import com.eduq.quatoca.torneiotmapi.domain.model.Partida;
+import com.eduq.quatoca.torneiotmapi.domain.repository.JogadorRepository;
 import com.eduq.quatoca.torneiotmapi.domain.repository.PartidaRepository;
 
 import lombok.AllArgsConstructor;
@@ -38,6 +39,8 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 	private PartidaRepository partidaRepository;
 	private GestaoGameService gestaoGameService;
 	private GestaoPontuacaoService gestaoPontuacaoService;
+		private JogadorRepository jogadorRepository;
+
 
 	private static final int JOGADOR_A = 0;
 	private static final int JOGADOR_B = 1;
@@ -69,8 +72,10 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 
 		partida.setQuantidadeGames(quantidadeGames);
 
-		Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
-		Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
+		// Optional<Jogador> jogadorA = catalogoJogadorService.buscar(jogadorAId);
+		// Optional<Jogador> jogadorB = catalogoJogadorService.buscar(jogadorBId);
+		Optional<Jogador> jogadorA = jogadorRepository.findById(jogadorAId);
+		Optional<Jogador> jogadorB = jogadorRepository.findById(jogadorBId);
 		this.setAdversarios(partida, jogadorA.orElse(null), jogadorB.orElse(null));
 
 		//		for (int i = 1; i <= quantidadeGames; i++) {
@@ -81,8 +86,10 @@ public class GestaoPartidaServiceImpl implements GestaoPartidaService {
 
 		partida.setGameAtualIndice(0);
 
-		catalogoJogadorService.salvar(jogadorA.orElse(null));
-		catalogoJogadorService.salvar(jogadorB.orElse(null));
+		// catalogoJogadorService.salvar(jogadorA.orElse(null));
+		// catalogoJogadorService.salvar(jogadorB.orElse(null));
+		jogadorRepository.save(jogadorA.orElse(null));
+		jogadorRepository.save(jogadorB.orElse(null));
 		this.salvar(partida);
 
 		return partida;

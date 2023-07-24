@@ -17,13 +17,15 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 //@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Getter
-@Setter
-@ToString
+// @Getter
+// @Setter
+// @ToString
 //@RequiredArgsConstructor
+@Data
 @Entity
 @SQLDelete(sql = "UPDATE Jogador SET status = 'Inativo' WHERE id = ?")
 @Where(clause = "status = 'Ativo'")
@@ -52,12 +54,13 @@ public class Jogador {
 	private String sobrenome;
 	
 	@NotNull(message = "Categoria é mandatório")
+    @Column(length = 10, nullable = false)
 	@Convert(converter = CategoriaJogadorConverter.class)
 	private CategoriaJogador categoria;
 	
 	@NotNull(message = "Status é mandatório")
 	@Enumerated(EnumType.STRING)
-	private StatusJogador statusJogador;
+	private StatusJogador statusJogador = StatusJogador.Disponivel;
 	
 	@OneToMany(mappedBy = "jogador", cascade = CascadeType.ALL)
 	@ToString.Exclude
@@ -96,5 +99,10 @@ public class Jogador {
 	@Override
 	public int hashCode() {
 		return getClass().hashCode();
+	}
+
+	
+	public Optional<Set<Partida>> getPartidasOptional() {
+		return Optional.of(getPartidas());
 	}
 }
