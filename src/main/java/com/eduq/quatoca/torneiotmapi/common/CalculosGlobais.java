@@ -10,12 +10,14 @@ public class CalculosGlobais {
 		}
 	}
 
-	public static boolean pontuacaoParaContinuarGame(int pontuacaoA, int pontuacaoB) {
-		return pontuacaoA < 11 && pontuacaoB < 11;
-	}
+public static boolean pontuacaoParaContinuarGame(int pontuacaoA, int pontuacaoB) {
+    return (pontuacaoA < 11 && pontuacaoB < 11) ||
+           (pontuacaoA == 11 && pontuacaoB == 10) ||
+           (pontuacaoA == 10 && pontuacaoB == 11);
+}
 
 	public static boolean pontuacaoParaFinalizarGame(int pontuacaoA, int pontuacaoB) {
-//		System.out.println("pontuacaoA = "+pontuacaoA+"   pontuacaoB = "+pontuacaoB);
+		// System.out.println("pontuacaoA = "+pontuacaoA+" pontuacaoB = "+pontuacaoB);
 		return pontuacaoA == 11 && pontuacaoB < 10 || pontuacaoA < 10 && pontuacaoB == 11
 				|| (pontuacaoA >= 10 && pontuacaoB >= 10 && Math.abs(pontuacaoA - pontuacaoB) == 2);
 	}
@@ -40,16 +42,21 @@ public class CalculosGlobais {
 		return false;
 	}
 
-
-	/*	return
-		 0 - vitoria no game para o jogadorA
-		 1 - vitoria no game para o jogadorB
-		-1 - game não tem vencedor	 */
+	/*
+	 * return
+	 * 0 - vitoria no game para o jogadorA
+	 * 1 - vitoria no game para o jogadorB
+	 * -1 - game não tem vencedor
+	 */
 	public static int vencedorGame(int pontosJogadorA, int pontosJogadorB) {
-		if (pontosJogadorA == 11 && pontosJogadorB <= 9 ) return 0;
-		if (pontosJogadorB == 11 && pontosJogadorA <= 9 ) return 1;
-		if (pontosJogadorA > 11 && pontosJogadorA == pontosJogadorB +2 ) return 0;
-		if (pontosJogadorB > 11 && pontosJogadorB == pontosJogadorA +2 ) return 1;
+		if (pontosJogadorA == 11 && pontosJogadorB <= 9)
+			return 0;
+		if (pontosJogadorB == 11 && pontosJogadorA <= 9)
+			return 1;
+		if (pontosJogadorA > 11 && pontosJogadorA == pontosJogadorB + 2)
+			return 0;
+		if (pontosJogadorB > 11 && pontosJogadorB == pontosJogadorA + 2)
+			return 1;
 		return -1;
 	}
 
